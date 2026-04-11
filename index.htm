@@ -1695,7 +1695,7 @@ async function loadGearFromSheet() {
   const serialScreen = document.getElementById('screen-serial');
   const loadingEl = document.getElementById('gear-loading-msg');
   try {
-    const res = await fetch(SCRIPT_URL + '?action=getGear', { redirect: 'follow' });
+    const res = await fetch(SCRIPT_URL + '?action=getGear', { method: 'GET', redirect: 'follow', mode: 'cors' });
     const data = await res.json();
     if (data.gear && data.gear.length > 0) {
       GEAR_DATA = data.gear;
@@ -2130,7 +2130,7 @@ function openAdmin() {
   if (adminUnlocked) {
     document.getElementById('admin-login-card').style.display = 'none';
     document.getElementById('gear-manager').classList.add('show');
-    renderGearList();
+    loadGearFromSheet().then(() => renderGearList());
   }
 }
 
@@ -2150,7 +2150,7 @@ function adminLogin() {
     document.getElementById('gear-manager').classList.add('show');
     document.querySelector('.admin-btn').classList.add('unlocked');
     document.querySelector('.admin-btn').innerHTML = '&#9881; <span class="admin-label">Admin</span>';
-    renderGearList();
+    loadGearFromSheet().then(() => renderGearList());
   } else {
     err.style.display = 'block';
   }
