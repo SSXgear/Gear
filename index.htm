@@ -862,16 +862,16 @@ body {
 .landing-cards {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 12px;
-  max-width: 600px;
+  gap: 16px;
+  max-width: 680px;
   margin: 0 auto;
 }
 @media (max-width: 480px) { .landing-cards { grid-template-columns: 1fr; gap: 10px; } }
 .landing-card {
   background: var(--surface);
   border: 1px solid var(--border-strong);
-  border-radius: 18px;
-  padding: 24px 20px 20px;
+  border-radius: 22px;
+  padding: 36px 24px 28px;
   cursor: pointer;
   transition: border-color 0.2s, transform 0.15s, box-shadow 0.2s;
   text-align: center;
@@ -1110,55 +1110,7 @@ body {
 }
 .damage-opt.selected-no  { border-color: var(--green); color: var(--green); background: var(--green-dim); }
 .damage-opt.selected-yes { border-color: var(--red);   color: var(--red);   background: var(--red-dim); }
-
-/* ── RETURNING CUSTOMER LOOKUP ── */
-.returning-wrap {
-  max-width: 420px; margin: 0 auto 16px; text-align: left;
-}
-.returning-toggle {
-  display: flex; align-items: center; gap: 8px; cursor: pointer;
-  background: var(--surface); border: 1px solid var(--border-strong);
-  border-radius: var(--radius); padding: 12px 16px;
-  font-size: 13px; font-weight: 600; color: var(--text-dim);
-  transition: border-color 0.2s, color 0.2s;
-  -webkit-tap-highlight-color: transparent;
-  user-select: none;
-}
-.returning-toggle:hover { border-color: var(--sky); color: var(--text); }
-.returning-body { display: none; margin-top: 10px; }
-.returning-body.open { display: block; }
-.returning-input-row {
-  display: flex; gap: 8px;
-  background: var(--surface); border: 1px solid var(--border-strong);
-  border-radius: var(--radius); padding: 6px 6px 6px 16px;
-  transition: border-color 0.2s;
-}
-.returning-input-row:focus-within { border-color: var(--sky); box-shadow: 0 0 0 3px var(--sky-dim); }
-.returning-input {
-  flex: 1; background: transparent; border: none; color: var(--text);
-  font-family: 'Inter', sans-serif; font-size: 15px; outline: none; min-width: 0;
-}
-.returning-input::placeholder { color: var(--text-muted); font-size: 13px; }
-.btn-returning {
-  background: var(--surface2); color: var(--text-dim); border: 1px solid var(--border-strong);
-  border-radius: 8px; padding: 10px 16px; font-family: 'Barlow', sans-serif;
-  font-size: 13px; font-weight: 800; cursor: pointer; white-space: nowrap;
-  transition: border-color 0.2s, color 0.2s; min-height: 40px;
-  -webkit-tap-highlight-color: transparent;
-}
-.btn-returning:hover { border-color: var(--sky); color: var(--sky); }
-.returning-result {
-  margin-top: 10px; padding: 10px 14px; border-radius: 9px;
-  background: var(--green-dim); border: 1px solid rgba(74,222,128,0.25);
-  color: var(--green); font-size: 13px; display: none;
-}
-.returning-err {
-  margin-top: 10px; padding: 10px 14px; border-radius: 9px;
-  background: var(--red-dim); border: 1px solid rgba(248,113,113,0.25);
-  color: var(--red); font-size: 13px; display: none;
-}
-
-/* ── RUSH SERVICE SELECTOR ── */
+/* ── RUSH SELECTOR ── */
 .rush-section {
   background: var(--surface); border: 1px solid var(--border-strong);
   border-radius: 16px; margin-bottom: 16px; overflow: hidden; padding: 18px 20px 20px;
@@ -1192,12 +1144,51 @@ body {
 .rush-label-sub { font-size: 11px; color: var(--text-dim); margin-top: 2px; }
 .rush-opt.selected .rush-label-sub { color: var(--sky); opacity: 0.8; }
 .rush-price {
-  font-family: 'Roboto Mono', monospace; font-size: 13px; font-weight: 600;
+  font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 600;
   color: var(--text-dim); white-space: nowrap; flex-shrink: 0;
 }
 .rush-opt.selected .rush-price { color: var(--sky); }
 
-/* ── PWA BANNER ── */
+/* ── PRINT (QR card only) ── */
+@media print {
+  @page { size: 3in 2in; margin: 0; }
+  * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+  body > *                          { display: none !important; }
+  .admin-overlay                    { position: static !important; background: white !important; display: block !important; }
+  .admin-panel                      { box-shadow: none !important; max-height: none !important; overflow: visible !important; border: none !important; border-radius: 0 !important; }
+  .admin-header, .admin-body > *:not(#gear-manager),
+  .admin-login-card, #admin-tab-gear, #admin-tab-parts,
+  #admin-tab-email, #admin-tab-qr > *:not(#qr-sub-dz) { display: none !important; }
+  #admin-tab-qr, #qr-sub-dz        { display: block !important; }
+  #qr-sub-fj, .admin-tab-bar,
+  #qr-sub-btn-fj, #qr-sub-btn-dz,
+  #dz-qr-result > div:not(#dz-qr-print-card),
+  .info-toast                       { display: none !important; }
+  #dz-qr-result                     { display: block !important; }
+  #dz-qr-print-card {
+    position: fixed !important;
+    top: 0 !important; left: 0 !important;
+    width: 3in !important;
+    height: 2in !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    margin: 0 !important;
+    padding: 6px 12px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 2px !important;
+    background: #f2ede4 !important;
+  }
+  #dz-qr-canvas { margin: 3px 0 !important; }
+  #dz-qr-print-card canvas,
+  #dz-qr-print-card img {
+    width: 108px !important;
+    height: 108px !important;
+  }
+}
+
 .pwa-banner {
   position: fixed; bottom: 0; left: 0; right: 0;
   background: #0d1829; border-top: 1px solid rgba(56,189,248,0.3);
@@ -1220,6 +1211,7 @@ body {
 }
 
 </style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 </head>
 <body>
 
@@ -1230,8 +1222,9 @@ body {
     </div>
     <div class="header-nav">
       <button class="btn-home" onclick="showScreen('screen-landing')">✚ <span class="btn-label">Request Service</span></button>
-      <button class="queue-link" onclick="window.location.href='ssx_queue.html'">📋 <span class="ql-label">Rigger Queue</span></button>
-      <a href="customer.html" style="display:flex;align-items:center;gap:5px;padding:8px 10px;background:transparent;border:1px solid rgba(255,255,255,0.15);border-radius:8px;color:var(--text-dim);font-family:'Inter',sans-serif;font-size:12px;font-weight:600;text-decoration:none;white-space:nowrap;transition:border-color 0.2s,color 0.2s;-webkit-tap-highlight-color:transparent;" onmouseover="this.style.borderColor='var(--sky)';this.style.color='#fff'" onmouseout="this.style.borderColor='rgba(255,255,255,0.15)';this.style.color='var(--text-dim)'">🪂 <span class="ql-label">My Rig</span></a>
+      <button class="queue-link" onclick="window.location.href='ssx_queue.html'">📋 <span class="ql-label">Queue</span></button>
+      <a href="customer.html" style="display:flex;align-items:center;gap:5px;padding:8px 10px;background:transparent;border:1px solid rgba(255,255,255,0.15);border-radius:8px;color:var(--text-dim);font-family:'Inter',sans-serif;font-size:12px;font-weight:600;text-decoration:none;white-space:nowrap;transition:border-color 0.2s,color 0.2s;-webkit-tap-highlight-color:transparent;">🪂 <span class="ql-label">My Rig</span></a>
+      <button id="pwa-nav-btn" onclick="triggerPWAInstall()" title="Install SSXgear App" style="display:flex;align-items:center;justify-content:center;width:36px;height:36px;background:transparent;border:1px solid rgba(255,255,255,0.15);border-radius:8px;color:var(--text-muted);font-size:18px;cursor:pointer;transition:border-color 0.2s,color 0.2s;-webkit-tap-highlight-color:transparent;flex-shrink:0;">⬇</button>
       <button class="admin-btn" onclick="openAdmin()">🔒 <span class="admin-label">Admin</span></button>
     </div>
   </div>
@@ -1280,22 +1273,6 @@ body {
   <!-- SCREEN FJ: FUN JUMPER FORM -->
   <div class="screen" id="screen-funjumper">
     <button class="fj-back" onclick="showScreen('screen-landing')">← Back</button>
-
-    <!-- RETURNING CUSTOMER LOOKUP -->
-    <div style="max-width:680px;margin:0 0 16px;">
-      <div class="returning-toggle" onclick="toggleReturning()">
-        <span>↺</span> <span>Returning Customer? Load your info automatically</span>
-        <span id="returning-chevron" style="margin-left:auto;font-size:12px;color:var(--text-muted);">▾</span>
-      </div>
-      <div class="returning-body" id="returning-body">
-        <div class="returning-input-row">
-          <input class="returning-input" id="ret-email" type="email" placeholder="Email address used previously">
-          <button class="btn-returning" onclick="loadReturningCustomer()">Load Rig ▶</button>
-        </div>
-        <div class="returning-result" id="returning-result"></div>
-        <div class="returning-err" id="returning-err"></div>
-      </div>
-    </div>
 
     <!-- Section 1: Customer Info -->
     <div class="fj-section">
@@ -1604,117 +1581,31 @@ body {
 <script>
 const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyJZiI8gMzft-hPBlx6rQ0R4MM7WDRl75hG_AXbhB950YaobHH_muXMLIiJkQEroa0Vrw/exec';
 
-// ── RUSH SELECTION ────────────────────────────────────────────
-let selectedRush = { fj: 'Standard Turnaround', dz: 'Standard Turnaround' };
-
-function selectRush(el, value, groupId) {
-  const container = document.getElementById(groupId);
-  container.querySelectorAll('.rush-opt').forEach(o => o.classList.remove('selected'));
-  el.classList.add('selected');
-  if (groupId === 'fj-rush-options') selectedRush.fj = value;
-  else selectedRush.dz = value;
-}
-
-// ── RETURNING CUSTOMER LOOKUP ─────────────────────────────────
-function toggleReturning() {
-  const body = document.getElementById('returning-body');
-  const chev = document.getElementById('returning-chevron');
-  const isOpen = body.classList.toggle('open');
-  chev.textContent = isOpen ? '▴' : '▾';
-}
-
-async function loadReturningCustomer() {
-  const email   = document.getElementById('ret-email').value.trim().toLowerCase();
-  const resultEl = document.getElementById('returning-result');
-  const errEl    = document.getElementById('returning-err');
-  resultEl.style.display = 'none';
-  errEl.style.display    = 'none';
-
-  if (!email) { errEl.textContent = 'Please enter your email address.'; errEl.style.display = 'block'; return; }
-
-  resultEl.textContent = 'Loading…'; resultEl.style.display = 'block';
-  try {
-    const params = new URLSearchParams({ action: 'customerLookup', email });
-    const res  = await fetch(SCRIPT_URL + '?' + params.toString(), { method: 'GET', redirect: 'follow', mode: 'cors' });
-    const data = JSON.parse(await res.text());
-    const rig  = data.rig;
-
-    if (!rig) {
-      resultEl.style.display = 'none';
-      errEl.textContent = 'No previous records found for that email. Please fill in your rig info manually.';
-      errEl.style.display = 'block';
-      return;
-    }
-
-    // Auto-fill customer info
-    if (rig.customer_name)  setFjVal('fj-name',      rig.customer_name);
-    if (rig.customer_phone) setFjVal('fj-phone',     rig.customer_phone);
-    if (rig.customer_email) setFjVal('fj-email',     rig.customer_email);
-    // Rig info
-    if (rig.rig_make)       setFjVal('fj-con-make',  rig.rig_make);
-    if (rig.con_model)      setFjVal('fj-con-model', rig.con_model);
-    if (rig.rig_sn)         setFjVal('fj-con-sn',    rig.rig_sn);
-    if (rig.rig_dom)        setFjVal('fj-con-dom',   rig.rig_dom);
-    if (rig.main_make)      setFjVal('fj-main-make', rig.main_make);
-    if (rig.main_model)     setFjVal('fj-main-model',rig.main_model);
-    if (rig.main_size)      setFjVal('fj-main-size', rig.main_size);
-    if (rig.main_sn)        setFjVal('fj-main-sn',   rig.main_sn);
-    if (rig.res_make)       setFjVal('fj-res-make',  rig.res_make);
-    if (rig.res_model)      setFjVal('fj-res-model', rig.res_model);
-    if (rig.res_size)       setFjVal('fj-res-size',  rig.res_size);
-    if (rig.res_sn)         setFjVal('fj-res-sn',    rig.res_sn);
-    if (rig.res_pack_date)  setFjVal('fj-res-pack',  rig.res_pack_date);
-    if (rig.res_repack_due) setFjVal('fj-res-due',   rig.res_repack_due);
-    if (rig.aad_make)       setFjVal('fj-aad-make',  rig.aad_make);
-    if (rig.aad_sn)         setFjVal('fj-aad-sn',    rig.aad_sn);
-    if (rig.aad_dom)        setFjVal('fj-aad-dom',   rig.aad_dom);
-
-    // Open container section so the user sees it filled in
-    const sub = document.getElementById('fj-sub-container');
-    if (sub && !sub.classList.contains('open')) sub.classList.add('open');
-
-    resultEl.textContent = '✓ Rig info loaded from your service record. Just select the services you need and submit.';
-    resultEl.style.display = 'block';
-  } catch(e) {
-    resultEl.style.display = 'none';
-    errEl.textContent = 'Error loading records: ' + e.message;
-    errEl.style.display = 'block';
-  }
-}
-
-function setFjVal(id, val) {
-  const el = document.getElementById(id);
-  if (el && val) el.value = val;
-}
-
 let GEAR_DATA = []; // loaded from Google Sheet on init
 let gearLoaded = false;
 let gearLoadError = false;
 
 async function loadGearFromSheet() {
+  const serialScreen = document.getElementById('screen-serial');
   const loadingEl = document.getElementById('gear-loading-msg');
-  const gmList = document.getElementById('gm-list');
   try {
-    if (gmList) gmList.innerHTML = '<div style="color:var(--text-muted);padding:20px;text-align:center;">⏳ Loading gear...</div>';
-    const url = SCRIPT_URL + '?action=getGear&t=' + Date.now();
-    const res = await fetch(url, { method: 'GET', redirect: 'follow' });
-    const text = await res.text();
-    const data = JSON.parse(text);
+    const res = await fetch(SCRIPT_URL + '?action=getGear', { redirect: 'follow' });
+    const data = await res.json();
     if (data.gear && data.gear.length > 0) {
       GEAR_DATA = data.gear;
       gearLoaded = true;
       if (loadingEl) loadingEl.style.display = 'none';
-      if (gmList) gmList.innerHTML = '';
-      console.log('Gear loaded: ' + GEAR_DATA.length + ' rigs');
     } else {
+      // Sheet is empty — fall back to hardcoded data on first run
       gearLoaded = true;
-      if (gmList) gmList.innerHTML = '<div style="color:var(--yellow);padding:20px;">⚠ No gear found in sheet. Response: ' + text.substring(0, 200) + '</div>';
-      console.warn('getGear returned empty:', data);
+      if (loadingEl) { loadingEl.textContent = '&#9888; No gear in sheet yet. Using local data.'; loadingEl.style.color = 'var(--yellow)'; }
+      setTimeout(() => { if (loadingEl) loadingEl.style.display = 'none'; }, 3000);
     }
   } catch(err) {
     gearLoadError = true;
+    if (loadingEl) { loadingEl.textContent = '&#9888; Could not reach server. Using local data.'; loadingEl.style.color = 'var(--yellow)'; }
+    setTimeout(() => { if (loadingEl) loadingEl.style.display = 'none'; }, 3000);
     console.warn('getGear failed:', err);
-    if (gmList) gmList.innerHTML = '<div style="color:var(--red);padding:20px;">⚠ Failed to load gear: ' + err.message + '</div>';
   }
 }
 
@@ -1765,10 +1656,60 @@ const SERVICE_GROUPS = [
 let currentGear = null;
 let selectedServices = new Set();
 
+function resetFjForm() {
+  // Clear all text/select inputs
+  const fields = [
+    'fj-name','fj-email','fj-phone','fj-address','fj-date',
+    'fj-con-make','fj-con-model','fj-con-sn','fj-con-dom',
+    'fj-main-make','fj-main-model','fj-main-size','fj-main-sn',
+    'fj-res-make','fj-res-model','fj-res-size','fj-res-sn','fj-res-pack','fj-res-due',
+    'fj-aad-make','fj-aad-sn','fj-aad-dom',
+    'fj-damage-desc','fj-extra-notes'
+  ];
+  fields.forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
+
+  // Reset damage flag
+  fjDamage = 'no';
+  const damageDesc = document.getElementById('fj-damage-desc');
+  if (damageDesc) damageDesc.closest('.fj-sub')?.classList.remove('open');
+
+  // Collapse all subsections
+  ['fj-sub-container','fj-sub-main','fj-sub-reserve','fj-sub-aad'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.classList.remove('open');
+  });
+
+  // Hide returning customer result
+  const retResult = document.getElementById('returning-result');
+  if (retResult) retResult.style.display = 'none';
+  const retBody = document.getElementById('returning-body');
+  if (retBody) retBody.classList.remove('open');
+  const retChev = document.getElementById('returning-chevron');
+  if (retChev) retChev.textContent = '▾';
+  const retEmail = document.getElementById('ret-email');
+  if (retEmail) retEmail.value = '';
+  const retErr = document.getElementById('ret-error');
+  if (retErr) retErr.style.display = 'none';
+
+  // Clear error
+  const errEl = document.getElementById('fj-form-error');
+  if (errEl) errEl.style.display = 'none';
+
+  // Reset rush selector to Standard
+  selectedRush.fj = 'Standard Turnaround';
+  const rushOpts = document.querySelectorAll('#fj-rush-options .rush-opt');
+  rushOpts.forEach((o, i) => o.classList.toggle('selected', i === 0));
+
+  // Clear services checkboxes and reset set
+  fjSelectedServices.clear();
+  document.querySelectorAll('#fj-services-container input[type=checkbox]')
+    .forEach(cb => cb.checked = false);
+}
+
 function showScreen(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
-  if (id === 'screen-funjumper') buildFjServices();
+  if (id === 'screen-funjumper') { resetFjForm(); buildFjServices(); }
 }
 
 async function lookupSerial() {
@@ -1839,7 +1780,7 @@ function renderGear(g) {
 
   if (!g.res_repack_due) {
     rb.className = 'repack-bar rp-unknown';
-    icon.textContent = '&#128203;'; text.textContent = 'Reserve repack due date unknown'; days.textContent = '';
+    icon.textContent = '📋'; text.textContent = 'Reserve repack due date unknown'; days.textContent = '';
   } else {
     const diff = Math.round((new Date(g.res_repack_due) - new Date()) / 86400000);
     if (diff < 0) {
@@ -1849,12 +1790,12 @@ function renderGear(g) {
       days.textContent = Math.abs(diff) + 'd overdue';
     } else if (diff <= 30) {
       rb.className = 'repack-bar rp-soon';
-      icon.textContent = '&#9888;️';
+      icon.textContent = '⚠️';
       text.textContent = 'Repack due soon — ' + g.res_repack_due;
       days.textContent = diff + ' days';
     } else {
       rb.className = 'repack-bar rp-ok';
-      icon.textContent = '&#10003;';
+      icon.textContent = '✓';
       text.textContent = 'Reserve current — due ' + g.res_repack_due;
       days.textContent = diff + ' days';
     }
@@ -1877,7 +1818,7 @@ function renderGear(g) {
   const blocks = [
     { title: 'Container', rows: [['Make', g.rig_make], ['S/N', sn], ['DOM', g.rig_dom]] },
     { title: 'Main Canopy', rows: [['Make', g.main_make], ['Size', g.main_size ? String(g.main_size).replace('.0','') + ' sqft' : '—'], ['Color', g.main_color || '—']] },
-    { title: 'Reserve', rows: [['Make', g.res_make], ['Size', g.res_size ? String(g.res_size).replace('.0','') + ' sqft' : '—'], ['Last Pack', g.res_pack_date || '—'], ['Due', g.res_repack_due || '—']] },
+    { title: 'Reserve', rows: [['Make', g.res_make], ['Size', g.res_size ? String(g.res_size).replace('.0','') + ' sqft' : '—'], ['Last Pack', g.res_pack_date ? new Date(g.res_pack_date).toLocaleDateString() : '—'], ['Due', g.res_repack_due ? new Date(g.res_repack_due).toLocaleDateString() : '—']] },
     { title: 'AAD', rows: [['Make', g.aad_make], ['S/N', g.aad_sn ? String(g.aad_sn).replace('.0','') : '—'], ['DOM', g.aad_dom || '—'], g.jumps ? ['Jumps', g.jumps] : null].filter(Boolean) },
   ];
   blocks.forEach(b => {
@@ -1963,7 +1904,6 @@ async function submitRequest() {
     res_repack_due: currentGear.res_repack_due || '',
     services: [...selectedServices].join(' | '),
     extra_notes: notes,
-    rush: '',
     status: 'PENDING'
   };
 
@@ -2127,16 +2067,543 @@ async function submitFunJumper() {
 let adminUnlocked = false;
 let gearFilter = 'all';
 
-async function openAdmin() {
+function switchAdminTab(tab) {
+  ['gear','parts','qr','email'].forEach(t => {
+    const el = document.getElementById('admin-tab-' + t);
+    if (el) el.style.display = t === tab ? 'block' : 'none';
+  });
+  const styles = {
+    gear:   { bg:'var(--yellow-dim)',         color:'var(--yellow)', border:'1px solid rgba(245,158,11,0.3)' },
+    report: { bg:'rgba(248,113,113,0.12)',    color:'var(--red)',    border:'1px solid rgba(248,113,113,0.3)' },
+    parts:  { bg:'rgba(74,222,128,0.12)',     color:'var(--green)',  border:'1px solid rgba(74,222,128,0.3)' },
+    qr:     { bg:'var(--sky-dim)',            color:'var(--sky)',    border:'1px solid rgba(56,189,248,0.3)' },
+    email:  { bg:'rgba(74,222,128,0.12)',     color:'var(--green)',  border:'1px solid rgba(74,222,128,0.3)' },
+  };
+  ['gear','parts','qr','email'].forEach(t => {
+    const btn = document.getElementById('admin-tab-btn-' + t);
+    if (!btn) return;
+    if (t === tab) {
+      btn.style.background = styles[t].bg;
+      btn.style.color      = styles[t].color;
+      btn.style.border     = styles[t].border;
+    } else {
+      btn.style.background = 'transparent';
+      btn.style.color      = 'var(--text-muted)';
+      btn.style.border     = 'none';
+    }
+  });
+  if (tab === 'email') {
+    lockSuperAdmin();
+    document.getElementById('super-admin-pw').value = '';
+    document.getElementById('super-admin-err').style.display = 'none';
+  }
+  if (tab === 'parts' && partsData.length === 0) loadParts();
+}
+
+// ── QR SUB TABS ───────────────────────────────────────────────
+function switchQRSub(sub) {
+  ['fj','dz','packing'].forEach(t => {
+    const el = document.getElementById('qr-sub-' + t);
+    if (el) el.style.display = t === sub ? 'block' : 'none';
+    const btn = document.getElementById('qr-sub-btn-' + t);
+    if (!btn) return;
+    const isActive = t === sub;
+    const colors = {
+      fj:      { bg:'var(--sky-dim)',             color:'var(--sky)',   border:'1px solid rgba(56,189,248,0.3)' },
+      dz:      { bg:'rgba(232,25,26,0.12)',        color:'var(--red)',   border:'1px solid rgba(232,25,26,0.3)' },
+      packing: { bg:'rgba(245,158,11,0.12)',       color:'var(--yellow)',border:'1px solid rgba(245,158,11,0.3)' },
+    };
+    btn.style.background = isActive ? colors[t].bg  : 'transparent';
+    btn.style.color      = isActive ? colors[t].color : 'var(--text-muted)';
+    btn.style.border     = isActive ? colors[t].border : 'none';
+  });
+  // Auto-generate DZ QR on first view
+  if (sub === 'dz' && document.getElementById('dz-qr-result') &&
+      (!document.getElementById('dz-qr-result').style.display || document.getElementById('dz-qr-result').style.display === 'none')) {
+    generateDZQR();
+  }
+}
+
+// ── DZ GEAR QR ───────────────────────────────────────────────
+let dzQrInstance = null;
+
+function generateDZQR() {
+  const url = 'https://ssxgear.com/index.htm?screen=dz';
+  const qrEl = document.getElementById('dz-qr-canvas');
+  qrEl.innerHTML = '';
+  if (dzQrInstance) { try { dzQrInstance.clear(); } catch(e) {} }
+  dzQrInstance = new QRCode(qrEl, {
+    text: url,
+    width: 160,
+    height: 160,
+    colorDark: '#1c1c1e',
+    colorLight: '#f2ede4',
+    correctLevel: QRCode.CorrectLevel.H
+  });
+  setTimeout(() => {
+    const img = qrEl.querySelector('img, canvas');
+    if (img) { img.style.borderRadius = '6px'; img.style.border = '3px solid #1c1c1e'; }
+  }, 100);
+  document.getElementById('dz-qr-result').style.display = 'block';
+}
+
+// ── PRINT SPECIFIC CARD ───────────────────────────────────────
+function printCard(cardId, labelSize) {
+  const card = document.getElementById(cardId);
+  if (!card) return;
+
+  const is3x2 = labelSize === '3x2';
+  const pageCSS = is3x2
+    ? `@page { size: 3in 2in; margin: 0; } body { margin: 0; width: 3in; height: 2in; overflow: hidden; }`
+    : `@page { size: auto; margin: 6mm; } body { margin: 0; display: flex; align-items: center; justify-content: center; min-height: 100vh; background: #fff; }`;
+
+  const cardCSS = is3x2 ? `
+    #${cardId} {
+      width: 3in !important;
+      height: 2in !important;
+      border-radius: 0 !important;
+      box-shadow: none !important;
+      padding: 10px 12px 8px !important;
+      display: flex !important;
+      flex-direction: column !important;
+      align-items: center !important;
+      justify-content: center !important;
+      box-sizing: border-box !important;
+      margin: 0 !important;
+    }
+    #${cardId} * { box-sizing: border-box; }
+    #dz-qr-canvas canvas, #dz-qr-canvas img,
+    #qr-canvas canvas, #qr-canvas img {
+      width: 110px !important;
+      height: 110px !important;
+    }
+  ` : '';
+
+  const w = window.open('', '_blank', 'width=400,height=350');
+  w.document.write(`<html><head><title>SSXgear Label</title>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet">
+    <style>
+      * { box-sizing: border-box; }
+      body { background: #fff; font-family: sans-serif; }
+      ${pageCSS}
+      ${cardCSS}
+    </style>
+  </head><body>`);
+  w.document.write(card.outerHTML);
+  w.document.write('</body></html>');
+  w.document.close();
+  w.focus();
+  setTimeout(() => { w.print(); w.close(); }, 600);
+}
+
+// ── QR CODE GENERATOR ────────────────────────────────────────
+let qrInstance = null;
+
+function generateQR() {
+  const name      = (document.getElementById('qr-name').value      || '').trim();
+  const serial    = (document.getElementById('qr-serial').value    || '').trim().toUpperCase();
+  const email     = (document.getElementById('qr-email').value     || '').trim();
+  const container = (document.getElementById('qr-container').value || '').trim();
+
+  if (!serial) {
+    alert('Please enter a container serial number.');
+    return;
+  }
+
+  // Build URL — goes to customer portal with S/N (and optionally email) pre-filled
+  let url = 'https://ssxgear.com/customer.html?sn=' + encodeURIComponent(serial);
+  if (email) url += '&email=' + encodeURIComponent(email);
+
+  // Update print card
+  document.getElementById('qr-pc-name').textContent      = name || '';
+  document.getElementById('qr-pc-serial').textContent    = 'S/N: ' + serial;
+  document.getElementById('qr-pc-container').textContent = container || '';
+  document.getElementById('qr-url-box').textContent      = url;
+
+  // Generate QR code
+  const qrEl = document.getElementById('qr-canvas');
+  qrEl.innerHTML = '';
+  if (qrInstance) { try { qrInstance.clear(); } catch(e) {} }
+
+  qrInstance = new QRCode(qrEl, {
+    text: url,
+    width: 200,
+    height: 200,
+    colorDark: '#1c1c1e',
+    colorLight: '#f2ede4',
+    correctLevel: QRCode.CorrectLevel.H
+  });
+
+  // Style the QR canvas
+  setTimeout(() => {
+    const img = qrEl.querySelector('img, canvas');
+    if (img) { img.style.borderRadius = '8px'; img.style.border = '3px solid #1c1c1e'; }
+  }, 100);
+
+  document.getElementById('qr-result').style.display = 'block';
+  document.getElementById('qr-result').scrollIntoView({ behavior: 'smooth' });
+}
+
+function resetQR() {
+  document.getElementById('qr-result').style.display = 'none';
+  document.getElementById('qr-name').value      = '';
+  document.getElementById('qr-serial').value    = '';
+  document.getElementById('qr-email').value     = '';
+  document.getElementById('qr-container').value = '';
+  document.getElementById('qr-name').focus();
+}
+
+// ── SPARE PARTS INVENTORY ────────────────────────────────────
+let partsData = [];
+
+async function loadParts() {
+  const listEl = document.getElementById('parts-list');
+  const errEl  = document.getElementById('parts-error');
+  if (errEl) errEl.style.display = 'none';
+  if (listEl) listEl.innerHTML = '<div style="text-align:center;padding:30px;color:var(--text-muted);">Loading…</div>';
+  try {
+    const res  = await fetch(SCRIPT_URL + '?action=getParts', { method:'GET', redirect:'follow', mode:'cors' });
+    const data = JSON.parse(await res.text());
+    partsData  = data.parts || [];
+    updatePartsCategoryFilter();
+    renderParts();
+  } catch(e) {
+    if (errEl) { errEl.textContent = 'Failed to load parts: ' + e.message; errEl.style.display = 'block'; }
+    if (listEl) listEl.innerHTML = '';
+  }
+}
+
+function updatePartsCategoryFilter() {
+  const sel = document.getElementById('parts-cat-filter');
+  if (!sel) return;
+  const cats = [...new Set(partsData.map(p => p.category).filter(Boolean))].sort();
+  const current = sel.value;
+  sel.innerHTML = '<option value="all">All Categories</option>';
+  cats.forEach(c => { const o = document.createElement('option'); o.value = c; o.textContent = c; sel.appendChild(o); });
+  if (cats.includes(current)) sel.value = current;
+}
+
+function renderParts() {
+  const listEl  = document.getElementById('parts-list');
+  const statsEl = document.getElementById('parts-stats');
+  const q   = (document.getElementById('parts-search')?.value || '').toLowerCase();
+  const cat = document.getElementById('parts-cat-filter')?.value || 'all';
+
+  const filtered = partsData.filter(p => {
+    if (cat !== 'all' && p.category !== cat) return false;
+    if (!q) return true;
+    return [p.name, p.category, p.notes].some(v => v && v.toLowerCase().includes(q));
+  });
+
+  const low  = filtered.filter(p => p.low_alert > 0 && p.qty <= p.low_alert && p.qty > 0).length;
+  const zero = filtered.filter(p => p.qty === 0).length;
+  if (statsEl) statsEl.innerHTML = filtered.length + ' part' + (filtered.length !== 1 ? 's' : '') +
+    (zero ? ' · <span style="color:var(--red);">⚠ ' + zero + ' out of stock</span>' : '') +
+    (low  ? ' · <span style="color:var(--yellow);">⚠ ' + low + ' low</span>' : '');
+
+  if (!listEl) return;
+  if (filtered.length === 0) {
+    listEl.innerHTML = '<div style="text-align:center;padding:30px;color:var(--text-muted);">No parts found.</div>';
+    return;
+  }
+
+  // Group by category
+  const groups = {};
+  filtered.forEach(p => {
+    const key = p.category || 'General';
+    if (!groups[key]) groups[key] = [];
+    groups[key].push(p);
+  });
+
+  listEl.innerHTML = '';
+  Object.keys(groups).sort().forEach(groupName => {
+    // Category header
+    const hdr = document.createElement('div');
+    hdr.style.cssText = 'font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-muted);padding:10px 4px 4px;border-bottom:1px solid var(--border);margin-bottom:4px;';
+    hdr.textContent = groupName;
+    listEl.appendChild(hdr);
+
+    groups[groupName].forEach(p => {
+      const realIdx  = partsData.indexOf(p);
+      const isOut    = p.qty === 0;
+      const isLow    = p.low_alert > 0 && p.qty <= p.low_alert && !isOut;
+      const qtyColor = isOut ? 'var(--red)' : isLow ? 'var(--yellow)' : 'var(--green)';
+      const dot      = isOut ? '🔴' : isLow ? '🟡' : '🟢';
+
+      const row = document.createElement('div');
+      row.id = 'part-row-' + realIdx;
+      row.style.cssText = 'border-bottom:1px solid var(--border);';
+      row.innerHTML = `
+        <!-- COMPACT ROW -->
+        <div style="display:flex;align-items:center;gap:8px;padding:8px 4px;min-height:44px;" onclick="togglePartEdit(${realIdx})" style="cursor:pointer;">
+          <div style="font-size:11px;flex-shrink:0;">${dot}</div>
+          <div style="flex:1;min-width:0;">
+            <div style="font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${p.name}</div>
+            ${p.notes ? `<div style="font-size:11px;color:var(--text-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${p.notes}</div>` : ''}
+          </div>
+          <div style="display:flex;align-items:center;gap:6px;flex-shrink:0;">
+            <button onclick="event.stopPropagation();adjustQty(${realIdx},-1)"
+              style="width:28px;height:28px;border-radius:6px;border:1px solid var(--border);background:var(--red-dim);color:var(--red);font-size:16px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;flex-shrink:0;">−</button>
+            <div style="text-align:center;min-width:44px;">
+              <span style="font-family:'JetBrains Mono',monospace;font-size:16px;font-weight:700;color:${qtyColor};" id="qty-${realIdx}">${p.qty}</span>
+              <span style="font-size:10px;color:var(--text-muted);margin-left:2px;">${p.unit}</span>
+            </div>
+            <button onclick="event.stopPropagation();adjustQty(${realIdx},1)"
+              style="width:28px;height:28px;border-radius:6px;border:1px solid var(--border);background:var(--green-dim);color:var(--green);font-size:16px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;flex-shrink:0;">+</button>
+            <button onclick="event.stopPropagation();togglePartEdit(${realIdx})"
+              style="width:28px;height:28px;border-radius:6px;border:1px solid var(--border);background:var(--surface2);color:var(--text-muted);font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;">✏</button>
+          </div>
+        </div>
+        <!-- INLINE EDIT (hidden) -->
+        <div id="edit-part-${realIdx}" style="display:none;background:var(--surface2);border-radius:8px;padding:12px;margin:0 0 6px;">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;">
+            <div class="a-field" style="margin:0;grid-column:1/-1;"><label>Part Name</label><input type="text" id="ep-name-${realIdx}" value="${p.name.replace(/"/g,'&quot;')}"></div>
+            <div class="a-field" style="margin:0;"><label>Category</label><input type="text" id="ep-cat-${realIdx}" value="${p.category.replace(/"/g,'&quot;')}"></div>
+            <div class="a-field" style="margin:0;"><label>Unit</label><input type="text" id="ep-unit-${realIdx}" value="${p.unit}"></div>
+            <div class="a-field" style="margin:0;"><label>Quantity</label><input type="number" id="ep-qty-${realIdx}" value="${p.qty}" min="0"></div>
+            <div class="a-field" style="margin:0;"><label>Low Stock Alert</label><input type="number" id="ep-low-${realIdx}" value="${p.low_alert}" min="0"></div>
+            <div class="a-field" style="margin:0;grid-column:1/-1;"><label>Notes</label><input type="text" id="ep-notes-${realIdx}" value="${p.notes.replace(/"/g,'&quot;')}"></div>
+          </div>
+          <div style="display:flex;gap:8px;">
+            <button onclick="saveEditPart(${realIdx})" style="flex:1;padding:8px;background:var(--sky-dim);border:1px solid rgba(56,189,248,0.3);color:var(--sky);border-radius:7px;font-size:12px;font-weight:700;cursor:pointer;">💾 Save</button>
+            <button onclick="confirmDeletePart(${realIdx})" style="padding:8px 12px;background:var(--red-dim);border:1px solid rgba(239,68,68,0.3);color:var(--red);border-radius:7px;font-size:12px;cursor:pointer;">✕ Delete</button>
+            <button onclick="togglePartEdit(${realIdx})" style="padding:8px 12px;background:transparent;border:1px solid var(--border);color:var(--text-muted);border-radius:7px;font-size:12px;cursor:pointer;">Cancel</button>
+          </div>
+        </div>`;
+      listEl.appendChild(row);
+    });
+  });
+}
+
+function togglePartEdit(idx) {
+  const el = document.getElementById('edit-part-' + idx);
+  if (el) el.style.display = el.style.display === 'none' ? 'block' : 'none';
+}
+
+async function adjustQty(idx, delta) {
+  const part = partsData[idx];
+  if (!part) return;
+  const newQty = Math.max(0, part.qty + delta);
+  part.qty = newQty;
+  const el = document.getElementById('qty-' + idx);
+  if (el) el.textContent = newQty;
+  renderParts();
+  try {
+    await fetch(SCRIPT_URL, { method:'POST', mode:'no-cors', headers:{'Content-Type':'text/plain'},
+      body: JSON.stringify({ action:'updatePartQty', row: part._row, delta }) });
+  } catch(e) { console.warn('updatePartQty failed:', e); }
+}
+
+function openAddPart()  { document.getElementById('add-part-form').style.display = 'block'; }
+function closeAddPart() { document.getElementById('add-part-form').style.display = 'none'; }
+
+async function submitAddPart() {
+  const name = document.getElementById('np-name').value.trim();
+  if (!name) { alert('Please enter a part name.'); return; }
+  const newPart = {
+    name, category: document.getElementById('np-cat').value.trim(),
+    qty:       Number(document.getElementById('np-qty').value)  || 0,
+    unit:      document.getElementById('np-unit').value.trim()  || 'ea',
+    low_alert: Number(document.getElementById('np-low').value)  || 0,
+    notes:     document.getElementById('np-notes').value.trim(),
+  };
+  try {
+    await fetch(SCRIPT_URL, { method:'POST', mode:'no-cors', headers:{'Content-Type':'text/plain'},
+      body: JSON.stringify({ action:'addPart', ...newPart }) });
+    closeAddPart();
+    ['np-name','np-cat','np-notes'].forEach(id => document.getElementById(id).value = '');
+    document.getElementById('np-qty').value = '0';
+    document.getElementById('np-low').value = '0';
+    document.getElementById('np-unit').value = 'ea';
+    await loadParts();
+  } catch(e) { alert('Error adding part.'); }
+}
+
+async function saveEditPart(idx) {
+  const part = partsData[idx];
+  const updated = {
+    name:      document.getElementById('ep-name-' + idx).value.trim(),
+    category:  document.getElementById('ep-cat-' + idx).value.trim(),
+    qty:       Number(document.getElementById('ep-qty-' + idx).value)  || 0,
+    unit:      document.getElementById('ep-unit-' + idx).value.trim()  || 'ea',
+    low_alert: Number(document.getElementById('ep-low-' + idx).value)  || 0,
+    notes:     document.getElementById('ep-notes-' + idx).value.trim(),
+    row:       part._row,
+  };
+  try {
+    await fetch(SCRIPT_URL, { method:'POST', mode:'no-cors', headers:{'Content-Type':'text/plain'},
+      body: JSON.stringify({ action:'savePart', ...updated }) });
+    Object.assign(part, updated);
+    renderParts();
+  } catch(e) { alert('Error saving part.'); }
+}
+
+async function confirmDeletePart(idx) {
+  const part = partsData[idx];
+  if (!confirm('Delete "' + part.name + '"? This cannot be undone.')) return;
+  try {
+    await fetch(SCRIPT_URL, { method:'POST', mode:'no-cors', headers:{'Content-Type':'text/plain'},
+      body: JSON.stringify({ action:'deletePart', row: part._row }) });
+    partsData.splice(idx, 1);
+    renderParts();
+  } catch(e) { alert('Error deleting part.'); }
+}
+
+function printBusinessCard(cardId) {
+  const card = document.getElementById(cardId);
+  if (!card) return;
+  const html = card.outerHTML;
+  const win = window.open('', '_blank');
+  win.document.write(`<!DOCTYPE html><html><head><title>Print QR Card</title>
+<style>
+  @page { size: 3.5in 2in; margin: 0; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { width: 3.5in; height: 2in; display: flex; align-items: center; justify-content: center; background: #f2ede4; overflow: hidden; }
+  ${cardId === 'packing-qr-card' || cardId === 'dz-qr-print-card' ? `
+  #${cardId} { transform: scale(0.52); transform-origin: center center; box-shadow: none !important; border-radius: 0 !important; padding: 10px !important; }
+  ` : `
+  #${cardId} { transform: scale(0.48); transform-origin: center center; box-shadow: none !important; border-radius: 0 !important; padding: 10px !important; }
+  `}
+  @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@400;600&family=DM+Mono&display=swap');
+</style></head><body>${html}<script>window.onload=()=>{window.print();window.close();}<\/script></body></html>`);
+  win.document.close();
+}
+
+// ── PACKING MAT QR ───────────────────────────────────────────
+let packingQRInstance = null;
+
+function generatePackingQR() {
+  const url = 'https://ssxgear.com/report.html';
+  const qrEl = document.getElementById('packing-qr-canvas');
+  qrEl.innerHTML = '';
+  if (packingQRInstance) { try { packingQRInstance.clear(); } catch(e) {} }
+  packingQRInstance = new QRCode(qrEl, {
+    text: url, width: 200, height: 200,
+    colorDark: '#1c1c1e', colorLight: '#f2ede4',
+    correctLevel: QRCode.CorrectLevel.H
+  });
+  setTimeout(() => {
+    const img = qrEl.querySelector('img, canvas');
+    if (img) { img.style.borderRadius = '8px'; img.style.border = '3px solid #1c1c1e'; }
+  }, 100);
+  document.getElementById('packing-qr-result').style.display = 'block';
+  document.getElementById('packing-qr-result').scrollIntoView({ behavior:'smooth' });
+}
+
+// ── SUPER ADMIN ───────────────────────────────────────────────
+const SUPER_ADMIN_CODE = '2280';
+const FORGOT_PW_EMAIL  = 'skydivesussexgear@gmail.com';
+let superAdminUnlocked = false;
+
+function superAdminLogin() {
+  const pw    = document.getElementById('super-admin-pw').value;
+  const errEl = document.getElementById('super-admin-err');
+  if (pw === SUPER_ADMIN_CODE) {
+    superAdminUnlocked = true;
+    errEl.style.display = 'none';
+    document.getElementById('super-admin-lock').style.display    = 'none';
+    document.getElementById('super-admin-content').style.display = 'block';
+    document.getElementById('super-admin-pw').value = '';
+    loadDzEmail();
+  } else {
+    errEl.style.display = 'block';
+    document.getElementById('super-admin-pw').value = '';
+    document.getElementById('super-admin-pw').focus();
+  }
+}
+
+function lockSuperAdmin() {
+  superAdminUnlocked = false;
+  document.getElementById('super-admin-lock').style.display    = 'block';
+  document.getElementById('super-admin-content').style.display = 'none';
+}
+
+function sendForgotPassword(e) {
+  e.preventDefault();
+  const statusEl = document.getElementById('forgot-pw-status');
+  statusEl.textContent = 'Sending…';
+  statusEl.style.color = 'var(--text-muted)';
+  statusEl.style.display = 'block';
+
+  fetch(SCRIPT_URL, {
+    method: 'POST', mode: 'no-cors',
+    headers: { 'Content-Type': 'text/plain' },
+    body: JSON.stringify({ action: 'sendSuperAdminCode', email: FORGOT_PW_EMAIL })
+  }).then(() => {
+    statusEl.textContent = '✓ Code sent to ' + FORGOT_PW_EMAIL;
+    statusEl.style.color = 'var(--green)';
+    setTimeout(() => { statusEl.style.display = 'none'; }, 4000);
+  }).catch(() => {
+    statusEl.textContent = '⚠ Could not send. Check your connection.';
+    statusEl.style.color = 'var(--red)';
+  });
+}
+
+// ── DZ EMAIL SETTINGS ─────────────────────────────────────────
+async function loadDzEmail() {
+  try {
+    const res = await fetch(SCRIPT_URL + '?action=getSettings', { method: 'GET', redirect: 'follow', mode: 'cors' });
+    const data = JSON.parse(await res.text());
+    const inp = document.getElementById('admin-dz-email');
+    if (inp) inp.value = data.dz_email || '';
+    const rInp = document.getElementById('admin-report-email');
+    if (rInp) rInp.value = data.report_email || 'skydivesussexgear@gmail.com';
+  } catch(e) { console.warn('loadDzEmail failed:', e); }
+}
+
+async function saveReportEmail() {
+  const inp    = document.getElementById('admin-report-email');
+  const status = document.getElementById('admin-report-email-status');
+  const email  = (inp ? inp.value : '').trim();
+  if (!email) { status.textContent = 'Please enter an email.'; status.style.color = 'var(--red)'; status.style.display = 'block'; return; }
+  status.textContent = 'Saving…'; status.style.color = 'var(--text-muted)'; status.style.display = 'block';
+  try {
+    await fetch(SCRIPT_URL, {
+      method:'POST', mode:'no-cors', headers:{'Content-Type':'text/plain'},
+      body: JSON.stringify({ action:'saveSettings', key:'report_email', value: email })
+    });
+    status.textContent = '✓ Report email saved!'; status.style.color = 'var(--green)';
+    setTimeout(() => { status.style.display = 'none'; }, 3000);
+  } catch(e) {
+    status.textContent = 'Error saving.'; status.style.color = 'var(--red)';
+  }
+}
+
+async function saveDzEmail() {
+  const inp    = document.getElementById('admin-dz-email');
+  const status = document.getElementById('admin-email-status');
+  const email  = (inp ? inp.value : '').trim();
+  if (!email) { showEmailStatus('Please enter an email address.', 'var(--red)'); return; }
+  showEmailStatus('Saving…', 'var(--text-muted)');
+  try {
+    await fetch(SCRIPT_URL, {
+      method: 'POST', mode: 'no-cors',
+      headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify({ action: 'saveSettings', dz_email: email })
+    });
+    showEmailStatus('✓ Email saved successfully!', 'var(--green)');
+  } catch(e) {
+    showEmailStatus('Error saving. Please try again.', 'var(--red)');
+  }
+}
+
+function showEmailStatus(msg, color) {
+  const el = document.getElementById('admin-email-status');
+  if (!el) return;
+  el.textContent = msg;
+  el.style.color = color;
+  el.style.display = 'block';
+  setTimeout(() => { el.style.display = 'none'; }, 3500);
+}
+
+function openAdmin() {
   document.getElementById('admin-overlay').classList.add('open');
   document.body.style.overflow = 'hidden';
   if (adminUnlocked) {
     document.getElementById('admin-login-card').style.display = 'none';
     document.getElementById('gear-manager').classList.add('show');
-    const gmList = document.getElementById('gm-list');
-    if (gmList) gmList.innerHTML = '<div style="color:var(--text-muted);padding:20px;">Loading gear...</div>';
-    await loadGearFromSheet();
     renderGearList();
+    loadDzEmail();
   }
 }
 
@@ -2157,20 +2624,138 @@ async function adminLogin() {
     document.querySelector('.admin-btn').classList.add('unlocked');
     document.querySelector('.admin-btn').innerHTML = '&#9881; <span class="admin-label">Admin</span>';
     const gmList = document.getElementById('gm-list');
-    const gmCount = document.getElementById('gm-count');
-    if (gmList) gmList.innerHTML = '<div style="color:var(--text-muted);padding:20px;">Loading gear...</div>';
-    if (gmCount) gmCount.textContent = '';
+    if (gmList) gmList.innerHTML = '<div style="color:var(--text-muted);padding:20px;text-align:center;">⏳ Loading gear...</div>';
     await loadGearFromSheet();
     renderGearList();
+    loadDzEmail();
   } else {
     err.style.display = 'block';
   }
 }
+function setFjVal(id, val) {
+  const el = document.getElementById(id);
+  if (el && val) el.value = val;
+}
+
+let selectedRush = { fj: 'Standard Turnaround' };
+
+function selectRush(el, value, groupId) {
+  const container = document.getElementById(groupId);
+  container.querySelectorAll('.rush-opt').forEach(o => o.classList.remove('selected'));
+  el.classList.add('selected');
+  selectedRush.fj = value;
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  const params  = new URLSearchParams(window.location.search);
+  const sn      = params.get('sn');
+  const prefill = params.get('prefill');
+  const email   = params.get('email');
+
+  const screen  = params.get('screen');
+
+  // DZ QR code scan — go straight to serial lookup
+  if (screen === 'dz') {
+    showScreen('screen-serial');
+    loadGearFromSheet();
+    return;
+  }
+
+  if (prefill === '1') {
+    showScreen('screen-funjumper');
+    buildFjServices();
+
+    const retBody   = document.getElementById('returning-body');
+    const retResult = document.getElementById('returning-result');
+    const retChev   = document.getElementById('returning-chevron');
+    if (retBody) retBody.classList.add('open');
+    if (retChev) retChev.textContent = '▴';
+
+    // Fill S/N immediately
+    if (sn) setFjVal('fj-con-sn', sn);
+
+    // Check sessionStorage cache first — instant if cached
+    const cacheKey = 'rigCache_' + (sn || '') + '_' + (email || '');
+    const cached = sessionStorage.getItem(cacheKey);
+    if (cached) {
+      try {
+        fillPrefillFields(JSON.parse(cached), retResult);
+        return;
+      } catch(e) { sessionStorage.removeItem(cacheKey); }
+    }
+
+    // Show loading state
+    if (retResult) {
+      retResult.textContent = '⏳ Loading your rig info…';
+      retResult.style.display = 'block';
+    }
+
+    const fetchParams = new URLSearchParams({ action: 'customerLookup' });
+    if (sn)    fetchParams.append('sn', sn.trim().toLowerCase());
+    if (email) fetchParams.append('email', email.trim().toLowerCase());
+
+    fetch(SCRIPT_URL + '?' + fetchParams.toString(), { method: 'GET', redirect: 'follow', mode: 'cors' })
+      .then(r => r.json())
+      .then(data => {
+        const rig = data.rig;
+        if (rig) sessionStorage.setItem(cacheKey, JSON.stringify(rig));
+        fillPrefillFields(rig, retResult);
+      })
+      .catch(err => {
+        console.warn('prefill lookup failed:', err);
+        if (retResult) retResult.textContent = '⚠ Could not load rig data. Serial number pre-filled — please complete remaining fields.';
+        const sub = document.getElementById('fj-sub-container');
+        if (sub) sub.classList.add('open');
+      });
+    return;
+  }
+
+  // Normal flow
+  loadGearFromSheet().then(() => {
+    if (sn) {
+      document.getElementById('serial-input').value = sn;
+      lookupSerial();
+    }
+  });
+});
+
+function fillPrefillFields(rig, retResult) {
+  if (rig) {
+    if (rig.customer_name)  setFjVal('fj-name',       rig.customer_name);
+    if (rig.customer_email) setFjVal('fj-email',      rig.customer_email);
+    if (rig.customer_phone) setFjVal('fj-phone',      rig.customer_phone);
+    if (rig.rig_make)       setFjVal('fj-con-make',   rig.rig_make);
+    if (rig.con_model)      setFjVal('fj-con-model',  rig.con_model);
+    if (rig.rig_sn)         setFjVal('fj-con-sn',     rig.rig_sn);
+    if (rig.rig_dom)        setFjVal('fj-con-dom',    rig.rig_dom);
+    if (rig.main_make)      setFjVal('fj-main-make',  rig.main_make);
+    if (rig.main_model)     setFjVal('fj-main-model', rig.main_model);
+    if (rig.main_size)      setFjVal('fj-main-size',  rig.main_size);
+    if (rig.main_sn)        setFjVal('fj-main-sn',    rig.main_sn);
+    if (rig.res_make)       setFjVal('fj-res-make',   rig.res_make);
+    if (rig.res_model)      setFjVal('fj-res-model',  rig.res_model);
+    if (rig.res_size)       setFjVal('fj-res-size',   rig.res_size);
+    if (rig.res_sn)         setFjVal('fj-res-sn',     rig.res_sn);
+    if (rig.res_pack_date)  setFjVal('fj-res-pack',   rig.res_pack_date);
+    if (rig.res_repack_due) setFjVal('fj-res-due',    rig.res_repack_due);
+    if (rig.aad_make)       setFjVal('fj-aad-make',   rig.aad_make);
+    if (rig.aad_sn)         setFjVal('fj-aad-sn',     rig.aad_sn);
+    if (rig.aad_dom)        setFjVal('fj-aad-dom',    rig.aad_dom);
+    ['fj-sub-container','fj-sub-main','fj-sub-reserve','fj-sub-aad'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el && !el.classList.contains('open')) el.classList.add('open');
+    });
+    if (retResult) retResult.textContent = '✓ Rig info loaded. Just select the services you need and submit.';
+  } else {
+    if (retResult) retResult.textContent = '✓ Serial number pre-filled. Please complete any missing fields.';
+    const sub = document.getElementById('fj-sub-container');
+    if (sub) sub.classList.add('open');
+  }
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   const inp = document.getElementById('admin-pw-input');
   if (inp) inp.addEventListener('keydown', e => { if (e.key === 'Enter') adminLogin(); });
-  const retInp = document.getElementById('ret-email');
-  if (retInp) retInp.addEventListener('keydown', e => { if (e.key === 'Enter') loadReturningCustomer(); });
 });
 
 function setFilter(f) {
@@ -2405,17 +2990,319 @@ async function createRig() {
 
       <!-- GEAR MANAGER -->
       <div class="gear-manager" id="gear-manager">
-        <div class="gm-toolbar">
-          <input class="gm-search" id="gm-search" type="text" placeholder="Search by name, serial, make…" oninput="renderGearList()">
-          <button class="gm-filter active" id="filter-all" onclick="setFilter('all')">All</button>
-          <button class="gm-filter" id="filter-student" onclick="setFilter('student')">Student</button>
-          <button class="gm-filter" id="filter-tandem" onclick="setFilter('tandem')">Tandem</button>
-          <button class="btn-add-rig" onclick="openAddRig()">+ Add Rig</button>
-        </div>
-        <div class="gm-count" id="gm-count"></div>
-        <div id="gm-list" style="margin-top:12px;"></div>
-      </div>
 
+        <!-- ADMIN TAB BAR -->
+        <div style="display:flex;gap:4px;margin-bottom:16px;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:4px;">
+          <div id="admin-tab-btn-gear" onclick="switchAdminTab('gear')"
+            style="flex:1;padding:8px 6px;text-align:center;border-radius:7px;cursor:pointer;font-size:12px;font-weight:600;transition:all 0.2s;min-height:38px;display:flex;align-items:center;justify-content:center;gap:5px;background:var(--yellow-dim);color:var(--yellow);border:1px solid rgba(245,158,11,0.3);-webkit-tap-highlight-color:transparent;">
+            🔧 Gear Manager
+          </div>
+          <div id="admin-tab-btn-parts" onclick="switchAdminTab('parts')"
+            style="flex:1;padding:8px 6px;text-align:center;border-radius:7px;cursor:pointer;font-size:12px;font-weight:600;transition:all 0.2s;min-height:38px;display:flex;align-items:center;justify-content:center;gap:5px;color:var(--text-muted);-webkit-tap-highlight-color:transparent;">
+            📦 Parts
+          </div>
+          <div id="admin-tab-btn-qr" onclick="switchAdminTab('qr')"
+            style="flex:1;padding:8px 6px;text-align:center;border-radius:7px;cursor:pointer;font-size:12px;font-weight:600;transition:all 0.2s;min-height:38px;display:flex;align-items:center;justify-content:center;gap:5px;color:var(--text-muted);-webkit-tap-highlight-color:transparent;">
+            📲 QR Codes
+          </div>
+          <div id="admin-tab-btn-email" onclick="switchAdminTab('email')"
+            style="flex:1;padding:8px 6px;text-align:center;border-radius:7px;cursor:pointer;font-size:12px;font-weight:600;transition:all 0.2s;min-height:38px;display:flex;align-items:center;justify-content:center;gap:5px;color:var(--text-muted);-webkit-tap-highlight-color:transparent;">
+            ✉️ Email Settings
+          </div>
+        </div>
+
+        <!-- GEAR TAB -->
+        <div id="admin-tab-gear">
+          <div class="gm-toolbar">
+            <input class="gm-search" id="gm-search" type="text" placeholder="Search by name, serial, make…" oninput="renderGearList()">
+            <button class="gm-filter active" id="filter-all" onclick="setFilter('all')">All</button>
+            <button class="gm-filter" id="filter-student" onclick="setFilter('student')">Student</button>
+            <button class="gm-filter" id="filter-tandem" onclick="setFilter('tandem')">Tandem</button>
+            <button class="btn-add-rig" onclick="openAddRig()">+ Add Rig</button>
+          </div>
+          <div class="gm-count" id="gm-count"></div>
+          <div id="gm-list" style="margin-top:12px;"></div>
+        </div>
+
+        <!-- PARTS INVENTORY TAB -->
+        <div id="admin-tab-parts" style="display:none;">
+
+          <!-- Header row -->
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:8px;">
+            <div>
+              <div style="font-family:'Barlow',sans-serif;font-size:16px;font-weight:800;margin-bottom:2px;">📦 Spare Parts Inventory</div>
+              <div style="font-size:12px;color:var(--text-dim);">Track supplies and stock levels</div>
+            </div>
+            <div style="display:flex;gap:8px;">
+              <button onclick="loadParts()" style="padding:8px 12px;background:var(--surface2);border:1px solid var(--border);color:var(--text-dim);border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;">↻ Refresh</button>
+              <button onclick="openAddPart()" style="padding:8px 14px;background:var(--green-dim);border:1px solid rgba(74,222,128,0.3);color:var(--green);border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;">+ Add Part</button>
+            </div>
+          </div>
+
+          <!-- Search + filter -->
+          <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;">
+            <input type="text" id="parts-search" placeholder="Search parts…" oninput="renderParts()"
+              style="flex:1;min-width:160px;background:var(--surface);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:'Inter',sans-serif;font-size:13px;padding:9px 12px;min-height:40px;outline:none;">
+            <select id="parts-cat-filter" onchange="renderParts()"
+              style="background:var(--surface);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:'Inter',sans-serif;font-size:12px;padding:9px 10px;min-height:40px;outline:none;cursor:pointer;">
+              <option value="all">All Categories</option>
+            </select>
+          </div>
+
+          <!-- Stats row -->
+          <div id="parts-stats" style="font-size:12px;color:var(--text-muted);margin-bottom:10px;"></div>
+          <div class="error-msg" id="parts-error"></div>
+          <div id="parts-list"><div style="text-align:center;padding:30px;color:var(--text-muted);">Click Refresh to load inventory</div></div>
+
+          <!-- ADD PART FORM -->
+          <div id="add-part-form" style="display:none;background:var(--surface2);border:1px solid rgba(74,222,128,0.3);border-radius:12px;padding:16px;margin-top:14px;">
+            <div style="font-size:13px;font-weight:800;color:var(--green);margin-bottom:12px;">+ Add New Part</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">
+              <div class="a-field" style="margin:0;"><label>Part Name *</label><input type="text" id="np-name" placeholder="e.g. Reserve Closing Loop"></div>
+              <div class="a-field" style="margin:0;"><label>Category</label><input type="text" id="np-cat" placeholder="e.g. Loops, AAD, Hardware"></div>
+              <div class="a-field" style="margin:0;"><label>Quantity</label><input type="number" id="np-qty" placeholder="0" min="0" value="0"></div>
+              <div class="a-field" style="margin:0;"><label>Unit</label><input type="text" id="np-unit" placeholder="ea, ft, pack…" value="ea"></div>
+              <div class="a-field" style="margin:0;"><label>Low Stock Alert</label><input type="number" id="np-low" placeholder="e.g. 5" min="0" value="0"></div>
+              <div class="a-field" style="margin:0;"><label>Notes</label><input type="text" id="np-notes" placeholder="Optional notes"></div>
+            </div>
+            <div style="display:flex;gap:8px;">
+              <button onclick="submitAddPart()"
+                style="flex:1;padding:11px;background:var(--green-dim);border:1px solid rgba(74,222,128,0.3);color:var(--green);border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;">
+                ✓ Add Part
+              </button>
+              <button onclick="closeAddPart()"
+                style="padding:11px 16px;background:transparent;border:1px solid var(--border);color:var(--text-muted);border-radius:8px;font-size:13px;cursor:pointer;">
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- QR CODE GENERATOR TAB -->
+        <div id="admin-tab-qr" style="display:none;">
+
+          <!-- QR Sub-tab bar -->
+          <div style="display:flex;gap:4px;margin-bottom:14px;background:var(--bg);border:1px solid var(--border);border-radius:9px;padding:3px;">
+            <div id="qr-sub-btn-fj" onclick="switchQRSub('fj')"
+              style="flex:1;padding:7px 6px;text-align:center;border-radius:6px;cursor:pointer;font-size:12px;font-weight:600;display:flex;align-items:center;justify-content:center;gap:4px;background:var(--sky-dim);color:var(--sky);border:1px solid rgba(56,189,248,0.3);transition:all 0.15s;-webkit-tap-highlight-color:transparent;">
+              🪂 Fun Jumper
+            </div>
+            <div id="qr-sub-btn-dz" onclick="switchQRSub('dz')"
+              style="flex:1;padding:7px 6px;text-align:center;border-radius:6px;cursor:pointer;font-size:12px;font-weight:600;display:flex;align-items:center;justify-content:center;gap:4px;color:var(--text-muted);transition:all 0.15s;-webkit-tap-highlight-color:transparent;">
+              🏫 DZ Gear
+            </div>
+            <div id="qr-sub-btn-packing" onclick="switchQRSub('packing')"
+              style="flex:1;padding:7px 6px;text-align:center;border-radius:6px;cursor:pointer;font-size:12px;font-weight:600;display:flex;align-items:center;justify-content:center;gap:4px;color:var(--text-muted);transition:all 0.15s;-webkit-tap-highlight-color:transparent;">
+              🛬 Packing Mat
+            </div>
+          </div>
+
+          <!-- ── FUN JUMPER QR ── -->
+          <div id="qr-sub-fj">
+            <div style="background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:14px;">
+              <div style="font-size:13px;font-weight:800;margin-bottom:3px;">📲 Personal Customer QR</div>
+              <div style="font-size:12px;color:var(--text-dim);margin-bottom:14px;">Links to their service history + pre-filled new request form.</div>
+
+              <div class="a-field"><label>Customer Full Name</label>
+                <input type="text" id="qr-name" placeholder="e.g. Jane Skydiver">
+              </div>
+              <div class="a-field"><label>Container Serial Number *</label>
+                <input type="text" id="qr-serial" placeholder="e.g. JO-12345">
+              </div>
+              <div class="a-field"><label>Customer Email <span style="font-weight:400;font-size:11px;text-transform:none;letter-spacing:0;color:var(--text-muted)">(optional)</span></label>
+                <input type="email" id="qr-email" placeholder="e.g. jane@email.com">
+              </div>
+              <div class="a-field"><label>Container Make / Model <span style="font-weight:400;font-size:11px;text-transform:none;letter-spacing:0;color:var(--text-muted)">(optional)</span></label>
+                <input type="text" id="qr-container" placeholder="e.g. Javelin Odyssey">
+              </div>
+              <button onclick="generateQR()"
+                style="width:100%;padding:12px;background:linear-gradient(135deg,var(--sky),#7dd3f8);color:#080c12;font-family:'Barlow',sans-serif;font-size:14px;font-weight:800;border:none;border-radius:8px;cursor:pointer;">
+                ⚡ Generate QR Code
+              </button>
+            </div>
+
+            <!-- FJ QR Result -->
+            <div id="qr-result" style="display:none;text-align:center;">
+              <div id="qr-print-card" style="background:#f2ede4;border-radius:14px;padding:28px 24px 22px;display:inline-block;text-align:center;box-shadow:0 12px 40px rgba(0,0,0,0.5);margin-bottom:16px;">
+                <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:2px;color:#1c1c1e;line-height:1;">SKYDIVE <span style="color:#8a3e3e;">SUSSEX</span></div>
+                <div style="font-size:10px;letter-spacing:3px;text-transform:uppercase;color:#8a7a60;margin:3px 0 14px;">Gear Service</div>
+                <div id="qr-canvas" style="display:flex;justify-content:center;margin-bottom:12px;"></div>
+                <div id="qr-pc-name" style="font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:1px;color:#2a1e10;margin-bottom:4px;"></div>
+                <div id="qr-pc-serial" style="font-family:'Courier New',monospace;font-size:12px;color:#5a4a30;background:rgba(138,106,62,0.12);border:1px solid rgba(138,106,62,0.2);padding:4px 14px;border-radius:20px;display:inline-block;"></div>
+                <div id="qr-pc-container" style="font-size:12px;color:#8a7a60;margin-top:5px;"></div>
+                <div style="font-size:10px;color:#a08060;margin-top:12px;letter-spacing:0.5px;border-top:1px solid rgba(138,106,62,0.15);padding-top:10px;">
+                  Scan to view service history &amp; request service<br>
+                  <strong style="color:#5a4a30;">ssxgear.com</strong>
+                </div>
+              </div>
+              <div style="font-size:11px;color:var(--text-muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:5px;text-align:left;">QR links to:</div>
+              <div id="qr-url-box" style="background:var(--surface2);border:1px solid var(--border);border-radius:7px;padding:10px 14px;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--sky);word-break:break-all;margin-bottom:14px;text-align:left;"></div>
+              <div style="display:flex;gap:10px;margin-bottom:12px;">
+                <button onclick="printCard('qr-print-card')"
+                  style="flex:1;padding:11px;background:var(--surface2);border:1px solid var(--border);color:var(--text-dim);font-family:'Barlow',sans-serif;font-size:13px;font-weight:700;border-radius:8px;cursor:pointer;">
+                  🖨 Print Full Size
+                </button>
+                <button onclick="printBusinessCard('qr-print-card')"
+                  style="flex:1;padding:11px;background:var(--surface2);border:1px solid var(--border);color:var(--sky);font-family:'Barlow',sans-serif;font-size:13px;font-weight:700;border-radius:8px;cursor:pointer;">
+                  💳 Print 2×3.5"
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- ── DZ GEAR QR ── -->
+          <div id="qr-sub-dz" style="display:none;">
+            <div style="background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:14px;">
+              <div style="font-size:13px;font-weight:800;margin-bottom:3px;">🏫 DZ Gear Service QR</div>
+              <div style="font-size:12px;color:var(--text-dim);margin-bottom:14px;">One universal QR code for all DZ tandem &amp; student gear. Scan it to go straight to the rig lookup page — enter any rig S/N or number to request service.</div>
+              <button onclick="generateDZQR()"
+                style="width:100%;padding:12px;background:linear-gradient(135deg,#e8191a,#c01010);color:#fff;font-family:'Barlow',sans-serif;font-size:14px;font-weight:800;border:none;border-radius:8px;cursor:pointer;">
+                ⚡ Generate DZ QR Code
+              </button>
+            </div>
+
+            <!-- DZ QR Result -->
+            <div id="dz-qr-result" style="display:none;text-align:center;">
+              <div id="dz-qr-print-card" style="background:#f2ede4;border-radius:10px;padding:16px 20px 14px;display:inline-block;text-align:center;box-shadow:0 12px 40px rgba(0,0,0,0.5);margin-bottom:16px;width:216px;">
+                <div style="font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:2px;color:#1c1c1e;line-height:1;">SKYDIVE <span style="color:#8a3e3e;">SUSSEX</span></div>
+                <div style="font-size:9px;letter-spacing:3px;text-transform:uppercase;color:#8a7a60;margin:2px 0 10px;">Gear Service</div>
+                <div id="dz-qr-canvas" style="display:flex;justify-content:center;margin-bottom:10px;"></div>
+                <div style="font-family:'Bebas Neue',sans-serif;font-size:14px;letter-spacing:1px;color:#2a1e10;margin-bottom:2px;">DZ Tandem &amp; Student Gear</div>
+                <div style="font-size:9px;color:#8a7a60;">Scan to request gear service · <strong style="color:#5a4a30;">ssxgear.com</strong></div>
+              </div>
+              <div style="font-size:11px;color:var(--text-muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:5px;text-align:left;">QR links to:</div>
+              <div style="background:var(--surface2);border:1px solid var(--border);border-radius:7px;padding:10px 14px;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--sky);word-break:break-all;margin-bottom:14px;text-align:left;">https://ssxgear.com/index.htm?screen=dz</div>
+              <div style="display:flex;gap:10px;margin-bottom:12px;">
+                <button onclick="printBusinessCard('dz-qr-print-card')"
+                  style="flex:1;padding:11px;background:var(--surface2);border:1px solid var(--border);color:var(--sky);font-family:'Barlow',sans-serif;font-size:13px;font-weight:700;border-radius:8px;cursor:pointer;">
+                  💳 Print 2×3.5"
+                </button>
+              </div>
+              <div style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:12px 14px;font-size:12px;color:var(--text-dim);text-align:left;line-height:1.6;">
+                <strong style="color:var(--text);">📌 How to use:</strong><br>
+                Print and laminate this card. Attach to the packing area, gear wall, or manifest desk. DZ staff scan it with any phone camera → enter rig S/N or rig number → request service instantly.
+              </div>
+            </div>
+          </div>
+
+          <!-- ── PACKING MAT QR ── -->
+          <div id="qr-sub-packing" style="display:none;">
+            <div style="background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:14px;">
+              <div style="font-size:13px;font-weight:800;margin-bottom:3px;">🛬 Packing Mat — Gear Issue QR</div>
+              <div style="font-size:12px;color:var(--text-dim);margin-bottom:14px;">Staff scan to report damage or problems with gear — includes photo upload and notes sent directly to the rigging team.</div>
+              <button onclick="generatePackingQR()"
+                style="width:100%;padding:12px;background:linear-gradient(135deg,#e8191a,#c01010);color:#fff;font-family:'Barlow',sans-serif;font-size:14px;font-weight:800;border:none;border-radius:8px;cursor:pointer;box-shadow:0 4px 16px rgba(232,25,26,0.3);">
+                ⚡ Generate Packing Mat QR Code
+              </button>
+            </div>
+
+            <div id="packing-qr-result" style="display:none;text-align:center;">
+              <div id="packing-qr-card" style="background:#f2ede4;border-radius:14px;padding:28px 24px 22px;display:inline-block;text-align:center;box-shadow:0 12px 40px rgba(0,0,0,0.5);margin-bottom:16px;min-width:240px;">
+                <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:2px;color:#1c1c1e;line-height:1;">SKYDIVE <span style="color:#8a3e3e;">SUSSEX</span></div>
+                <div style="font-size:10px;letter-spacing:3px;text-transform:uppercase;color:#8a7a60;margin:3px 0 14px;">Gear Service</div>
+                <div id="packing-qr-canvas" style="display:flex;justify-content:center;margin-bottom:14px;"></div>
+                <div style="font-family:'Bebas Neue',sans-serif;font-size:17px;letter-spacing:1px;color:#2a1e10;margin-bottom:4px;">⚠ Spot a Gear Issue?</div>
+                <div style="font-size:11px;color:#8a7a60;margin-bottom:12px;">Scan to report damage or problems</div>
+                <div style="font-size:10px;color:#a08060;border-top:1px solid rgba(138,106,62,0.15);padding-top:10px;">
+                  Take a photo · Describe the issue · Submit
+                </div>
+              </div>
+              <div style="display:flex;gap:8px;margin-bottom:12px;">
+                <button onclick="printCard('packing-qr-card')"
+                  style="flex:1;padding:11px;background:var(--surface2);border:1px solid var(--border);color:var(--text-dim);font-family:'Barlow',sans-serif;font-size:13px;font-weight:700;border-radius:8px;cursor:pointer;">
+                  🖨 Print Full Size
+                </button>
+                <button onclick="printBusinessCard('packing-qr-card')"
+                  style="flex:1;padding:11px;background:var(--surface2);border:1px solid var(--border);color:var(--sky);font-family:'Barlow',sans-serif;font-size:13px;font-weight:700;border-radius:8px;cursor:pointer;">
+                  💳 Print 2×3.5"
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- EMAIL SETTINGS TAB -->
+        <div id="admin-tab-email" style="display:none;">
+
+          <!-- Google Sheet Link — always visible -->
+          <div style="background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:14px 16px;margin-bottom:14px;">
+            <div style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-muted);margin-bottom:10px;">📊 Google Sheet</div>
+            <a href="https://docs.google.com/spreadsheets/d/18xWrsryd3PUw_y02wrCJOPQ4ZBkFFPtZrCILRsrnSD8" target="_blank"
+               style="display:inline-flex;align-items:center;gap:8px;padding:10px 18px;background:rgba(74,222,128,0.1);border:1px solid rgba(74,222,128,0.3);color:var(--green);border-radius:8px;font-family:'Inter',sans-serif;font-size:13px;font-weight:700;text-decoration:none;">
+              🔗 Open SSXgear Sheet ↗
+            </a>
+          </div>
+
+          <!-- LOCK SCREEN -->
+          <div id="super-admin-lock" style="text-align:center;padding:20px 0;">
+            <div style="font-size:32px;margin-bottom:10px;">🔐</div>
+            <div style="font-family:'Barlow',sans-serif;font-size:16px;font-weight:800;color:var(--yellow);margin-bottom:6px;">Email Settings</div>
+            <div style="font-size:12px;color:var(--text-dim);margin-bottom:20px;">Enter password to manage invoice email address.</div>
+            <div style="max-width:280px;margin:0 auto;">
+              <input type="password" id="super-admin-pw" placeholder="Enter password"
+                style="width:100%;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:'Inter',sans-serif;font-size:16px;padding:11px 14px;min-height:44px;outline:none;margin-bottom:10px;text-align:center;letter-spacing:4px;"
+                onfocus="this.style.borderColor='var(--yellow)'" onblur="this.style.borderColor='var(--border)'"
+                onkeydown="if(event.key==='Enter')superAdminLogin()">
+              <div id="super-admin-err" style="color:var(--red);font-size:12px;margin-bottom:10px;display:none;">Incorrect password. Please try again.</div>
+              <button onclick="superAdminLogin()"
+                style="width:100%;padding:12px;background:var(--yellow-dim);border:1px solid rgba(245,158,11,0.4);color:var(--yellow);font-family:'Barlow',sans-serif;font-size:14px;font-weight:800;border-radius:8px;cursor:pointer;margin-bottom:14px;">
+                Unlock ▶
+              </button>
+              <div>
+                <a href="#" onclick="sendForgotPassword(event)"
+                  style="font-size:12px;color:var(--text-muted);text-decoration:none;border-bottom:1px solid rgba(255,255,255,0.15);padding-bottom:1px;">
+                  Forgot password? Send reset email
+                </a>
+                <div id="forgot-pw-status" style="font-size:11px;margin-top:8px;display:none;"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- SETTINGS CONTENT (hidden until unlocked) -->
+          <div id="super-admin-content" style="display:none;">
+            <!-- Email Settings -->
+            <div style="background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:14px 16px;">
+              <div style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-muted);margin-bottom:6px;">✉️ Invoice & Notification Email</div>
+              <div style="font-size:12px;color:var(--text-dim);margin-bottom:12px;">All service request and invoice emails go to this address. Separate multiple with a comma.</div>
+              <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end;">
+                <div style="flex:1;min-width:200px;">
+                  <input type="text" id="admin-dz-email" placeholder="Loading…"
+                    style="width:100%;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:'Inter',sans-serif;font-size:14px;padding:10px 14px;min-height:44px;outline:none;transition:border-color 0.2s;"
+                    onfocus="this.style.borderColor='var(--sky)'" onblur="this.style.borderColor='var(--border)'">
+                </div>
+                <button onclick="saveDzEmail()"
+                  style="padding:10px 18px;background:var(--sky-dim);border:1px solid rgba(56,189,248,0.3);color:var(--sky);border-radius:8px;font-family:'Inter',sans-serif;font-size:13px;font-weight:700;cursor:pointer;min-height:44px;white-space:nowrap;">
+                  💾 Save
+                </button>
+              </div>
+              <div id="admin-email-status" style="font-size:12px;margin-top:8px;display:none;"></div>
+            </div>
+            <!-- Report Email -->
+            <div style="background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:14px 16px;margin-top:14px;">
+              <div style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-muted);margin-bottom:6px;">🛬 Packing Mat Report Email</div>
+              <div style="font-size:12px;color:var(--text-dim);margin-bottom:12px;">Gear issue reports from the packing mat QR code are sent here. Defaults to <code style="background:var(--bg);padding:2px 6px;border-radius:4px;font-size:11px;">skydivesussexgear@gmail.com</code></div>
+              <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end;">
+                <div style="flex:1;min-width:200px;">
+                  <input type="text" id="admin-report-email" placeholder="Loading…"
+                    style="width:100%;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:'Inter',sans-serif;font-size:14px;padding:10px 14px;min-height:44px;outline:none;transition:border-color 0.2s;"
+                    onfocus="this.style.borderColor='var(--sky)'" onblur="this.style.borderColor='var(--border)'">
+                </div>
+                <button onclick="saveReportEmail()"
+                  style="padding:10px 18px;background:var(--sky-dim);border:1px solid rgba(56,189,248,0.3);color:var(--sky);border-radius:8px;font-family:'Inter',sans-serif;font-size:13px;font-weight:700;cursor:pointer;min-height:44px;white-space:nowrap;">
+                  💾 Save
+                </button>
+              </div>
+              <div id="admin-report-email-status" style="font-size:12px;margin-top:8px;display:none;"></div>
+            </div>
+              <button onclick="lockSuperAdmin()"
+                style="background:transparent;border:1px solid var(--border);color:var(--text-muted);border-radius:8px;padding:8px 14px;font-size:12px;cursor:pointer;">
+                🔒 Lock Settings
+              </button>
+            </div>
+          </div>
+        </div>
+
+      </div>
     </div>
   </div>
 </div>
@@ -2478,26 +3365,43 @@ async function createRig() {
 </div>
 
 <script>
-// ── PWA INSTALL ───────────────────────────────────────────────
-let deferredPrompt = null;
+// Register service worker for PWA
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/sw.js').catch(() => {});
+}
 
+// Hide ONLY if already running as installed standalone app
+if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true) {
+  const navBtn = document.getElementById('pwa-nav-btn');
+  if (navBtn) navBtn.style.display = 'none';
+  const banner = document.getElementById('pwa-banner');
+  if (banner) banner.style.display = 'none';
+}
+
+let deferredPrompt = null;
 window.addEventListener('beforeinstallprompt', e => {
   e.preventDefault();
   deferredPrompt = e;
-  if (!sessionStorage.getItem('pwaDismissed')) {
-    setTimeout(() => { document.getElementById('pwa-banner').classList.add('show'); }, 3000);
-  }
 });
 
-document.getElementById('pwa-install-btn').addEventListener('click', async () => {
-  if (!deferredPrompt) return;
-  deferredPrompt.prompt();
-  const { outcome } = await deferredPrompt.userChoice;
-  deferredPrompt = null;
-  document.getElementById('pwa-banner').classList.remove('show');
-});
+async function triggerPWAInstall() {
+  if (deferredPrompt) {
+    deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+    deferredPrompt = null;
+    if (outcome === 'accepted') {
+      document.getElementById('pwa-nav-btn').style.display = 'none';
+      document.getElementById('pwa-banner').classList.remove('show');
+    }
+  } else {
+    alert('📲 Install SSXgear as an App:\n\n🍎 iPhone/iPad (Safari):\nTap Share ⬆ → "Add to Home Screen" → Add\n\n🤖 Android (Chrome):\nTap Menu ⋮ → "Add to Home Screen"\n\n💻 Desktop Chrome/Edge:\nLook for ⊕ icon in the address bar');
+  }
+}
+
+document.getElementById('pwa-install-btn').addEventListener('click', triggerPWAInstall);
 
 window.addEventListener('appinstalled', () => {
+  document.getElementById('pwa-nav-btn').style.display = 'none';
   document.getElementById('pwa-banner').classList.remove('show');
   deferredPrompt = null;
 });
