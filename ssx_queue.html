@@ -1,0 +1,1532 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link rel="manifest" href="manifest.json">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="SSXgear">
+<meta name="theme-color" content="#080c12">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SSX — Rigger Queue</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root{--bg:#0e1117;--surface:#161b25;--surface2:#1e2535;--border:rgba(255,255,255,0.08);--blue:#3b82f6;--blue-dim:rgba(59,130,246,0.15);--green:#22c55e;--green-dim:rgba(34,197,94,0.12);--red:#ef4444;--red-dim:rgba(239,68,68,0.12);--yellow:#f59e0b;--yellow-dim:rgba(245,158,11,0.12);--purple:#a78bfa;--purple-dim:rgba(167,139,250,0.12);--sky:#38bdf8;--sky-dim:rgba(56,189,248,0.12);--text:#f1f5f9;--text-dim:#94a3b8;--text-muted:#475569;--accent:#60a5fa;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;}
+  .header{background:linear-gradient(135deg,#0a0f1e,#0e1628,#0a1520);border-bottom:1px solid var(--border);}
+  .header-inner{max-width:960px;margin:0 auto;padding:14px 12px;display:flex;align-items:center;justify-content:space-between;gap:10px;}
+  .header-left{display:flex;align-items:center;gap:10px;min-width:0;flex:1;}
+  .header-logo{flex-shrink:0;}
+  .header-logo img{height:40px;width:auto;border-radius:6px;}
+  .header-text h1{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:2px;line-height:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .header-text p{font-size:10px;color:var(--text-dim);margin-top:2px;}
+  @media(max-width:480px){.header-text{display:none;}}
+  .header-req-btn{background:rgba(56,189,248,0.12);border:1px solid rgba(56,189,248,0.3);color:#38bdf8;border-radius:8px;padding:7px 14px;font-family:'Bebas Neue',sans-serif;font-size:13px;letter-spacing:1px;text-decoration:none;white-space:nowrap;flex-shrink:0;}
+  .header-req-label{display:inline;}
+  @media(max-width:400px){.header-req-label{display:none;}}
+  @media(max-width:500px){
+    .header-inner{padding:8px 10px;}
+    .header-text h1{font-size:14px;letter-spacing:1px;}
+    .header-text p{display:none;}
+    .header-logo img{height:32px;}
+  }
+  .logout-btn{background:transparent;border:1px solid var(--border);color:var(--text-dim);border-radius:7px;padding:10px 14px;font-family:'DM Sans',sans-serif;font-size:12px;cursor:pointer;transition:border-color 0.2s;min-height:44px;-webkit-tap-highlight-color:transparent;}
+  .logout-btn:hover{border-color:var(--red);color:var(--red);}
+  .main{max-width:960px;margin:0 auto;padding:16px 12px 80px;}
+  .screen{display:none;}.screen.active{display:block;}
+
+  /* LOGIN */
+  .login-wrap{max-width:360px;margin:60px auto;text-align:center;padding:0 4px;}
+  .login-wrap h2{font-family:'Bebas Neue',sans-serif;font-size:30px;letter-spacing:2px;margin-bottom:8px;}
+  .login-wrap p{color:var(--text-dim);font-size:14px;margin-bottom:28px;}
+  .login-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:24px 20px;}
+  .field{margin-bottom:14px;text-align:left;}
+  .field label{display:block;font-size:12px;font-weight:600;color:var(--text-dim);margin-bottom:6px;}
+  .field input{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:16px;padding:12px 14px;transition:border-color 0.2s;min-height:48px;}
+  .field input:focus{outline:none;border-color:var(--blue);}
+  .btn{border:none;border-radius:8px;padding:14px 22px;font-family:'DM Sans',sans-serif;font-weight:700;font-size:14px;cursor:pointer;transition:opacity 0.2s;min-height:48px;-webkit-tap-highlight-color:transparent;}
+  .btn:hover{opacity:0.85;}
+  .btn-primary{background:var(--blue);color:#fff;width:100%;}
+  .btn-green{background:var(--green);color:#0e1117;}
+  .btn-sm{padding:10px 16px;font-size:13px;min-height:44px;}
+  .btn-ghost{background:transparent;border:1px solid var(--border);color:var(--text-dim);}
+  .btn-danger{background:var(--red-dim);border:1px solid rgba(239,68,68,0.3);color:var(--red);}
+  .btn-invoice{background:var(--yellow-dim);border:1px solid rgba(245,158,11,0.3);color:var(--yellow);}
+  .error-msg{background:var(--red-dim);border:1px solid rgba(239,68,68,0.3);color:var(--red);border-radius:8px;padding:10px 14px;font-size:13px;margin-bottom:14px;display:none;}
+
+  /* DASHBOARD STATS */
+  .dash-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:20px;}
+  @media(max-width:600px){.dash-grid{grid-template-columns:repeat(2,1fr);}}
+  .dash-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px 16px;text-align:center;}
+  .dash-val{font-family:'Bebas Neue',sans-serif;font-size:32px;letter-spacing:1px;line-height:1;}
+  .dash-lbl{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-muted);margin-top:4px;}
+  .dash-val.v-total{color:var(--text);}
+  .dash-val.v-pending{color:var(--yellow);}
+  .dash-val.v-progress{color:var(--blue);}
+  .dash-val.v-ready{color:var(--green);}
+
+  /* QUEUE */
+  .queue-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px;}
+  .queue-title{font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:2px;}
+  .queue-count{background:var(--yellow-dim);border:1px solid rgba(245,158,11,0.3);color:var(--yellow);border-radius:20px;padding:4px 12px;font-size:12px;font-weight:700;}
+  .queue-filters{display:flex;gap:6px;flex-wrap:wrap;}
+  .filter-btn{background:transparent;border:1px solid var(--border);color:var(--text-muted);border-radius:20px;padding:5px 14px;font-size:12px;font-weight:600;cursor:pointer;transition:all 0.15s;-webkit-tap-highlight-color:transparent;}
+  .filter-btn.active{border-color:var(--blue);color:var(--accent);background:var(--blue-dim);}
+  .queue-empty{text-align:center;padding:60px 20px;color:var(--text-muted);}
+  .queue-empty .icon{font-size:48px;margin-bottom:14px;}
+  .queue-empty p{font-size:14px;}
+
+  /* ORDER CARD */
+  .order-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;margin-bottom:12px;overflow:hidden;transition:border-color 0.2s;}
+  .order-card.status-IN_PROGRESS{border-color:rgba(59,130,246,0.35);}
+  .order-card.status-GEAR_READY{border-color:rgba(34,197,94,0.35);}
+  .order-card-header{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid var(--border);flex-wrap:wrap;gap:8px;cursor:pointer;-webkit-tap-highlight-color:transparent;}
+  .order-card-header:hover,.order-card-header:active{background:var(--surface2);}
+  .order-wo{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:600;color:var(--accent);display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+  .order-rig{font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:1px;}
+  .order-meta{font-size:12px;color:var(--text-dim);margin-top:2px;}
+  .order-time{font-size:11px;color:var(--text-muted);text-align:right;}
+  .order-expand{color:var(--text-muted);font-size:18px;transition:transform 0.2s;flex-shrink:0;}
+  .order-card.expanded .order-expand{transform:rotate(180deg);}
+  .order-body{display:none;padding:16px;}
+  .order-card.expanded .order-body{display:block;}
+
+  /* STATUS BADGE */
+  .status-badge{display:inline-block;padding:2px 10px;border-radius:20px;font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;}
+  .sb-PENDING{background:var(--yellow-dim);color:var(--yellow);border:1px solid rgba(245,158,11,0.3);}
+  .sb-IN_PROGRESS{background:var(--blue-dim);color:var(--accent);border:1px solid rgba(59,130,246,0.3);}
+  .sb-GEAR_READY{background:var(--green-dim);color:var(--green);border:1px solid rgba(34,197,94,0.3);}
+
+  /* STATUS SELECTOR */
+  .status-row{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;}
+  .status-opt{flex:1;min-width:100px;padding:10px 8px;border-radius:9px;border:2px solid var(--border);background:transparent;color:var(--text-dim);font-family:'DM Sans',sans-serif;font-size:12px;font-weight:700;cursor:pointer;text-align:center;transition:all 0.15s;-webkit-tap-highlight-color:transparent;}
+  .status-opt:hover{border-color:rgba(255,255,255,0.2);}
+  .status-opt.sel-PENDING{border-color:var(--yellow);color:var(--yellow);background:var(--yellow-dim);}
+  .status-opt.sel-IN_PROGRESS{border-color:var(--blue);color:var(--accent);background:var(--blue-dim);}
+  .status-opt.sel-GEAR_READY{border-color:var(--green);color:var(--green);background:var(--green-dim);}
+
+  .order-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;}
+  @media(max-width:500px){.order-grid{grid-template-columns:1fr;}}
+  .info-block{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:12px 14px;}
+  .info-title{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-muted);margin-bottom:8px;}
+  .info-content{font-size:13px;color:var(--text);line-height:1.6;}
+
+  .complete-section{background:var(--green-dim);border:1px solid rgba(34,197,94,0.2);border-radius:10px;padding:14px;margin-top:14px;}
+  .complete-title{font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--green);margin-bottom:12px;}
+  .complete-row{display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap;}
+  .complete-field{flex:1;min-width:160px;}
+  .complete-field label{display:block;font-size:11px;font-weight:600;color:var(--text-dim);margin-bottom:5px;}
+  .complete-field input,.complete-field textarea{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:16px;padding:10px 12px;min-height:44px;}
+  .complete-field input:focus,.complete-field textarea:focus{outline:none;border-color:var(--green);}
+  .complete-field textarea{resize:vertical;min-height:60px;font-size:15px;}
+  .complete-actions{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;}
+
+
+  /* GEAR TYPE TABS */
+  .gear-tabs{display:flex;gap:4px;margin-bottom:14px;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:4px;}
+  .gear-tab{flex:1;padding:8px 6px;text-align:center;border-radius:7px;cursor:pointer;font-size:12px;font-weight:700;color:var(--text-muted);transition:all 0.2s;-webkit-tap-highlight-color:transparent;}
+  .gear-tab.active-fj{background:var(--sky-dim);color:var(--sky);border:1px solid rgba(56,189,248,0.3);}
+  .gear-tab.active-dz{background:var(--red-dim);color:var(--red);border:1px solid rgba(239,68,68,0.3);}
+  .gear-tab.active-all{background:var(--blue-dim);color:var(--accent);border:1px solid rgba(59,130,246,0.3);}
+
+  /* RIGGER SIGN-IN MODAL */
+  .signin-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:9999;align-items:center;justify-content:center;padding:16px;}
+  .signin-modal.open{display:flex;}
+  .signin-box{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:24px 20px;width:100%;max-width:400px;box-shadow:0 24px 60px rgba(0,0,0,0.6);}
+  .signin-title{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:1.5px;color:var(--blue);margin-bottom:4px;}
+  .signin-sub{font-size:12px;color:var(--text-muted);margin-bottom:18px;}
+
+  /* SERVICES DISPLAY (view-only, not edit grid) */
+  .svc-list-view{list-style:none;}
+  .svc-list-view li{padding:5px 0;border-bottom:1px solid var(--border);font-size:13px;display:flex;justify-content:space-between;}
+  .svc-list-view li:last-child{border-bottom:none;}
+
+  /* ADD SERVICES DROPDOWN */
+  .add-svc-toggle{background:var(--surface2);border:1px solid var(--border);color:var(--text-dim);border-radius:8px;padding:8px 14px;font-size:12px;font-weight:600;cursor:pointer;margin-top:8px;width:100%;text-align:left;}
+  .add-svc-panel{display:none;margin-top:8px;}
+  .add-svc-panel.open{display:block;}
+
+
+  .varies-price-input{width:72px;background:var(--bg);border:1px solid rgba(59,130,246,0.4);border-radius:5px;color:var(--text);font-family:'JetBrains Mono',monospace;font-size:11px;padding:3px 6px;text-align:right;min-height:28px;}
+  .varies-price-input:focus{outline:none;border-color:var(--blue);}
+  .charge-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px;padding:10px 12px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;}
+  .charge-field label{font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text-muted);display:block;margin-bottom:4px;}
+  .charge-field input{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:7px;color:var(--text);font-family:'JetBrains Mono',monospace;font-size:14px;padding:8px 10px;min-height:40px;}
+  .charge-field input:focus{outline:none;border-color:var(--blue);}
+  .svc-notes-field{margin-top:6px;grid-column:1/-1;}
+  .svc-notes-input{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:7px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;padding:8px 10px;min-height:44px;resize:vertical;}
+  .svc-notes-input:focus{outline:none;border-color:var(--blue);}
+
+  /* CUSTOMER HISTORY TAB */
+  .history-search-wrap{display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap;}
+  .history-search-wrap input{flex:1;min-width:180px;background:var(--surface);border:1px solid var(--border);border-radius:9px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:15px;padding:12px 14px;min-height:48px;}
+  .history-search-wrap input:focus{outline:none;border-color:var(--blue);}
+  .history-search-wrap button{white-space:nowrap;}
+  .history-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px 16px;margin-bottom:10px;}
+  .history-wo{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--accent);margin-bottom:4px;}
+  .history-rig{font-size:14px;font-weight:600;margin-bottom:3px;}
+  .history-svc{font-size:12px;color:var(--text-dim);line-height:1.5;}
+  .history-meta{font-size:11px;color:var(--text-muted);margin-top:6px;}
+
+  /* SETTINGS */
+  .settings-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:20px;margin-bottom:20px;}
+  .settings-title{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:1.5px;margin-bottom:18px;padding-bottom:12px;border-bottom:1px solid var(--border);}
+  .pw-row{display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap;}
+  .pw-field{flex:1;min-width:140px;}
+  .pw-field label{display:block;font-size:12px;font-weight:600;color:var(--text-dim);margin-bottom:6px;}
+  .pw-field input{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:16px;padding:12px 14px;min-height:48px;}
+  .pw-field input:focus{outline:none;border-color:var(--blue);}
+  .success-toast{background:var(--green-dim);border:1px solid rgba(34,197,94,0.3);color:var(--green);border-radius:8px;padding:10px 14px;font-size:13px;margin-top:12px;display:none;}
+  .info-toast{background:var(--blue-dim);border:1px solid rgba(59,130,246,0.3);color:var(--accent);border-radius:8px;padding:10px 14px;font-size:13px;margin-top:8px;display:none;}
+
+  .tab-bar{display:flex;gap:4px;margin-bottom:16px;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:4px;}
+  .tab{flex:1;padding:8px 6px;text-align:center;border-radius:7px;cursor:pointer;font-size:12px;font-weight:600;color:var(--text-dim);transition:all 0.2s;min-height:40px;display:flex;align-items:center;justify-content:center;gap:5px;-webkit-tap-highlight-color:transparent;white-space:nowrap;}
+  .tab.active{background:var(--blue);color:#fff;}
+  .tab:hover:not(.active){background:var(--surface2);}
+  .tab-label{display:inline;}
+  @media(max-width:500px){.tab{font-size:11px;padding:7px 4px;}.tab-label{display:none;}}
+
+  .refresh-btn{background:var(--surface2);border:1px solid var(--border);color:var(--text-dim);border-radius:8px;padding:10px 16px;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:6px;min-height:44px;-webkit-tap-highlight-color:transparent;}
+  .refresh-btn:hover{border-color:var(--blue);color:var(--accent);}
+  .svc-edit-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+  @media(max-width:500px){.svc-edit-grid{grid-template-columns:1fr;}}
+  .svc-item{display:flex;align-items:center;gap:10px;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:11px 12px;cursor:pointer;transition:border-color 0.15s,background 0.15s;user-select:none;min-height:48px;-webkit-tap-highlight-color:transparent;}
+  .svc-item:hover{border-color:rgba(59,130,246,0.4);}
+  .svc-item input{display:none;}
+  .svc-item.checked{background:var(--blue-dim);border-color:rgba(59,130,246,0.5);}
+  .svc-check{width:20px;height:20px;border:2px solid var(--text-muted);border-radius:4px;flex-shrink:0;display:flex;align-items:center;justify-content:center;}
+  .svc-item.checked .svc-check{background:var(--blue);border-color:var(--blue);}
+  .svc-check::after{content:'✓';font-size:11px;color:#fff;display:none;}
+  .svc-item.checked .svc-check::after{display:block;}
+  .svc-label{font-size:13px;line-height:1.3;flex:1;display:flex;align-items:center;justify-content:space-between;gap:8px;}
+  .svc-price{font-size:11px;font-weight:700;color:var(--blue);white-space:nowrap;flex-shrink:0;}
+
+  .modal-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);display:none;align-items:center;justify-content:center;z-index:1000;padding:16px;}
+  .modal-overlay.open{display:flex;}
+  .modal-box{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:24px 20px;max-width:420px;width:100%;text-align:center;}
+  .modal-icon{font-size:40px;margin-bottom:14px;}
+  .modal-title{font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:2px;color:var(--yellow);margin-bottom:10px;}
+  .modal-text{color:var(--text-dim);font-size:14px;line-height:1.6;margin-bottom:20px;}
+  .modal-text strong{color:var(--text);}
+  .modal-actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;}
+  .btn-confirm{background:var(--green);color:#0e1117;border:none;border-radius:8px;padding:13px 28px;font-family:'Bebas Neue',sans-serif;font-size:17px;letter-spacing:1.5px;cursor:pointer;min-height:48px;-webkit-tap-highlight-color:transparent;}
+  .btn-cancel-modal{background:transparent;border:1px solid var(--border);color:var(--text-dim);border-radius:8px;padding:13px 20px;font-family:'DM Sans',sans-serif;font-weight:600;font-size:13px;cursor:pointer;min-height:48px;-webkit-tap-highlight-color:transparent;}
+  .btn-cancel-modal:hover{border-color:var(--red);color:var(--red);}
+
+  /* SUBMIT BUTTON LOADING STATES */
+  .btn-green{position:relative;overflow:hidden;transition:transform 0.1s ease,box-shadow 0.15s ease;}
+  .btn-green:active{transform:scale(0.95) !important;box-shadow:0 0 0 4px rgba(34,197,94,0.35) !important;}
+  .btn-green.submitting{opacity:0.85;pointer-events:none;cursor:not-allowed;}
+  .btn-green.submitting .btn-text{display:none;}
+  .btn-green .btn-spinner{display:none;align-items:center;justify-content:center;gap:8px;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);}
+  .btn-green.submitting .btn-spinner{display:flex;}
+  @keyframes spin{to{transform:rotate(360deg);}}
+  .spinner-ring{width:16px;height:16px;border:2.5px solid rgba(14,17,23,0.3);border-top-color:#0e1117;border-radius:50%;animation:spin 0.65s linear infinite;flex-shrink:0;}
+  .btn-green .ripple{position:absolute;border-radius:50%;background:rgba(255,255,255,0.28);transform:scale(0);animation:ripple-anim 0.55s linear;pointer-events:none;}
+  @keyframes ripple-anim{to{transform:scale(5);opacity:0;}}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-inner">
+    <div class="header-left">
+      <div class="header-logo"><img src="data:image/png;base64,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" alt="Skydive Sussex"></div>
+      <div class="header-text"><h1>SSX Rigger Queue</h1><p>MANAGEMENT PORTAL</p></div>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px;">
+      <a href="index.htm" class="header-req-btn">✚ <span class="header-req-label">REQUEST SERVICE</span></a>
+      <button class="logout-btn" onclick="logout()" id="logout-btn" style="display:none">Logout</button>
+    </div>
+  </div>
+</div>
+
+<div class="main">
+
+  <!-- LOGIN SCREEN -->
+  <div class="screen active" id="screen-login">
+    <div class="login-wrap">
+      <h2>Rigger Access</h2>
+      <p>Enter your password to view the service queue</p>
+      <div class="login-card">
+        <div class="field">
+          <label>Password</label>
+          <input type="password" id="pw-input" placeholder="Enter password" autocomplete="current-password">
+        </div>
+        <div class="error-msg" id="login-error">Incorrect password. Please try again.</div>
+        <button class="btn btn-primary" onclick="login()">Access Queue ▶</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN QUEUE SCREEN -->
+  <div class="screen" id="screen-queue">
+    <div class="tab-bar">
+      <div class="tab active" onclick="switchTab('queue')" id="tab-btn-queue">📋 <span class="tab-label">Queue</span></div>
+      <div class="tab" onclick="switchTab('svchistory')" id="tab-btn-svchistory">📁 <span class="tab-label">History</span></div>
+      <div class="tab" onclick="switchTab('history')" id="tab-btn-history">🔍 <span class="tab-label">Customer</span></div>
+      <div class="tab" onclick="switchTab('settings')" id="tab-btn-settings">⚙ <span class="tab-label">Settings</span></div>
+    </div>
+
+    <!-- QUEUE TAB -->
+    <div id="tab-queue">
+      <!-- Dashboard Stats -->
+      <div class="dash-grid" id="dashboard-stats">
+        <div class="dash-card"><div class="dash-val v-total" id="ds-total">—</div><div class="dash-lbl">Total Active</div></div>
+        <div class="dash-card"><div class="dash-val v-pending" id="ds-pending">—</div><div class="dash-lbl">Pending</div></div>
+        <div class="dash-card"><div class="dash-val v-progress" id="ds-progress">—</div><div class="dash-lbl">In Progress</div></div>
+        <div class="dash-card"><div class="dash-val v-ready" id="ds-ready">—</div><div class="dash-lbl">Gear Ready</div></div>
+      </div>
+
+      <div class="queue-header">
+        <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+          <div class="queue-title">Service Queue</div>
+          <div class="queue-count" id="queue-count">0 orders</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+          <div class="queue-filters">
+            <button class="filter-btn active" onclick="setQueueFilter('ALL')" id="qf-ALL">All</button>
+            <button class="filter-btn" onclick="setQueueFilter('PENDING')" id="qf-PENDING">📥 Pending</button>
+            <button class="filter-btn" onclick="setQueueFilter('IN_PROGRESS')" id="qf-IN_PROGRESS">🔧 In Progress</button>
+            <button class="filter-btn" onclick="setQueueFilter('GEAR_READY')" id="qf-GEAR_READY">✅ Gear Ready</button>
+          </div>
+          <button class="refresh-btn" onclick="loadQueue()">↻ Refresh</button>
+        </div>
+      </div>
+      <!-- GEAR TYPE TABS -->
+      <div class="gear-tabs">
+        <div class="gear-tab active-all" id="gt-all" onclick="setGearType('all')">🔀 All Gear</div>
+        <div class="gear-tab" id="gt-fj" onclick="setGearType('fj')">🪂 Fun Jumper</div>
+        <div class="gear-tab" id="gt-dz" onclick="setGearType('dz')">🏫 DZ Gear</div>
+      </div>
+
+      <div id="queue-list"></div>
+    </div>
+
+    <!-- SERVICE HISTORY TAB -->
+    <div id="tab-svchistory" style="display:none">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px;">
+        <div>
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:2px;margin-bottom:4px;">Service History</div>
+          <div style="font-size:13px;color:var(--text-dim);">All completed service orders</div>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+          <a href="https://docs.google.com/spreadsheets/d/18xWrsryd3PUw_y02wrCJOPQ4ZBkFFPtZrCILRsrnSD8" target="_blank"
+             style="display:flex;align-items:center;gap:6px;padding:9px 14px;background:rgba(74,222,128,0.1);border:1px solid rgba(74,222,128,0.3);color:var(--green);border-radius:8px;font-size:12px;font-weight:700;text-decoration:none;white-space:nowrap;">
+            📊 Open in Sheets
+          </a>
+          <button class="refresh-btn" onclick="loadServiceHistory()">↻ Refresh</button>
+        </div>
+      </div>
+
+      <!-- Search + Filter -->
+      <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;">
+        <input type="text" id="sh-search" placeholder="Search by name, rig #, S/N, rigger…" autocomplete="off"
+          style="flex:1;min-width:200px;background:var(--surface);border:1px solid var(--border);border-radius:9px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;padding:10px 14px;min-height:44px;outline:none;"
+          oninput="filterServiceHistory()">
+        <select id="sh-type-filter" onchange="filterServiceHistory()"
+          style="background:var(--surface);border:1px solid var(--border);border-radius:9px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;padding:10px 12px;min-height:44px;outline:none;cursor:pointer;">
+          <option value="all">All Types</option>
+          <option value="fun-jumper">Fun Jumper</option>
+          <option value="tandem">Tandem</option>
+          <option value="student">Student</option>
+        </select>
+      </div>
+
+      <!-- Stats row -->
+      <div id="sh-stats" style="font-size:12px;color:var(--text-muted);margin-bottom:12px;"></div>
+      <div class="error-msg" id="sh-error"></div>
+      <div id="sh-list"><div style="text-align:center;padding:40px;color:var(--text-muted);">Click Refresh to load history</div></div>
+    </div>
+
+    <!-- CUSTOMER HISTORY TAB -->
+    <div id="tab-history" style="display:none">
+      <div style="margin-bottom:16px;">
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:2px;margin-bottom:6px;">Customer History Lookup</div>
+        <div style="font-size:13px;color:var(--text-dim);margin-bottom:14px;">Search completed and pending orders by customer email or container serial number.</div>
+      </div>
+      <div class="history-search-wrap">
+        <input type="text" id="history-search-email" placeholder="Customer email address" autocomplete="off">
+        <input type="text" id="history-search-sn" placeholder="Container S/N" autocomplete="off" style="max-width:200px;">
+        <button class="btn btn-primary btn-sm" onclick="searchHistory()" style="width:auto;">Search</button>
+      </div>
+      <div class="error-msg" id="history-error"></div>
+      <div id="history-results"></div>
+    </div>
+
+    <!-- SETTINGS TAB -->
+    <div id="tab-settings" style="display:none">
+      <div class="settings-card">
+        <div class="settings-title">Change Password</div>
+        <div class="pw-row">
+          <div class="pw-field"><label>Current Password</label><input type="password" id="pw-current" placeholder="Current password"></div>
+          <div class="pw-field"><label>New Password</label><input type="password" id="pw-new" placeholder="New password"></div>
+          <div class="pw-field"><label>Confirm New Password</label><input type="password" id="pw-confirm" placeholder="Confirm new password"></div>
+        </div>
+        <div class="error-msg" id="pw-error" style="margin-top:12px;"></div>
+        <div class="success-toast" id="pw-success">✓ Password updated successfully!</div>
+        <button class="btn btn-primary" style="margin-top:14px;width:auto;padding:11px 24px;" onclick="changePassword()">Update Password</button>
+      </div>
+      <div class="settings-card">
+        <div class="settings-title">DZ Email Settings</div>
+        <div style="font-size:13px;color:var(--text-dim);margin-bottom:12px;">Invoice and notification emails are managed in the <strong style="color:var(--text);">Admin panel → Email Settings</strong> tab on the main SSXgear page. The current address is saved in the Google Sheet → Settings tab.</div>
+        <a href="https://ssxgear.com" target="_blank"
+          style="display:inline-flex;align-items:center;gap:6px;padding:9px 16px;background:var(--blue-dim,rgba(56,189,248,0.1));border:1px solid rgba(56,189,248,0.3);color:var(--blue,#38bdf8);border-radius:8px;font-size:12px;font-weight:700;text-decoration:none;">
+          ↗ Open SSXgear Admin
+        </a>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyJZiI8gMzft-hPBlx6rQ0R4MM7WDRl75hG_AXbhB950YaobHH_muXMLIiJkQEroa0Vrw/exec';
+
+const SERVICE_GROUPS = [
+  { group: '🔁 Repacks & Inspections', items: [
+    {name:"Reserve Inspection & Repack (Sport)",price:"$115"},
+    {name:"Assembly, Inspection & Pack Reserve (Sport)",price:"$140"},
+    {name:"Assembly, Inspection & Pack Main",price:"$75"},
+    {name:"Inspect Main or Reserve",price:"$25"},
+    {name:"Inspect Container",price:"$20"},
+    {name:"Inspect & Pack Pilot's Emergency Rig",price:"$120"},
+  ]},
+  { group: '📦 Packing', items: [
+    {name:"Pack Main Sport",price:"$15"},
+  ]},
+  { group: '🔧 Hardware & Parts', items: [
+    {name:"Reserve Safety Stow Replacement",price:"$12"},
+    {name:"Slinks",price:"$35"},
+    {name:"Tack Slinks / Links",price:"$5"},
+    {name:"Install Slider Bumpers",price:"$25"},
+    {name:"BOC Replacement",price:"$100"},
+    {name:"Kill Line Replacement",price:"$25"},
+    {name:"Disassemble Main or Reserve",price:"$10"},
+  ]},
+  { group: '📏 Lines', items: [
+    {name:"Replace Lower Steering Lines",price:"$40"},
+    {name:"Replace Steering Lines Toggles to Cascades",price:"$65"},
+    {name:"Full Line Set",price:"Varies"},
+    {name:"Re-line Sport",price:"$130"},
+  ]},
+  { group: '⚡ AAD', items: [
+    {name:"Install AAD",price:"$10"},
+    {name:"AAD Batteries / Service",price:"Varies"},
+  ]},
+  { group: '🧵 Fabric & Repair', items: [
+    {name:"Canopy Patch",price:"Varies"},
+    {name:"Sewing",price:"$85/hr"},
+    {name:"Fabric Tensile Test",price:"$20"},
+  ]},
+  { group: '🧼 Cleaning', items: [
+    {name:"Wash Rig",price:"$65"},
+  ]},
+];
+// Flat list for compatibility
+const SERVICES = SERVICE_GROUPS.flatMap(g => g.items);
+
+let pendingOrders = [];
+let currentPassword = localStorage.getItem('ssxQueuePw') || '1234';
+let activeQueueFilter = 'ALL';
+let activeGearType = 'all';
+
+function setGearType(t) {
+  activeGearType = t;
+  ['all','fj','dz'].forEach(k => {
+    const el = document.getElementById('gt-' + k);
+    if (!el) return;
+    el.className = 'gear-tab' + (k === t ? ' active-' + k : '');
+  });
+  renderQueue();
+}
+
+// ── AUTH ──────────────────────────────────────────────────────
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+function login(){
+  const pw = document.getElementById('pw-input').value;
+  const errEl = document.getElementById('login-error');
+  if(pw === currentPassword){
+    errEl.style.display='none';
+    showScreen('screen-queue');
+    document.getElementById('logout-btn').style.display='block';
+    loadQueue();
+  } else {
+    errEl.style.display='block';
+  }
+}
+document.addEventListener('DOMContentLoaded',()=>{
+  const inp = document.getElementById('pw-input');
+  if(inp) inp.addEventListener('keydown',e=>{if(e.key==='Enter')login();});
+  const hs = document.getElementById('history-search-email');
+  if(hs) hs.addEventListener('keydown',e=>{if(e.key==='Enter')searchHistory();});
+});
+
+function logout(){
+  document.getElementById('logout-btn').style.display='none';
+  document.getElementById('pw-input').value='';
+  showScreen('screen-login');
+}
+
+async function testConnection(){
+  const el = document.getElementById('conn-result');
+  el.style.display='block'; el.style.color='var(--text-muted)'; el.textContent='Testing...';
+  try {
+    const res = await fetch(SCRIPT_URL+'?action=getPending',{method:'GET',redirect:'follow',mode:'cors'});
+    if(!res.ok) throw new Error('HTTP '+res.status);
+    JSON.parse(await res.text());
+    el.style.color='var(--green)'; el.textContent='✅ Connected!';
+  } catch(e){
+    el.style.color='var(--red)'; el.textContent='❌ '+e.message;
+  }
+}
+
+// ── TABS ──────────────────────────────────────────────────────
+function switchTab(tab){
+  ['queue','svchistory','history','settings'].forEach(t=>{
+    document.getElementById('tab-btn-'+t).classList.toggle('active', t===tab);
+    document.getElementById('tab-'+t).style.display = t===tab?'block':'none';
+  });
+  if(tab==='svchistory' && allCompletedOrders.length===0) loadServiceHistory();
+}
+
+// ── QUEUE FILTER ──────────────────────────────────────────────
+function setQueueFilter(f){
+  activeQueueFilter = f;
+  ['ALL','PENDING','IN_PROGRESS','GEAR_READY'].forEach(x=>{
+    document.getElementById('qf-'+x).classList.toggle('active',x===f);
+  });
+  renderQueue();
+}
+
+// ── LOAD ──────────────────────────────────────────────────────
+async function loadQueue(){
+  const listEl = document.getElementById('queue-list');
+  listEl.innerHTML='<div style="text-align:center;padding:40px;color:var(--text-muted);">Loading...</div>';
+  try {
+    const res = await fetch(SCRIPT_URL+'?action=getPending',{method:'GET',redirect:'follow',mode:'cors'});
+    if(!res.ok) throw new Error('HTTP '+res.status);
+    const text = await res.text();
+    let data;
+    try{ data=JSON.parse(text); } catch(pe){ throw new Error('Bad JSON: '+text.substring(0,120)); }
+    pendingOrders = (data.pending||[]).map(o => {
+      // Parse persisted activity log from sheet
+      if (o.activity_log) {
+        try { o._activity_log = JSON.parse(o.activity_log); }
+        catch(e) { o._activity_log = []; }
+      } else { o._activity_log = []; }
+      return o;
+    });
+    updateDashboard();
+    renderQueue();
+  } catch(e){
+    listEl.innerHTML='<div style="text-align:center;padding:40px;color:var(--red);">⚠️ Failed to load queue.<br><small style="color:var(--text-muted);">'+e.message+'</small><br><br><button onclick="loadQueue()" style="margin-top:8px;padding:10px 20px;background:var(--blue);color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:14px;">Retry</button></div>';
+  }
+}
+
+// ── DASHBOARD ─────────────────────────────────────────────────
+function updateDashboard(){
+  let total=0,pending=0,progress=0,ready=0;
+  pendingOrders.forEach(o=>{
+    total++;
+    const s=(o.status||'PENDING').toUpperCase();
+    if(s==='PENDING') pending++;
+    if(s==='IN_PROGRESS') progress++;
+    if(s==='GEAR_READY') ready++;
+  });
+  document.getElementById('ds-total').textContent=total;
+  document.getElementById('ds-pending').textContent=pending;
+  document.getElementById('ds-progress').textContent=progress;
+  document.getElementById('ds-ready').textContent=ready;
+  document.getElementById('queue-count').textContent=total+' order'+(total!==1?'s':'');
+}
+
+// ── RENDER QUEUE ──────────────────────────────────────────────
+function renderQueue(){
+  const listEl = document.getElementById('queue-list');
+
+  let filtered = pendingOrders.filter(o => {
+    const status = (o.status || 'PENDING').toUpperCase();
+    if (activeQueueFilter !== 'ALL' && status !== activeQueueFilter) return false;
+    if (activeGearType === 'fj' && o.gear_type !== 'fun-jumper') return false;
+    if (activeGearType === 'dz' && o.gear_type === 'fun-jumper') return false;
+    return true;
+  });
+
+  if (filtered.length === 0) {
+    listEl.innerHTML = '<div class="queue-empty"><div class="icon">✅</div><p>' + (activeQueueFilter === 'ALL' ? 'No active service requests.' : 'No orders with this status.') + '</p></div>';
+    return;
+  }
+
+  listEl.innerHTML = '';
+  filtered.forEach((order, fi) => {
+    const realIdx = pendingOrders.indexOf(order);
+    const card = document.createElement('div');
+    const status = (order.status || 'PENDING').toUpperCase();
+    card.className = 'order-card status-' + status;
+    card.id = 'order-' + realIdx;
+
+    const submittedDate = order.submitted_at ? new Date(order.submitted_at).toLocaleDateString() : 'Unknown';
+    const svcs = (order.services || '').split(' | ').filter(Boolean);
+    const isFJ = order.gear_type === 'fun-jumper';
+
+    const rigLine = isFJ
+      ? (order.customer_name || 'Fun Jumper')
+      : ((order.rig_num ? 'RIG #' + order.rig_num + ' — ' : '') + (order.rig_make || ''));
+    const metaLine = isFJ
+      ? 'S/N: ' + (order.rig_sn || '') + ' · ' + (order.rig_make || '') + ' · 📞 ' + (order.customer_phone || '')
+      : 'S/N: ' + (order.rig_sn || '') + ' · ' + (order.gear_type === 'tandem' ? 'Tandem' : 'Student');
+
+    const statusBadge = '<span class="status-badge sb-' + status + '">' + statusLabel(status) + '</span>';
+    const rushBadge = order.rush && order.rush !== 'Standard Turnaround'
+      ? '<span style="background:var(--red-dim);border:1px solid rgba(239,68,68,0.3);color:var(--red);font-size:10px;font-weight:800;padding:2px 8px;border-radius:20px;">⚡ RUSH</span>'
+      : '';
+    const typeBadge = isFJ
+      ? '<span style="background:var(--sky-dim);border:1px solid rgba(56,189,248,0.3);color:var(--sky);font-size:10px;font-weight:800;padding:2px 8px;border-radius:20px;">🪂 FUN JUMPER</span>'
+      : '<span style="background:var(--red-dim);border:1px solid rgba(239,68,68,0.3);color:var(--red);font-size:10px;font-weight:800;padding:2px 8px;border-radius:20px;">🏫 DZ GEAR</span>';
+
+    const { total, hasVaries } = calcTotal(order.services);
+
+    // Build services display (view-only list)
+    const svcsHtml = svcs.length > 0
+      ? '<ul class="svc-list-view">' + svcs.map(s => {
+          const found = SERVICES.find(sv => sv.name === s);
+          return '<li><span>' + s + '</span><span style="color:var(--text-muted);font-size:12px;">' + (found ? found.price : '') + '</span></li>';
+        }).join('') + '</ul>'
+      : '<span style="color:var(--text-muted);font-size:13px;">No services selected</span>';
+
+    // PENDING: show sign-in button to start service
+    // IN_PROGRESS / GEAR_READY: show complete section
+    const isPending = status === 'PENDING';
+
+    card.innerHTML = `
+      <div class="order-card-header" onclick="toggleOrder(${realIdx})">
+        <div>
+          <div class="order-wo">
+            ${order.work_order || 'N/A'}
+            ${statusBadge}
+            ${typeBadge}
+            ${rushBadge}
+          </div>
+          <div class="order-rig">${rigLine}</div>
+          <div class="order-meta">${metaLine}</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px;">
+          <div class="order-time">${submittedDate}</div>
+          <div class="order-expand">▾</div>
+        </div>
+      </div>
+      <div class="order-body">
+
+        ${isFJ ? `
+        <div class="order-grid">
+          <div class="info-block">
+            <div class="info-title">Customer Info</div>
+            <div class="info-content">
+              ${order.customer_name || ''}<br>${order.customer_phone || ''} · ${order.customer_email || ''}
+              ${order.completion_date ? '<br>Requested by: ' + order.completion_date : ''}
+              ${order.mailing_address ? '<br>' + order.mailing_address : ''}
+              ${order.rush && order.rush !== 'Standard' ? '<br><strong>Rush: </strong>' + order.rush : ''}
+            </div>
+          </div>
+          <div class="info-block">
+            <div class="info-title">Rig Info</div>
+            <div class="info-content">
+              Container: ${order.rig_make || ''} ${order.con_model || ''} S/N: ${order.rig_sn || ''}
+              ${order.main_make ? '<br>Main: ' + order.main_make + ' ' + (order.main_model || '') + ' ' + (order.main_size || '') + 'sqft S/N: ' + (order.main_sn || '') : ''}
+              ${order.res_make ? '<br>Reserve: ' + order.res_make + ' ' + (order.res_model || '') + ' ' + (order.res_size || '') + 'sqft S/N: ' + (order.res_sn || '') + (order.res_repack_due ? ' · Due: ' + new Date(order.res_repack_due).toLocaleDateString() : '') : ''}
+              ${order.aad_make ? '<br>AAD: ' + order.aad_make + ' S/N: ' + (order.aad_sn || '') : ''}
+              ${order.known_damage === 'yes' ? '<br>⚠ <strong>Known damage:</strong> ' + (order.damage_desc || '') : ''}
+            </div>
+          </div>
+        </div>` : ''}
+
+        <!-- SERVICES REQUESTED (view only) -->
+        <div class="info-block" style="margin-bottom:10px;">
+          <div class="info-title">Services Requested (${svcs.length}) — Est. $${total.toFixed(2)}${hasVaries ? ' +varies' : ''}</div>
+          ${svcsHtml}
+        </div>
+
+        ${order.extra_notes ? `
+        <div class="info-block" style="margin-bottom:10px;">
+          <div class="info-title">Additional Notes</div>
+          <div class="info-content" style="font-size:13px;">${order.extra_notes}</div>
+        </div>` : ''}
+
+        <!-- ADD SERVICES DROPDOWN -->
+        <button class="add-svc-toggle" onclick="toggleAddSvc(this)">➕ Add / Edit Services ▾</button>
+        <div class="add-svc-panel">
+          <div class="info-block">
+            <div class="svc-edit-grid" id="svc-grid-${realIdx}"></div>
+          </div>
+          <!-- NOTES -->
+          <div style="margin-top:8px;">
+            <div style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-muted);margin-bottom:5px;">📝 Rigger Notes</div>
+            <textarea id="rigger-notes-${realIdx}" placeholder="Notes on this service order..." style="width:100%;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;padding:10px 12px;min-height:64px;resize:vertical;"></textarea>
+          </div>
+          <!-- EXTRA CHARGE / DISCOUNT -->
+          <div class="charge-row" style="margin-top:8px;">
+            <div class="charge-field">
+              <label>➕ Extra Charge ($)</label>
+              <input type="number" id="extra-charge-${realIdx}" placeholder="0.00" min="0" step="0.01">
+            </div>
+            <div class="charge-field">
+              <label>➖ Discount ($)</label>
+              <input type="number" id="discount-${realIdx}" placeholder="0.00" min="0" step="0.01">
+            </div>
+          </div>
+        </div>
+
+        <!-- RIGGER ACTIVITY LOG — always rendered so JS can update it -->
+        <div class="info-block" style="margin-top:10px;${(order._activity_log && order._activity_log.length) ? '' : 'display:none;'}" id="activity-log-wrap-${realIdx}">
+          <div class="info-title">🔐 Rigger Activity Log</div>
+          <div id="activity-log-${realIdx}">${buildActivityLog(order._activity_log)}</div>
+        </div>
+        ${!(order._activity_log && order._activity_log.length) ? `<div id="activity-log-${realIdx}" style="display:none;"></div>` : ''}
+
+        <!-- PENDING: Rigger must sign in to start -->
+        ${isPending ? `
+        <div style="background:var(--yellow-dim);border:1px solid rgba(245,158,11,0.3);border-radius:10px;padding:14px;margin-top:12px;">
+          <div style="font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--yellow);margin-bottom:10px;">🔐 Rigger Sign-In Required to Start</div>
+          <div style="font-size:12px;color:var(--text-dim);margin-bottom:12px;">Enter your name and seal to begin work. The order will automatically move to In Progress.</div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <button class="btn btn-sm" style="background:var(--blue);color:#fff;flex:1;" onclick="openSigninModal(${realIdx})">▶ Start This Service</button>
+            <button class="btn btn-danger btn-sm" onclick="deleteOrder(${realIdx})">✕ Delete</button>
+            <button class="btn btn-sm" style="background:var(--surface2);border:1px solid var(--border);color:var(--text-dim);" onclick="printWorkOrder(${realIdx})">🖨 Print</button>
+          </div>
+        </div>` : `
+        <!-- IN PROGRESS / GEAR READY: Full complete section -->
+        <div style="margin-bottom:10px;margin-top:12px;">
+          <div style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-muted);margin-bottom:8px;">Update Status</div>
+          <div class="status-row">
+            ${['IN_PROGRESS','GEAR_READY'].map(s => `
+              <button class="status-opt${status===s?' sel-'+s:''}" onclick="changeStatus(${realIdx},'${s}')" id="st-${realIdx}-${s}">
+                ${statusLabel(s)}
+              </button>`).join('')}
+          </div>
+        </div>
+        <div class="complete-section">
+          <div class="complete-title">✓ Mark as Completed</div>
+          <div class="complete-row">
+            <div class="complete-field">
+              <label>Rigger Name *</label>
+              <input type="text" id="rigger-${realIdx}" placeholder="Your name" value="${order._rigger_name || ''}">
+            </div>
+            <div class="complete-field">
+              <label>Rigger Symbol *</label>
+              <input type="text" id="rigger-symbol-${realIdx}" placeholder="e.g. T.R. or ✦" value="${order._rigger_symbol || ''}">
+            </div>
+            <div class="complete-field" style="grid-column:1/-1;">
+              <label>Internal Notes (optional)</label>
+              <textarea id="comp-notes-${realIdx}" placeholder="Any final notes, observations, or changes to service..."></textarea>
+            </div>
+          </div>
+          <div class="error-msg" id="comp-error-${realIdx}" style="margin-top:8px;"></div>
+          <div class="complete-actions">
+            <button class="btn btn-green btn-sm" id="complete-btn-${realIdx}" onclick="addRipple(event,this);markComplete(${realIdx})">
+              <span class="btn-text">✓ Mark Complete & Log to Sheet</span>
+              <span class="btn-spinner"><span class="spinner-ring"></span> Saving…</span>
+            </button>
+            <button class="btn btn-danger btn-sm" onclick="deleteOrder(${realIdx})">✕ Delete</button>
+            <button class="btn btn-sm" style="background:var(--surface2);border:1px solid var(--border);color:var(--text-dim);" onclick="printWorkOrder(${realIdx})">🖨 Print</button>
+          </div>
+        </div>`}
+      </div>`;
+
+    listEl.appendChild(card);
+
+    // Inject service checkboxes into add/edit panel
+    const svcGrid = document.getElementById('svc-grid-' + realIdx);
+    if (svcGrid) {
+      SERVICE_GROUPS.forEach(group => {
+        const hdr = document.createElement('div');
+        hdr.style.cssText = 'grid-column:1/-1;font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-muted);padding:8px 2px 4px;border-bottom:1px solid var(--border);margin-bottom:2px;';
+        hdr.textContent = group.group;
+        svcGrid.appendChild(hdr);
+
+        group.items.forEach(svc => {
+          const checked  = svcs.includes(svc.name);
+          const isVaries = svc.price === 'Varies' || svc.price.includes('/hr');
+          const safeKey  = svc.name.replace(/[^a-zA-Z0-9]/g, '_');
+
+          // Wrapper — full width so the expand row can sit below
+          const wrap = document.createElement('div');
+          wrap.style.cssText = 'grid-column:1/-1;';
+
+          const label = document.createElement('label');
+          label.className = 'svc-item' + (checked ? ' checked' : '');
+          label.style.width = '100%';
+          label.innerHTML =
+            '<input type="checkbox" value="' + svc.name + '"' + (checked ? ' checked' : '') + '>' +
+            '<div class="svc-check"></div>' +
+            '<span class="svc-label" style="flex:1;">' + svc.name +
+            '<span class="svc-price">' + svc.price + '</span></span>' +
+            (isVaries ? '<span style="font-size:10px;color:var(--yellow);margin-left:6px;">$ ▾</span>' : '');
+
+          // Varies expand row — price + note
+          let expandRow = null;
+          if (isVaries) {
+            expandRow = document.createElement('div');
+            expandRow.id = 'varies-expand-' + realIdx + '-' + safeKey;
+            expandRow.style.cssText = 'display:' + (checked ? 'grid' : 'none') + ';grid-template-columns:120px 1fr;gap:6px;padding:6px 10px 8px;background:var(--surface2);border:1px solid rgba(245,158,11,0.2);border-top:none;border-radius:0 0 8px 8px;margin-top:-4px;';
+            expandRow.innerHTML =
+              '<div><label style="font-size:10px;font-weight:600;color:var(--yellow);display:block;margin-bottom:3px;">Price ($)</label>' +
+              '<input type="number" id="varies-price-' + realIdx + '-' + safeKey + '" placeholder="0.00" min="0" step="0.01" style="width:100%;background:var(--bg);border:1px solid rgba(245,158,11,0.4);border-radius:6px;color:var(--text);font-family:\'JetBrains Mono\',monospace;font-size:12px;padding:5px 8px;min-height:34px;" onclick="event.stopPropagation()"></div>' +
+              '<div><label style="font-size:10px;font-weight:600;color:var(--text-muted);display:block;margin-bottom:3px;">Note (optional)</label>' +
+              '<input type="text" id="varies-note-' + realIdx + '-' + safeKey + '" placeholder="e.g. 2hrs, battery replaced…" style="width:100%;background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);font-family:\'DM Sans\',sans-serif;font-size:12px;padding:5px 8px;min-height:34px;" onclick="event.stopPropagation()"></div>';
+          }
+
+          label.addEventListener('click', function(e) {
+            if (e.target.tagName === 'INPUT' && e.target.type !== 'checkbox') return;
+            const cb = label.querySelector('input[type="checkbox"]');
+            cb.checked = !cb.checked;
+            label.classList.toggle('checked', cb.checked);
+            if (expandRow) expandRow.style.display = cb.checked ? 'grid' : 'none';
+          });
+
+          wrap.appendChild(label);
+          if (expandRow) wrap.appendChild(expandRow);
+          svcGrid.appendChild(wrap);
+        });
+      });
+    }
+  });
+}
+
+function toggleAddSvc(btn) {
+  const panel = btn.nextElementSibling;
+  panel.classList.toggle('open');
+  btn.textContent = panel.classList.contains('open') ? '➖ Hide Services ▴' : '➕ Add / Edit Services ▾';
+}
+
+
+function statusLabel(s){
+  if(s==='IN_PROGRESS') return '🔧 In Progress';
+  if(s==='GEAR_READY')  return '✅ Gear Ready';
+  return '📥 Pending';
+}
+
+function toggleOrder(idx){
+  const card = document.getElementById('order-'+idx);
+  const isExpanding = !card.classList.contains('expanded');
+  card.classList.toggle('expanded');
+
+  // If expanding an IN_PROGRESS card, prompt for rigger re-access
+  if (isExpanding) {
+    const order = pendingOrders[idx];
+    const status = (order.status || 'PENDING').toUpperCase();
+    if (status === 'IN_PROGRESS') {
+      openReaccessModal(idx);
+    }
+  }
+}
+
+function toggleSvc(label){
+  const cb=label.querySelector('input');
+  cb.checked=!cb.checked;
+  label.classList.toggle('checked',cb.checked);
+}
+
+
+// ── RIGGER SIGN-IN (start service) ────────────────────────────
+function openSigninModal(idx) {
+  document.getElementById('signin-order-idx').value = idx;
+  document.getElementById('signin-name').value = '';
+  document.getElementById('signin-symbol').value = '';
+  document.getElementById('signin-error').style.display = 'none';
+  document.getElementById('signin-modal').classList.add('open');
+  setTimeout(() => document.getElementById('signin-name').focus(), 100);
+}
+
+function closeSigninModal() {
+  document.getElementById('signin-modal').classList.remove('open');
+}
+
+// ── ACTIVITY LOG HELPER ──────────────────────────────────────
+async function logActivity(order, name, symbol, action, newStatus) {
+  if (!order._activity_log) order._activity_log = [];
+  order._activity_log.push({ name, symbol, action, timestamp: new Date().toLocaleDateString() });
+  const saveStatus = newStatus || order.status;
+  // Single save: status + activity log together so neither overwrites the other
+  try {
+    await fetch(SCRIPT_URL, {
+      method: 'POST', mode: 'no-cors', headers: {'Content-Type':'text/plain'},
+      body: JSON.stringify({
+        action: 'updateStatus',
+        row: order._row,
+        status: saveStatus,
+        activity_log: JSON.stringify(order._activity_log),
+      })
+    });
+  } catch(e) { console.warn('logActivity save failed', e); }
+}
+
+async function confirmStartService() {
+  const idx    = parseInt(document.getElementById('signin-order-idx').value);
+  const name   = document.getElementById('signin-name').value.trim();
+  const symbol = document.getElementById('signin-symbol').value.trim();
+  const errEl  = document.getElementById('signin-error');
+  errEl.style.display = 'none';
+  if (!name)   { errEl.textContent = 'Please enter your name.';        errEl.style.display = 'block'; return; }
+  if (!symbol) { errEl.textContent = 'Please enter your rigger seal.'; errEl.style.display = 'block'; return; }
+
+  const order = pendingOrders[idx];
+  order._rigger_name   = name;
+  order._rigger_symbol = symbol;
+
+  // Log activity AND set status to IN_PROGRESS in one single sheet write
+  await logActivity(order, name, symbol, 'Started Service', 'IN_PROGRESS');
+  order.status = 'IN_PROGRESS';
+
+  closeSigninModal();
+  // Update UI only — no second fetch needed
+  const card = document.getElementById('order-' + idx);
+  if (card) {
+    card.className = 'order-card expanded status-IN_PROGRESS';
+    const badge = card.querySelector('.status-badge');
+    if (badge) { badge.className = 'status-badge sb-IN_PROGRESS'; badge.textContent = statusLabel('IN_PROGRESS'); }
+  }
+  updateDashboard();
+  renderQueue();
+}
+
+function openReaccessModal(idx) {
+  document.getElementById('reaccess-order-idx').value = idx;
+  document.getElementById('reaccess-name').value = pendingOrders[idx]._rigger_name || '';
+  document.getElementById('reaccess-symbol').value = pendingOrders[idx]._rigger_symbol || '';
+  document.getElementById('reaccess-error').style.display = 'none';
+  document.getElementById('reaccess-modal').classList.add('open');
+  setTimeout(() => document.getElementById('reaccess-name').focus(), 100);
+}
+
+function closeReaccessModal() {
+  document.getElementById('reaccess-modal').classList.remove('open');
+}
+
+async function confirmReaccess() {
+  const idx    = parseInt(document.getElementById('reaccess-order-idx').value);
+  const name   = document.getElementById('reaccess-name').value.trim();
+  const symbol = document.getElementById('reaccess-symbol').value.trim();
+  const errEl  = document.getElementById('reaccess-error');
+  errEl.style.display = 'none';
+  if (!name)   { errEl.textContent = 'Please enter your name.';        errEl.style.display = 'block'; return; }
+  if (!symbol) { errEl.textContent = 'Please enter your rigger seal.'; errEl.style.display = 'block'; return; }
+
+  const order = pendingOrders[idx];
+  order._rigger_name   = name;
+  order._rigger_symbol = symbol;
+
+  await logActivity(order, name, symbol, 'Accessed Service');
+  closeReaccessModal();
+
+  // Re-render just the activity log section
+  const logEl = document.getElementById('activity-log-' + idx);
+  if (logEl) logEl.innerHTML = buildActivityLog(order._activity_log);
+  // Show the wrapper if it was hidden
+  const wrapEl = document.getElementById('activity-log-wrap-' + idx);
+  if (wrapEl) wrapEl.style.display = 'block';
+
+  // Pre-fill rigger fields
+  const nameEl   = document.getElementById('rigger-' + idx);
+  const symbolEl = document.getElementById('rigger-symbol-' + idx);
+  if (nameEl)   nameEl.value   = name;
+  if (symbolEl) symbolEl.value = symbol;
+}
+
+function buildActivityLog(log) {
+  if (!log || !log.length) return '';
+  return log.map(e =>
+    `<div style="display:flex;justify-content:space-between;align-items:flex-start;padding:6px 0;border-bottom:1px solid var(--border);font-size:12px;gap:8px;">
+      <div>
+        <span style="font-weight:700;color:var(--text);">${e.name}</span>
+        <span style="color:var(--text-muted);margin:0 6px;">·</span>
+        <span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--accent);">${e.symbol}</span>
+        <span style="background:var(--blue-dim);color:var(--accent);border-radius:10px;padding:1px 7px;font-size:10px;font-weight:700;margin-left:6px;">${e.action}</span>
+      </div>
+      <div style="color:var(--text-muted);white-space:nowrap;font-size:11px;">${e.timestamp}</div>
+    </div>`
+  ).join('');
+}
+
+// ── CHANGE STATUS ─────────────────────────────────────────────
+async function changeStatus(idx, newStatus){
+  const order = pendingOrders[idx];
+  // Update UI optimistically
+  order.status = newStatus;
+  const card = document.getElementById('order-'+idx);
+  if(card){
+    card.className = 'order-card expanded status-'+newStatus;
+    ['PENDING','IN_PROGRESS','GEAR_READY'].forEach(s=>{
+      const btn = document.getElementById('st-'+idx+'-'+s);
+      if(btn) btn.className='status-opt'+(s===newStatus?' sel-'+s:'');
+    });
+    // update badge in header
+    const badge = card.querySelector('.status-badge');
+    if(badge){ badge.className='status-badge sb-'+newStatus; badge.textContent=statusLabel(newStatus); }
+  }
+  updateDashboard();
+  try {
+    await fetch(SCRIPT_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain'},
+      body:JSON.stringify({action:'updateStatus',row:order._row,status:newStatus})});
+  } catch(e){ console.warn('updateStatus failed',e); }
+}
+
+// ── RIPPLE EFFECT ─────────────────────────────────────────────
+function addRipple(e, btn) {
+  const circle = document.createElement('span');
+  const diameter = Math.max(btn.clientWidth, btn.clientHeight);
+  const radius = diameter / 2;
+  const rect = btn.getBoundingClientRect();
+  circle.style.cssText = `width:${diameter}px;height:${diameter}px;left:${e.clientX-rect.left-radius}px;top:${e.clientY-rect.top-radius}px`;
+  circle.className = 'ripple';
+  btn.querySelector('.ripple')?.remove();
+  btn.appendChild(circle);
+}
+
+// ── COMPLETE ORDER ─────────────────────────────────────────────
+let pendingCompleteIdx = null;
+
+function markComplete(idx){
+  const rigger = document.getElementById('rigger-'+idx).value.trim();
+  const symbol = document.getElementById('rigger-symbol-'+idx).value.trim();
+  const errEl = document.getElementById('comp-error-'+idx);
+  errEl.style.display='none';
+  if(!rigger){ errEl.textContent='Please enter the rigger name.'; errEl.style.display='block'; return; }
+  if(!symbol){ errEl.textContent='Please enter your rigger symbol.'; errEl.style.display='block'; return; }
+  pendingCompleteIdx=idx;
+  document.getElementById('signoff-modal').classList.add('open');
+}
+
+function closeSignoffModal(){
+  document.getElementById('signoff-modal').classList.remove('open');
+  pendingCompleteIdx=null;
+}
+
+async function confirmAndComplete(){
+  document.getElementById('signoff-modal').classList.remove('open');
+  const idx=pendingCompleteIdx; pendingCompleteIdx=null;
+  await doMarkComplete(idx);
+}
+
+async function doMarkComplete(idx){
+  const order=pendingOrders[idx];
+  const rigger=document.getElementById('rigger-'+idx).value.trim();
+  const symbol=document.getElementById('rigger-symbol-'+idx).value.trim();
+  const compNotes=document.getElementById('comp-notes-'+idx).value.trim();
+  const extraCharge = parseFloat(document.getElementById('extra-charge-'+idx)?.value) || 0;
+  const discount    = parseFloat(document.getElementById('discount-'+idx)?.value)    || 0;
+  const riggerNotes = (document.getElementById('rigger-notes-'+idx)?.value || '').trim();
+  const errEl=document.getElementById('comp-error-'+idx);
+  errEl.style.display='none';
+  if(!rigger){ errEl.textContent='Please enter the rigger name.'; errEl.style.display='block'; return; }
+  if(!symbol){ errEl.textContent='Please enter your rigger symbol.'; errEl.style.display='block'; return; }
+
+  const svcGrid=document.getElementById('svc-grid-'+idx);
+  const updatedServices = svcGrid
+    ? [...svcGrid.querySelectorAll('input[type="checkbox"]:checked')].map(c=>c.value).join(' | ')
+    : order.services;
+
+  // Collect manual price overrides and notes for Varies/hr services
+  const priceOverrides = {};
+  const variesNotes = [];
+  if (svcGrid) {
+    SERVICES.forEach(svc => {
+      if (svc.price !== 'Varies' && !svc.price.includes('/hr')) return;
+      const safeKey = svc.name.replace(/[^a-zA-Z0-9]/g, '_');
+      const priceEl = document.getElementById('varies-price-' + idx + '-' + safeKey);
+      const noteEl  = document.getElementById('varies-note-'  + idx + '-' + safeKey);
+      const val = priceEl ? parseFloat(priceEl.value) : 0;
+      if (val > 0) priceOverrides[svc.name] = val;
+      const note = noteEl ? noteEl.value.trim() : '';
+      if (note) variesNotes.push(svc.name + ': ' + note);
+    });
+  }
+
+  const riggerFull = rigger + ' (' + symbol + ')';
+
+  // Build notes: rigger notes + varies service notes + charge/discount
+  let finalNotes = riggerNotes;
+  if (variesNotes.length)  finalNotes += (finalNotes ? '\n' : '') + variesNotes.join('\n');
+  if (extraCharge > 0)     finalNotes += (finalNotes ? '\n' : '') + 'Extra charge: +$' + extraCharge.toFixed(2);
+  if (discount > 0)        finalNotes += (finalNotes ? '\n' : '') + 'Discount applied: -$' + discount.toFixed(2);
+
+  const btn = document.getElementById('complete-btn-'+idx);
+  if (btn) btn.classList.add('submitting');
+
+  const payload={
+    action:'completeOrder',
+    work_order:order.work_order,
+    rigger:riggerFull,
+    services:updatedServices,
+    completion_notes:finalNotes,
+    extra_charge: extraCharge || '',
+    discount: discount || '',
+    price_overrides: Object.keys(priceOverrides).length ? JSON.stringify(priceOverrides) : '',
+    row:order._row
+  };
+  try {
+    await fetch(SCRIPT_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain'},body:JSON.stringify(payload)});
+    pendingOrders.splice(idx,1);
+    updateDashboard();
+    renderQueue();
+  } catch(e){
+    if (btn) btn.classList.remove('submitting');
+    errEl.textContent='Error completing order. Please try again.'; errEl.style.display='block';
+  }
+}
+
+async function deleteOrder(idx){
+  if(!confirm('Delete this service request? This cannot be undone.')) return;
+  const order=pendingOrders[idx];
+  try {
+    await fetch(SCRIPT_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain'},body:JSON.stringify({action:'deleteOrder',work_order:order.work_order,row:order._row})});
+    pendingOrders.splice(idx,1);
+    updateDashboard();
+    renderQueue();
+  } catch(e){ alert('Error deleting order.'); }
+}
+
+// ── SERVICE HISTORY ───────────────────────────────────────────
+let allCompletedOrders = [];
+
+const SVC_PRICES = {
+  'Reserve Inspection & Repack (Sport)': 115,
+  'Inspect Main or Reserve': 25,
+  'Inspect Harness / Container': 20,
+  "Inspect & Pack Pilot's Emergency Rig": 120,
+  'Pack Main Sport': 15,
+  'Install AAD': 10,
+  'Reserve Safety Stow Replacement': 12,
+  'Replace Lower Steering Lines': 40,
+  'Replace Steering Lines Toggles to Cascades': 65,
+  'Re-line Sport': 130,
+  'Slinks': 35,
+  'Assembly, Inspection & Pack Reserve (Sport)': 140,
+  'Assembly, Inspection & Pack Main': 75,
+  'Disassemble Main or Reserve': 10,
+  'Install Slider Bumpers': 25,
+  'Fabric Tensile Test': 20,
+  'Kill Line Replacement': 25,
+  'BOC Replacement': 100,
+  'Tack Slinks / Links': 5,
+  'Wash Rig': 65,
+  '2–5 Day Rush +$40': 40,
+  'Same / Next Day Rush +$65': 65,
+};
+
+function printWorkOrder(idx) {
+  const order = pendingOrders[idx];
+  if (!order) return;
+  const isFJ = order.gear_type === 'fun-jumper';
+  const svcs = (order.services || '').split(' | ').filter(Boolean);
+  const { total, hasVaries } = calcTotal(order.services);
+  const date = order.submitted_at ? new Date(order.submitted_at).toLocaleDateString() : new Date().toLocaleDateString();
+  const rush = order.rush && order.rush !== 'Standard Turnaround' ? order.rush : null;
+
+  const html = `<!DOCTYPE html><html><head><title>Work Order ${order.work_order||''}</title>
+<style>
+  @page { size: 8.5in 11in; margin: 0.6in; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Arial', sans-serif; font-size: 13px; color: #111; background: #fff; }
+  .header { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 3px solid #1a1a2e; padding-bottom: 12px; margin-bottom: 20px; }
+  .dz-name { font-size: 22px; font-weight: 900; letter-spacing: 1px; text-transform: uppercase; color: #1a1a2e; }
+  .dz-sub { font-size: 11px; color: #555; letter-spacing: 1px; text-transform: uppercase; margin-top: 3px; }
+  .wo-box { text-align: right; }
+  .wo-num { font-size: 28px; font-weight: 900; color: #1a1a2e; letter-spacing: 2px; }
+  .wo-date { font-size: 11px; color: #555; margin-top: 4px; }
+  ${rush ? '.rush-banner { background: #fee2e2; border: 2px solid #ef4444; border-radius: 6px; padding: 8px 14px; font-weight: 900; font-size: 14px; color: #b91c1c; text-align: center; margin-bottom: 16px; letter-spacing: 1px; }' : ''}
+  .section { margin-bottom: 18px; }
+  .section-title { font-size: 10px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: #555; border-bottom: 1px solid #ddd; padding-bottom: 4px; margin-bottom: 10px; }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .field { margin-bottom: 8px; }
+  .field label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: #777; display: block; margin-bottom: 2px; }
+  .field .val { font-size: 13px; color: #111; font-weight: 500; }
+  .svc-list { list-style: none; }
+  .svc-list li { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px dashed #eee; font-size: 13px; }
+  .svc-list li:last-child { border-bottom: none; }
+  .svc-price { font-weight: 700; color: #1a1a2e; }
+  .total-row { display: flex; justify-content: space-between; font-size: 15px; font-weight: 900; border-top: 2px solid #1a1a2e; padding-top: 8px; margin-top: 6px; }
+  .damage-warn { background: #fff7ed; border: 1px solid #f59e0b; border-radius: 6px; padding: 8px 12px; font-size: 12px; color: #92400e; margin-top: 10px; }
+  .signoff { margin-top: 28px; border-top: 2px solid #1a1a2e; padding-top: 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
+  .signoff-field { border-bottom: 1px solid #aaa; padding-bottom: 4px; min-height: 36px; }
+  .signoff-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: #777; margin-top: 6px; }
+  .leave-with { background: #f0f4ff; border: 1px solid #c7d2fe; border-radius: 6px; padding: 10px 14px; text-align: center; font-size: 11px; color: #3730a3; font-weight: 600; letter-spacing: 0.5px; margin-top: 20px; }
+</style></head><body>
+
+<div class="header">
+  <div>
+    <div class="dz-name">Skydive Sussex</div>
+    <div class="dz-sub">Rigging Department — Service Request</div>
+  </div>
+  <div class="wo-box">
+    <div class="wo-num">${order.work_order || 'N/A'}</div>
+    <div class="wo-date">Submitted: ${date}</div>
+  </div>
+</div>
+
+${rush ? `<div class="rush-banner">⚡ RUSH — ${rush}</div>` : ''}
+
+<div class="grid2">
+  <div class="section">
+    <div class="section-title">${isFJ ? 'Customer Info' : 'DZ Gear Info'}</div>
+    ${isFJ ? `
+    <div class="field"><label>Name</label><div class="val">${order.customer_name || '—'}</div></div>
+    <div class="field"><label>Phone</label><div class="val">${order.customer_phone || '—'}</div></div>
+    <div class="field"><label>Email</label><div class="val">${order.customer_email || '—'}</div></div>
+    ${order.mailing_address ? `<div class="field"><label>Address</label><div class="val">${order.mailing_address}</div></div>` : ''}
+    ${order.completion_date ? `<div class="field"><label>Needed By</label><div class="val">${order.completion_date}</div></div>` : ''}
+    ` : `
+    <div class="field"><label>Rig #</label><div class="val">${order.rig_num || '—'}</div></div>
+    <div class="field"><label>Type</label><div class="val">${order.gear_type === 'tandem' ? 'Tandem' : 'Student'}</div></div>
+    `}
+  </div>
+
+  <div class="section">
+    <div class="section-title">Gear / Container</div>
+    <div class="field"><label>Container</label><div class="val">${[order.rig_make, order.con_model].filter(Boolean).join(' ') || '—'}</div></div>
+    <div class="field"><label>Container S/N</label><div class="val">${order.rig_sn || '—'}</div></div>
+    ${order.main_make ? `<div class="field"><label>Main</label><div class="val">${order.main_make} ${order.main_model||''} ${order.main_size||''}sqft · S/N: ${order.main_sn||'—'}</div></div>` : ''}
+    ${order.res_make ? `<div class="field"><label>Reserve</label><div class="val">${order.res_make} ${order.res_model||''} ${order.res_size||''}sqft · S/N: ${order.res_sn||'—'}${order.res_repack_due ? ' · Due: '+new Date(order.res_repack_due).toLocaleDateString() : ''}</div></div>` : ''}
+    ${order.aad_make ? `<div class="field"><label>AAD</label><div class="val">${order.aad_make} · S/N: ${order.aad_sn||'—'}</div></div>` : ''}
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-title">Services Requested</div>
+  <ul class="svc-list">
+    ${svcs.map(s => {
+      const found = (typeof SERVICES !== 'undefined' ? SERVICES : []).find(sv => sv.name === s);
+      return `<li><span>${s}</span><span class="svc-price">${found ? found.price : ''}</span></li>`;
+    }).join('') || '<li><span style="color:#999">No services selected</span></li>'}
+  </ul>
+  <div class="total-row">
+    <span>Estimated Total</span>
+    <span>$${total.toFixed(2)}${hasVaries ? ' + varies' : ''}</span>
+  </div>
+</div>
+
+${order.extra_notes ? `
+<div class="section">
+  <div class="section-title">Additional Notes</div>
+  <div style="font-size:13px;color:#333;line-height:1.6;">${order.extra_notes}</div>
+</div>` : ''}
+
+${order.known_damage === 'yes' ? `
+<div class="damage-warn">⚠ <strong>Known Damage:</strong> ${order.damage_desc || 'See notes'}</div>` : ''}
+
+<div class="signoff">
+  <div>
+    <div class="signoff-field"></div>
+    <div class="signoff-label">Rigger Name</div>
+  </div>
+  <div>
+    <div class="signoff-field"></div>
+    <div class="signoff-label">Rigger Seal / Symbol</div>
+  </div>
+  <div>
+    <div class="signoff-field"></div>
+    <div class="signoff-label">Date Completed</div>
+  </div>
+  <div>
+    <div class="signoff-field"></div>
+    <div class="signoff-label">Customer Signature / Pickup</div>
+  </div>
+</div>
+
+<div class="leave-with">📎 Print and leave this slip with the gear</div>
+
+</body></html>`;
+
+  const w = window.open('', '_blank');
+  w.document.write(html);
+  w.document.close();
+  setTimeout(() => { w.print(); }, 500);
+}
+
+function calcTotal(services, priceOverrides, extraCharge, discount) {
+  let total = 0;
+  let hasVaries = false;
+  (services||'').split(' | ').filter(Boolean).forEach(s => {
+    // Check for manual price override first
+    if (priceOverrides && priceOverrides[s] !== undefined) {
+      total += parseFloat(priceOverrides[s]) || 0;
+      return;
+    }
+    const p = SVC_PRICES[s];
+    if (p > 0) total += p;
+    else hasVaries = true;
+  });
+  if (extraCharge) total += parseFloat(extraCharge) || 0;
+  if (discount)    total -= parseFloat(discount)    || 0;
+  return { total, hasVaries };
+}
+
+async function loadServiceHistory() {
+  const listEl = document.getElementById('sh-list');
+  const errEl  = document.getElementById('sh-error');
+  errEl.style.display = 'none';
+  listEl.innerHTML = '<div style="text-align:center;padding:40px;color:var(--text-muted);">Loading…</div>';
+
+  try {
+    const res = await fetch(SCRIPT_URL + '?action=getCompleted', { method:'GET', redirect:'follow', mode:'cors' });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const data = JSON.parse(await res.text());
+    allCompletedOrders = (data.completed || []).sort((a,b) => new Date(b.completed_at) - new Date(a.completed_at));
+    filterServiceHistory();
+  } catch(e) {
+    errEl.textContent = 'Failed to load history: ' + e.message;
+    errEl.style.display = 'block';
+    listEl.innerHTML = '';
+  }
+}
+
+function filterServiceHistory() {
+  const q    = (document.getElementById('sh-search').value || '').toLowerCase();
+  const type = document.getElementById('sh-type-filter').value;
+
+  const filtered = allCompletedOrders.filter(o => {
+    if (type !== 'all' && (o.gear_type || '') !== type) return false;
+    if (!q) return true;
+    return [o.work_order, o.rig_num, o.rig_sn, o.rig_make, o.customer_name, o.rigger]
+      .some(v => v && String(v).toLowerCase().includes(q));
+  });
+
+  const statsEl = document.getElementById('sh-stats');
+  let totalRevenue = 0;
+  filtered.forEach(o => { totalRevenue += calcTotal(o.services).total; });
+  statsEl.textContent = filtered.length + ' completed order' + (filtered.length !== 1 ? 's' : '')
+    + (filtered.length > 0 ? ' · Est. Revenue: $' + totalRevenue.toFixed(2) + (filtered.some(o=>calcTotal(o.services).hasVaries)?' +varies':'') : '');
+
+  renderServiceHistory(filtered);
+}
+
+function renderServiceHistory(orders) {
+  const listEl = document.getElementById('sh-list');
+  if (orders.length === 0) {
+    listEl.innerHTML = '<div class="queue-empty"><div class="icon">📋</div><p>No completed orders found.</p></div>';
+    return;
+  }
+  listEl.innerHTML = '';
+  orders.forEach((o, i) => {
+    const isFJ       = o.gear_type === 'fun-jumper';
+    const rigLine    = isFJ ? (o.customer_name || 'Fun Jumper') : ((o.rig_num ? 'Rig #' + o.rig_num + ' — ' : '') + (o.rig_make || ''));
+    const svcs       = (o.services || '').split(' | ').filter(Boolean);
+    const { total, hasVaries } = calcTotal(o.services);
+    const totalStr   = total > 0 ? '$' + total.toFixed(2) + (hasVaries ? '+' : '') : (hasVaries ? 'Varies' : '—');
+    const completedDate = o.completed_at ? new Date(o.completed_at).toLocaleDateString() : '—';
+    const submittedDate = o.submitted_at ? new Date(o.submitted_at).toLocaleDateString() : '—';
+
+    const typeBadge = isFJ
+      ? '<span style="background:var(--sky-dim);border:1px solid rgba(56,189,248,0.3);color:var(--sky);font-size:10px;font-weight:800;padding:2px 8px;border-radius:20px;">FUN JUMPER</span>'
+      : o.gear_type === 'tandem'
+        ? '<span style="background:var(--purple-dim);border:1px solid rgba(167,139,250,0.3);color:var(--purple);font-size:10px;font-weight:800;padding:2px 8px;border-radius:20px;">TANDEM</span>'
+        : '<span style="background:var(--blue-dim);border:1px solid rgba(59,130,246,0.3);color:var(--accent);font-size:10px;font-weight:800;padding:2px 8px;border-radius:20px;">STUDENT</span>';
+
+    const card = document.createElement('div');
+    card.className = 'order-card';
+    card.id = 'sh-card-' + i;
+    card.innerHTML = `
+      <div class="order-card-header" onclick="toggleSHCard(${i})">
+        <div>
+          <div class="order-wo" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+            ${o.work_order||'—'} ${typeBadge}
+            <span style="background:var(--green-dim);border:1px solid rgba(74,222,128,0.3);color:var(--green);font-size:10px;font-weight:800;padding:2px 8px;border-radius:20px;">✓ COMPLETE</span>
+          </div>
+          <div class="order-rig">${rigLine}</div>
+          <div class="order-meta">
+            S/N: ${o.rig_sn||'—'} · Completed: ${completedDate} · Rigger: ${o.rigger||'—'}
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;">
+          <div style="font-family:'JetBrains Mono',monospace;font-size:15px;font-weight:700;color:var(--green);">${totalStr}</div>
+          <div class="order-expand">▾</div>
+        </div>
+      </div>
+      <div class="order-body">
+        <div class="order-grid">
+          ${isFJ ? `
+          <div class="info-block">
+            <div class="info-title">Customer</div>
+            <div class="info-content">
+              ${o.customer_name||'—'}<br>
+              ${o.customer_phone||''} ${o.customer_email?'· '+o.customer_email:''}
+            </div>
+          </div>` : ''}
+          <div class="info-block">
+            <div class="info-title">Rig</div>
+            <div class="info-content">
+              ${o.rig_make||'—'} · S/N ${o.rig_sn||'—'}
+              ${o.rig_num?'<br>Rig #'+o.rig_num:''}
+            </div>
+          </div>
+          <div class="info-block">
+            <div class="info-title">Dates</div>
+            <div class="info-content">
+              Submitted: ${submittedDate}<br>
+              Completed: ${completedDate}
+            </div>
+          </div>
+        </div>
+        <div class="info-block" style="margin-bottom:12px;">
+          <div class="info-title" style="margin-bottom:10px;">Services & Invoice</div>
+          <div style="display:flex;flex-direction:column;gap:4px;">
+            ${svcs.map(s => {
+              const p = SVC_PRICES[s];
+              const pStr = p > 0 ? '<span style="font-family:\'JetBrains Mono\',monospace;font-size:12px;color:var(--green);margin-left:auto;">$'+p.toFixed(2)+'</span>'
+                                  : '<span style="font-size:11px;color:var(--text-muted);margin-left:auto;">Varies</span>';
+              return `<div style="display:flex;align-items:center;padding:6px 10px;background:var(--surface2);border-radius:6px;font-size:13px;">• ${s}${pStr}</div>`;
+            }).join('')}
+            <div style="display:flex;justify-content:flex-end;padding:8px 10px 0;border-top:1px solid var(--border);margin-top:4px;">
+              <span style="font-size:12px;color:var(--text-muted);margin-right:8px;">TOTAL</span>
+              <span style="font-family:'JetBrains Mono',monospace;font-size:15px;font-weight:700;color:var(--green);">${totalStr}</span>
+            </div>
+          </div>
+        </div>
+        ${o.completion_notes?`<div class="info-block"><div class="info-title">Rigger Notes</div><div class="info-content">${o.completion_notes}</div></div>`:''}
+        ${o.extra_notes?`<div class="info-block" style="margin-top:8px;"><div class="info-title">Customer Notes</div><div class="info-content">${o.extra_notes}</div></div>`:''}
+      </div>`;
+    listEl.appendChild(card);
+  });
+}
+
+function toggleSHCard(i) {
+  document.getElementById('sh-card-' + i).classList.toggle('expanded');
+}
+
+// ── CUSTOMER HISTORY SEARCH ───────────────────────────────────
+async function searchHistory(){
+  const email = document.getElementById('history-search-email').value.trim().toLowerCase();
+  const sn    = document.getElementById('history-search-sn').value.trim();
+  const errEl = document.getElementById('history-error');
+  const resultsEl = document.getElementById('history-results');
+  errEl.style.display='none';
+
+  if(!email && !sn){ errEl.textContent='Enter an email address or container serial number.'; errEl.style.display='block'; return; }
+
+  resultsEl.innerHTML='<div style="color:var(--text-muted);padding:20px 0;">Searching...</div>';
+  try {
+    const params = new URLSearchParams({action:'getHistory'});
+    if(email) params.append('email',email);
+    if(sn)    params.append('sn',sn);
+    const res = await fetch(SCRIPT_URL+'?'+params.toString(),{method:'GET',redirect:'follow',mode:'cors'});
+    const data = JSON.parse(await res.text());
+    const history = data.history||[];
+
+    if(history.length===0){
+      resultsEl.innerHTML='<div style="color:var(--text-muted);padding:20px 0;">No records found for that email / serial number.</div>';
+      return;
+    }
+
+    resultsEl.innerHTML='<div style="font-size:12px;color:var(--text-muted);margin-bottom:12px;">'+history.length+' record'+(history.length!==1?'s':'')+' found</div>';
+    history.forEach(h=>{
+      const statusBadge = h.status==='COMPLETE'
+        ? '<span style="background:var(--green-dim);border:1px solid rgba(34,197,94,0.3);color:var(--green);font-size:10px;padding:2px 8px;border-radius:20px;font-weight:700;">COMPLETE</span>'
+        : '<span class="status-badge sb-'+(h.status||'PENDING')+'">'+(statusLabel(h.status||'PENDING'))+'</span>';
+      const card = document.createElement('div');
+      card.className='history-card';
+      card.innerHTML=`
+        <div class="history-wo">${h.work_order||'—'} ${statusBadge}</div>
+        <div class="history-rig">${h.rig_make||''} · S/N ${h.rig_sn||''}</div>
+        <div class="history-svc">${(h.services||'').replace(/\|/g,'·')||'No services listed'}</div>
+        <div class="history-meta">
+          Submitted: ${h.submitted_at?new Date(h.submitted_at).toLocaleDateString():'—'}
+          ${h.completed_at?' · Completed: '+new Date(h.completed_at).toLocaleDateString():''}
+          ${h.rigger?' · Rigger: '+h.rigger:''}
+          ${h.customer_name?' · Customer: '+h.customer_name:''}
+        </div>
+        ${h.completion_notes?'<div style="font-size:12px;color:var(--text-dim);margin-top:4px;">Notes: '+h.completion_notes+'</div>':''}`;
+      resultsEl.appendChild(card);
+    });
+  } catch(e){
+    errEl.textContent='Search failed: '+e.message; errEl.style.display='block';
+    resultsEl.innerHTML='';
+  }
+}
+
+// ── PASSWORD CHANGE ───────────────────────────────────────────
+function changePassword(){
+  const cur=document.getElementById('pw-current').value;
+  const nw=document.getElementById('pw-new').value;
+  const conf=document.getElementById('pw-confirm').value;
+  const errEl=document.getElementById('pw-error');
+  const successEl=document.getElementById('pw-success');
+  errEl.style.display='none'; successEl.style.display='none';
+  if(cur!==currentPassword){ errEl.textContent='Current password is incorrect.'; errEl.style.display='block'; return; }
+  if(nw.length<4){ errEl.textContent='New password must be at least 4 characters.'; errEl.style.display='block'; return; }
+  if(nw!==conf){ errEl.textContent='New passwords do not match.'; errEl.style.display='block'; return; }
+  currentPassword=nw;
+  localStorage.setItem('ssxQueuePw',nw);
+  document.getElementById('pw-current').value='';
+  document.getElementById('pw-new').value='';
+  document.getElementById('pw-confirm').value='';
+  successEl.style.display='block';
+  setTimeout(()=>successEl.style.display='none',3000);
+}
+</script>
+
+<!-- SIGN-OFF MODAL -->
+<div class="modal-overlay" id="signoff-modal">
+  <div class="modal-box">
+    <div class="modal-icon">✍️</div>
+    <div class="modal-title">Sign-Off Required</div>
+    <div class="modal-text">
+      Before completing this service record, confirm that the <strong>physical service record has been filled out</strong> and signed with your <strong>name and rigger symbol</strong>.<br><br>
+      This cannot be undone once submitted.
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel-modal" onclick="closeSignoffModal()">← Go Back</button>
+      <button class="btn-confirm" onclick="confirmAndComplete()">✓ I Confirm</button>
+    </div>
+  </div>
+</div>
+
+<!-- RIGGER SIGN-IN MODAL -->
+<div class="signin-modal" id="signin-modal">
+  <div class="signin-box">
+    <div class="signin-title">🔧 Start Service</div>
+    <div class="signin-sub">Enter your name and seal to begin work. This will move the order to In Progress.</div>
+    <input type="hidden" id="signin-order-idx">
+    <div class="field">
+      <label>Rigger Name *</label>
+      <input type="text" id="signin-name" placeholder="Your full name" autocomplete="name">
+    </div>
+    <div class="field">
+      <label>Rigger Seal / Symbol *</label>
+      <input type="text" id="signin-symbol" placeholder="e.g. T.R. or ✦">
+    </div>
+    <div class="error-msg" id="signin-error"></div>
+    <div style="display:flex;gap:10px;margin-top:4px;">
+      <button class="btn btn-primary" style="flex:1;" onclick="confirmStartService()">▶ Start Service</button>
+      <button class="btn btn-ghost btn-sm" onclick="closeSigninModal()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- RIGGER RE-ACCESS MODAL -->
+<div class="signin-modal" id="reaccess-modal">
+  <div class="signin-box">
+    <div class="signin-title">🔍 Accessing Service</div>
+    <div class="signin-sub">Enter your name and seal — this will be logged as a touchpoint on this order.</div>
+    <input type="hidden" id="reaccess-order-idx">
+    <div class="field">
+      <label>Rigger Name *</label>
+      <input type="text" id="reaccess-name" placeholder="Your full name" autocomplete="name">
+    </div>
+    <div class="field">
+      <label>Rigger Seal / Symbol *</label>
+      <input type="text" id="reaccess-symbol" placeholder="e.g. T.R. or ✦">
+    </div>
+    <div class="error-msg" id="reaccess-error"></div>
+    <div style="display:flex;gap:10px;margin-top:4px;">
+      <button class="btn btn-primary" style="flex:1;" onclick="confirmReaccess()">✓ Log & Continue</button>
+      <button class="btn btn-ghost btn-sm" onclick="closeReaccessModal()">Skip</button>
+    </div>
+  </div>
+</div>
+</body>
+</html>
