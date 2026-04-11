@@ -1701,17 +1701,21 @@ async function loadGearFromSheet() {
       GEAR_DATA = data.gear;
       gearLoaded = true;
       if (loadingEl) loadingEl.style.display = 'none';
+      console.log('Gear loaded: ' + GEAR_DATA.length + ' rigs');
     } else {
-      // Sheet is empty — fall back to hardcoded data on first run
       gearLoaded = true;
-      if (loadingEl) { loadingEl.textContent = '&#9888; No gear in sheet yet. Using local data.'; loadingEl.style.color = 'var(--yellow)'; }
+      console.warn('getGear returned empty:', data);
+      if (loadingEl) { loadingEl.textContent = '⚠ No gear in sheet yet.'; loadingEl.style.color = 'var(--yellow)'; }
       setTimeout(() => { if (loadingEl) loadingEl.style.display = 'none'; }, 3000);
     }
   } catch(err) {
     gearLoadError = true;
-    if (loadingEl) { loadingEl.textContent = '&#9888; Could not reach server. Using local data.'; loadingEl.style.color = 'var(--yellow)'; }
-    setTimeout(() => { if (loadingEl) loadingEl.style.display = 'none'; }, 3000);
     console.warn('getGear failed:', err);
+    // Show error in gear manager if open
+    const gmList = document.getElementById('gm-list');
+    if (gmList) gmList.innerHTML = '<div style="color:var(--red);padding:20px;">⚠ Failed to load gear: ' + err.message + '</div>';
+    if (loadingEl) { loadingEl.textContent = '⚠ Could not reach server.'; loadingEl.style.color = 'var(--yellow)'; }
+    setTimeout(() => { if (loadingEl) loadingEl.style.display = 'none'; }, 3000);
   }
 }
 
