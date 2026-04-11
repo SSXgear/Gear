@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SSXgear Diagnostic</title>
+<style>
+  body { background: #0f1520; color: #f0f4ff; font-family: monospace; padding: 20px; font-size: 14px; }
+  h2 { color: #38bdf8; margin-bottom: 20px; }
+  button { background: #38bdf8; color: #0f1520; border: none; padding: 14px 28px; font-size: 16px;
+           font-weight: bold; border-radius: 10px; cursor: pointer; margin: 8px 4px; display: block; width: 100%; }
+  button.sec { background: #4ade80; }
+  .box { background: #161e2e; border: 1px solid rgba(255,255,255,0.1); border-radius: 10px;
+         padding: 16px; margin-top: 16px; word-break: break-all; white-space: pre-wrap; }
+  .ok  { color: #4ade80; }
+  .err { color: #f87171; }
+  .warn { color: #fbbf24; }
+  .dim { color: #8896b0; }
+  .big { font-size: 18px; font-weight: bold; margin-bottom: 8px; }
+</style>
+</head>
+<body>
+<h2>🔧 SSXgear Fetch Diagnostic</h2>
+
+<button onclick="runTest()">▶ Run Fetch Test</button>
+<button class="sec" onclick="runDebugGear()">🔍 Debug Gear Sheet</button>
+
+<div id="out" class="box dim">Tap a button above to run the test…</div>
+
+<script>
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyJZiI8gMzft-hPBlx6rQ0R4MM7WDRl75hG_AXbhB950YaobHH_muXMLIiJkQEroa0Vrw/exec';
+
+function log(msg, cls) {
+  const out = document.getElementById('out');
+  const line = document.createElement('div');
+  line.className = cls || '';
+  line.textContent = msg;
+  out.appendChild(line);
+}
+
+function clear() {
+  document.getElementById('out').innerHTML = '';
+}
+
+async function runTest() {
+  clear();
+  log('⏳ Testing fetch to GAS…', 'dim');
+  log('URL: ' + SCRIPT_URL + '?action=getGear', 'dim');
+  log('', '');
+
+  const start = Date.now();
+  try {
+    const res = await fetch(SCRIPT_URL + '?action=getGear', {
+      method: 'GET',
+      redirect: 'follow',
+      mode: 'cors'
+    });
+    const elapsed = Date.now() - start;
+
+    log('✅ Fetch completed in ' + elapsed + 'ms', 'ok');
+    log('HTTP Status: ' + res.status + ' ' + res.statusText, res.ok ? 'ok' : 'err');
+    log('Response type: ' + res.type, 'dim');
+    log('', '');
+
+    const text = await res.text();
+    log('Raw response length: ' + text.length + ' chars', 'dim');
+    log('First 500 chars:', 'dim');
+    log(text.slice(0, 500), text.startsWith('{') ? 'ok' : 'err');
+    log('', '');
+
+    if (!text.startsWith('{')) {
+      log('❌ PROBLEM: Response is NOT JSON!', 'err big');
+      if (text.includes('<!DOCTYPE') || text.includes('<html')) {
+        log('→ Got an HTML page (likely a Google login redirect or error page)', 'err');
+        log('→ FIX: In Apps Script, redeploy and set "Who has access" to "Anyone"', 'warn');
+      }
+      return;
+    }
+
+    let data;
+    try {
+      data = JSON.parse(text);
+      log('✅ JSON parsed OK', 'ok');
+    } catch(e) {
+      log('❌ JSON parse failed: ' + e.message, 'err');
+      return;
+    }
+
+    log('Keys in response: ' + Object.keys(data).join(', '), 'dim');
+    log('', '');
+
+    if (data.gear === undefined) {
+      log('❌ PROBLEM: No "gear" key in response!', 'err big');
+      log('Keys found: ' + Object.keys(data).join(', '), 'warn');
+      log('Full response: ' + JSON.stringify(data).slice(0, 300), 'warn');
+      return;
+    }
+
+    if (!Array.isArray(data.gear)) {
+      log('❌ PROBLEM: "gear" is not an array, it is: ' + typeof data.gear, 'err big');
+      return;
+    }
+
+    log('✅ "gear" key found, array length: ' + data.gear.length, 'ok big');
+
+    if (data.gear.length === 0) {
+      log('⚠ Gear array is EMPTY — sheet may have no data rows', 'warn');
+      return;
+    }
+
+    log('First rig:', 'dim');
+    log(JSON.stringify(data.gear[0], null, 2), 'ok');
+    log('', '');
+    log('✅ ALL GOOD — ' + data.gear.length + ' rigs returned', 'ok big');
+    log('If admin panel still shows 0, the bug is in renderGearList or GEAR_DATA timing.', 'warn');
+
+  } catch(err) {
+    const elapsed = Date.now() - start;
+    log('❌ Fetch FAILED after ' + elapsed + 'ms', 'err big');
+    log('Error name: ' + err.name, 'err');
+    log('Error message: ' + err.message, 'err');
+    log('', '');
+    if (err.name === 'TypeError' && err.message.includes('Failed to fetch')) {
+      log('→ This is a CORS or network error', 'warn');
+      log('→ Most likely cause: GAS deployment not set to "Anyone"', 'warn');
+      log('→ Fix: Apps Script → Deploy → Manage → Edit → Who has access: Anyone', 'warn');
+    }
+    if (err.name === 'TypeError' && err.message.includes('NetworkError')) {
+      log('→ Network error — check internet connection or script URL', 'warn');
+    }
+  }
+}
+
+async function runDebugGear() {
+  clear();
+  log('⏳ Calling ?action=debugGear…', 'dim');
+  try {
+    const res = await fetch(SCRIPT_URL + '?action=debugGear', {
+      method: 'GET', redirect: 'follow', mode: 'cors'
+    });
+    const text = await res.text();
+    log('Raw (' + text.length + ' chars):', 'dim');
+    if (text.startsWith('{')) {
+      const d = JSON.parse(text);
+      log('Headers row: ' + JSON.stringify(d.headers), 'ok');
+      log('typeIdx: ' + d.typeIdx, 'ok');
+      log('Sample rows:', 'dim');
+      (d.sample || []).forEach((s,i) => log('Row ' + (i+2) + ': ' + JSON.stringify(s), 'ok'));
+    } else {
+      log(text.slice(0, 800), 'err');
+    }
+  } catch(e) {
+    log('❌ ' + e.name + ': ' + e.message, 'err');
+  }
+}
+</script>
+</body>
+</html>
