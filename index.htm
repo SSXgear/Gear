@@ -1692,30 +1692,29 @@ let gearLoaded = false;
 let gearLoadError = false;
 
 async function loadGearFromSheet() {
-  const serialScreen = document.getElementById('screen-serial');
   const loadingEl = document.getElementById('gear-loading-msg');
+  const gmList = document.getElementById('gm-list');
   try {
-    const res = await fetch(SCRIPT_URL + '?action=getGear', { method: 'GET', redirect: 'follow', mode: 'cors' });
-    const data = await res.json();
+    if (gmList) gmList.innerHTML = '<div style="color:var(--text-muted);padding:20px;text-align:center;">⏳ Loading gear...</div>';
+    const url = SCRIPT_URL + '?action=getGear&t=' + Date.now();
+    const res = await fetch(url, { method: 'GET', redirect: 'follow' });
+    const text = await res.text();
+    const data = JSON.parse(text);
     if (data.gear && data.gear.length > 0) {
       GEAR_DATA = data.gear;
       gearLoaded = true;
       if (loadingEl) loadingEl.style.display = 'none';
+      if (gmList) gmList.innerHTML = '';
       console.log('Gear loaded: ' + GEAR_DATA.length + ' rigs');
     } else {
       gearLoaded = true;
+      if (gmList) gmList.innerHTML = '<div style="color:var(--yellow);padding:20px;">⚠ No gear found in sheet. Response: ' + text.substring(0, 200) + '</div>';
       console.warn('getGear returned empty:', data);
-      if (loadingEl) { loadingEl.textContent = '⚠ No gear in sheet yet.'; loadingEl.style.color = 'var(--yellow)'; }
-      setTimeout(() => { if (loadingEl) loadingEl.style.display = 'none'; }, 3000);
     }
   } catch(err) {
     gearLoadError = true;
     console.warn('getGear failed:', err);
-    // Show error in gear manager if open
-    const gmList = document.getElementById('gm-list');
     if (gmList) gmList.innerHTML = '<div style="color:var(--red);padding:20px;">⚠ Failed to load gear: ' + err.message + '</div>';
-    if (loadingEl) { loadingEl.textContent = '⚠ Could not reach server.'; loadingEl.style.color = 'var(--yellow)'; }
-    setTimeout(() => { if (loadingEl) loadingEl.style.display = 'none'; }, 3000);
   }
 }
 
