@@ -1579,33 +1579,42 @@ body {
 </div>
 
 <script>
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyJZiI8gMzft-hPBlx6rQ0R4MM7WDRl75hG_AXbhB950YaobHH_muXMLIiJkQEroa0Vrw/exec';
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwwQede6kkJjleWRAnMuZjCFXTzQ-Cy2-pavCKy1CiUN9X2wUTW4q5vHf7lCCUZlCSZvw/exec';
 
 let GEAR_DATA = []; // loaded from Google Sheet on init
 let gearLoaded = false;
 let gearLoadError = false;
 
 async function loadGearFromSheet() {
-  const serialScreen = document.getElementById('screen-serial');
   const loadingEl = document.getElementById('gear-loading-msg');
+  gearLoadError = false; // reset on each attempt
   try {
-    const res = await fetch(SCRIPT_URL + '?action=getGear', { redirect: 'follow' });
-    const data = await res.json();
+    const res = await fetch(SCRIPT_URL + '?action=getGear', { method: 'GET', redirect: 'follow', mode: 'cors' });
+    console.log('[SSX] getGear response status:', res.status, 'ok:', res.ok, 'type:', res.type);
+    const text = await res.text();
+    console.log('[SSX] getGear raw response (first 300):', text.slice(0, 300));
+    let data;
+    try { data = JSON.parse(text); }
+    catch(parseErr) {
+      console.error('[SSX] getGear JSON parse failed:', parseErr, 'Raw:', text.slice(0, 500));
+      throw new Error('JSON parse failed: ' + parseErr.message);
+    }
+    console.log('[SSX] getGear parsed keys:', Object.keys(data), 'gear count:', data.gear ? data.gear.length : 'NO GEAR KEY');
     if (data.gear && data.gear.length > 0) {
       GEAR_DATA = data.gear;
       gearLoaded = true;
       if (loadingEl) loadingEl.style.display = 'none';
     } else {
-      // Sheet is empty — fall back to hardcoded data on first run
       gearLoaded = true;
-      if (loadingEl) { loadingEl.textContent = '&#9888; No gear in sheet yet. Using local data.'; loadingEl.style.color = 'var(--yellow)'; }
+      console.warn('[SSX] getGear returned empty or missing gear array. Full response:', JSON.stringify(data).slice(0, 500));
+      if (loadingEl) { loadingEl.textContent = '\u26a0 No gear in sheet yet.'; loadingEl.style.color = 'var(--yellow)'; }
       setTimeout(() => { if (loadingEl) loadingEl.style.display = 'none'; }, 3000);
     }
   } catch(err) {
     gearLoadError = true;
-    if (loadingEl) { loadingEl.textContent = '&#9888; Could not reach server. Using local data.'; loadingEl.style.color = 'var(--yellow)'; }
+    console.error('[SSX] getGear FAILED:', err.name, err.message, err);
+    if (loadingEl) { loadingEl.textContent = '\u26a0 Could not reach server.'; loadingEl.style.color = 'var(--yellow)'; }
     setTimeout(() => { if (loadingEl) loadingEl.style.display = 'none'; }, 3000);
-    console.warn('getGear failed:', err);
   }
 }
 
@@ -2774,6 +2783,21 @@ function repackStatus(due) {
   return { cls: 'rrp-ok', label: diff + 'd' };
 }
 
+async function reloadGearDebug() {
+  const dbg = document.getElementById('gear-debug-msg');
+  const list = document.getElementById('gm-list');
+  if (dbg) { dbg.style.display = 'inline'; dbg.textContent = '⏳ Fetching...'; }
+  if (list) list.innerHTML = '<div style="color:var(--text-muted);padding:20px;text-align:center;">⏳ Loading gear...</div>';
+  await loadGearFromSheet();
+  renderGearList();
+  if (dbg) {
+    dbg.textContent = gearLoadError
+      ? '❌ Fetch failed — check Console (F12)'
+      : (GEAR_DATA.length > 0 ? '✅ Loaded ' + GEAR_DATA.length + ' rigs' : '⚠ Fetch OK but 0 rigs returned — check Console');
+    setTimeout(() => { dbg.style.display = 'none'; }, 5000);
+  }
+}
+
 function renderGearList() {
   const q = (document.getElementById('gm-search').value || '').toLowerCase();
   const list = document.getElementById('gm-list');
@@ -3020,7 +3044,11 @@ async function createRig() {
             <button class="gm-filter" id="filter-tandem" onclick="setFilter('tandem')">Tandem</button>
             <button class="btn-add-rig" onclick="openAddRig()">+ Add Rig</button>
           </div>
-          <div class="gm-count" id="gm-count"></div>
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+            <div class="gm-count" id="gm-count"></div>
+            <button onclick="reloadGearDebug()" style="background:var(--surface2);border:1px solid var(--border);color:var(--text-dim);border-radius:6px;padding:3px 10px;font-size:11px;cursor:pointer;">⟳ Reload</button>
+            <span id="gear-debug-msg" style="font-size:11px;color:var(--yellow);display:none;"></span>
+          </div>
           <div id="gm-list" style="margin-top:12px;"></div>
         </div>
 
@@ -3280,7 +3308,7 @@ async function createRig() {
             <!-- Report Email -->
             <div style="background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:14px 16px;margin-top:14px;">
               <div style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-muted);margin-bottom:6px;">🛬 Packing Mat Report Email</div>
-              <div style="font-size:12px;color:var(--text-dim);margin-bottom:12px;">Gear issue reports from the packing mat QR code are sent here. Defaults to <code style="background:var(--bg);padding:2px 6px;border-radius:4px;font-size:11px;">skydivesussexgear@gmail.com</code></div>
+              <div style="font-size:12px;color:var(--text-dim);margin-bottom:12px;">Gear issue reports from the packing mat QR code are sent here. Defaults to <code style="background:var(--bg);padding:2px 6px;border-radius:4px;font-size:11px;"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="b5c6deccd1dcc3d0c6c0c6c6d0cdd2d0d4c7f5d2d8d4dcd99bd6dad8">[email&#160;protected]</a></code></div>
               <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end;">
                 <div style="flex:1;min-width:200px;">
                   <input type="text" id="admin-report-email" placeholder="Loading…"
@@ -3364,7 +3392,7 @@ async function createRig() {
   <button class="btn-pwa-dismiss" onclick="dismissPWA()" title="Dismiss">✕</button>
 </div>
 
-<script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
 // Register service worker for PWA
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('/sw.js').catch(() => {});
@@ -3402,14 +3430,4 @@ document.getElementById('pwa-install-btn').addEventListener('click', triggerPWAI
 
 window.addEventListener('appinstalled', () => {
   document.getElementById('pwa-nav-btn').style.display = 'none';
-  document.getElementById('pwa-banner').classList.remove('show');
-  deferredPrompt = null;
-});
-
-function dismissPWA() {
-  document.getElementById('pwa-banner').classList.remove('show');
-  sessionStorage.setItem('pwaDismissed', '1');
-}
-</script>
-
-</body></html>
+  document.getElementB
