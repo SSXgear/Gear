@@ -2537,7 +2537,7 @@ function superAdminLogin() {
   }
 }
 
-function changeAdminPassword() {
+async function changeAdminPassword() {
   const nw   = document.getElementById('chpw-new').value;
   const conf = document.getElementById('chpw-confirm').value;
   const errEl = document.getElementById('chpw-err');
@@ -2545,7 +2545,13 @@ function changeAdminPassword() {
   errEl.style.display = 'none'; okEl.style.display = 'none';
   if (nw.length < 4) { errEl.textContent = 'Password must be at least 4 characters.'; errEl.style.display = 'block'; return; }
   if (nw !== conf)   { errEl.textContent = 'Passwords do not match.'; errEl.style.display = 'block'; return; }
-  localStorage.setItem('ssxQueuePw', nw);
+  try {
+    await fetch(SCRIPT_URL, {
+      method: 'POST', mode: 'no-cors', headers: {'Content-Type':'text/plain'},
+      body: JSON.stringify({ action: 'saveSettings', key: 'admin_password', value: nw })
+    });
+    localStorage.setItem('ssxQueuePw', nw);
+  } catch(e) { console.warn('Password save failed', e); }
   document.getElementById('chpw-new').value = '';
   document.getElementById('chpw-confirm').value = '';
   okEl.style.display = 'block';
@@ -2655,8 +2661,24 @@ function closeAdmin() {
 async function adminLogin() {
   const pw = document.getElementById('admin-pw-input').value;
   const err = document.getElementById('admin-err');
-  const stored = localStorage.getItem('ssxQueuePw') || '2280';
-  if (pw === stored || pw === '2280') {
+  // Fetch password from sheet, fall back to localStorage then hardcoded
+  let correctPw = localStorage.getItem('ssxQueuePw') || '2280';
+  try {
+    const data = await new Promise((resolve, reject) => {
+      const cb = '_gasPwCB_' + Date.now();
+      const s = document.createElement('script');
+      const t = setTimeout(() => { delete window[cb]; s.remove(); reject(); }, 6000);
+      window[cb] = (d) => { clearTimeout(t); delete window[cb]; s.remove(); resolve(d); };
+      s.onerror = () => { clearTimeout(t); delete window[cb]; s.remove(); reject(); };
+      s.src = SCRIPT_URL + '?action=getSettings&callback=' + cb;
+      document.head.appendChild(s);
+    });
+    if (data && data.admin_password) {
+      correctPw = data.admin_password;
+      localStorage.setItem('ssxQueuePw', correctPw);
+    }
+  } catch(e) { /* use cached */ }
+  if (pw === correctPw) {
     adminUnlocked = true;
     err.style.display = 'none';
     document.getElementById('admin-login-card').style.display = 'none';
