@@ -2692,6 +2692,20 @@ function selectRush(el, value, groupId) {
   selectedRush.fj = value;
 }
 
+// Fetch admin password from sheet on load and cache it
+(function() {
+  const cb = '_gasPwInit_' + Date.now();
+  const s = document.createElement('script');
+  const t = setTimeout(() => { delete window[cb]; if(s.parentNode) s.remove(); }, 8000);
+  window[cb] = function(d) {
+    clearTimeout(t); delete window[cb]; if(s.parentNode) s.remove();
+    if (d && d.admin_password) localStorage.setItem('ssxQueuePw', d.admin_password);
+  };
+  s.onerror = function() { clearTimeout(t); delete window[cb]; if(s.parentNode) s.remove(); };
+  s.src = 'https://script.google.com/macros/s/AKfycbwwQede6kkJjleWRAnMuZjCFXTzQ-Cy2-pavCKy1CiUN9X2wUTW4q5vHf7lCCUZlCSZvw/exec?action=getSettings&callback=' + cb;
+  document.head.appendChild(s);
+})();
+
 document.addEventListener('DOMContentLoaded', function() {
   const params  = new URLSearchParams(window.location.search);
   const sn      = params.get('sn');
