@@ -2332,16 +2332,35 @@ function renderParts() {
     return;
   }
 
-  // Group by category
+  // Frequently used item names
+  const FREQ_USED = [
+    'TANDEM MAIN CLOSING LOOPS',
+    'RECOIL BUNGEES',
+    'TX2 330 LINE SETS',
+    '54IN DROGUE, UPT - NEW',
+    '54IN DROGUE, UPT - USED',
+    'DROGUE KILL LINES',
+  ];
+
+  // Group by category, with Frequently Used first
   const groups = {};
+  const freqItems = [];
   filtered.forEach(p => {
+    if (FREQ_USED.some(f => p.name.toUpperCase() === f || p.name.toUpperCase().includes(f))) {
+      freqItems.push(p);
+    }
     const key = p.category || 'General';
     if (!groups[key]) groups[key] = [];
     groups[key].push(p);
   });
 
+  // Build ordered category list — Frequently Used first
+  const sortedKeys = Object.keys(groups).sort();
+  const orderedKeys = freqItems.length > 0 ? ['⭐ Frequently Used', ...sortedKeys] : sortedKeys;
+  if (freqItems.length > 0) groups['⭐ Frequently Used'] = freqItems;
+
   listEl.innerHTML = '';
-  Object.keys(groups).sort().forEach(groupName => {
+  orderedKeys.forEach(groupName => {
     // Category header
     const hdr = document.createElement('div');
     hdr.style.cssText = 'font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-muted);padding:10px 4px 4px;border-bottom:1px solid var(--border);margin-bottom:4px;';
