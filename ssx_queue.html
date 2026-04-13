@@ -311,7 +311,7 @@ const SERVICE_GROUPS = [
     {name:"Assembly, Inspection & Pack Reserve (Sport)",price:"$140"},
     {name:"Assembly, Inspection & Pack Main",price:"$75"},
     {name:"Inspect Main or Reserve",price:"$25"},
-    {name:"Inspect Container",price:"$20"},
+    {name:"Inspect Harness / Container",price:"$20"},
     {name:"Inspect & Pack Pilot's Emergency Rig",price:"$120"},
   ]},
   { group: '📦 Packing', items: [{name:"Pack Main Sport",price:"$15"}]},
@@ -621,6 +621,7 @@ function renderQueue() {
               <span class="btn-spinner"><span class="spinner-ring"></span> Saving…</span>
             </button>
             <button class="btn btn-danger btn-sm" onclick="deleteOrder(${realIdx})">✕ Delete</button>
+            <button class="btn btn-sm" style="background:var(--surface2);border:1px solid var(--border);color:var(--text-dim);" onclick="printWorkOrder(${realIdx})">🖨 Print</button>
           </div>
         </div>`}
       </div>`;
@@ -964,6 +965,82 @@ function changePassword() {
   successEl.style.display = 'block';
   setTimeout(() => successEl.style.display = 'none', 3000);
 }
+function printWorkOrder(idx) {
+  const order = pendingOrders[idx];
+  if (!order) return;
+  const isFJ = order.gear_type === 'fun-jumper';
+  const svcs = (order.services || '').split(' | ').filter(Boolean);
+  const { total, hasVaries } = calcTotal(order.services);
+  const date = order.submitted_at ? new Date(order.submitted_at).toLocaleDateString() : new Date().toLocaleDateString();
+  const rush = order.rush && order.rush !== 'Standard Turnaround' ? order.rush : null;
+
+  const svcRows = svcs.map(s => {
+    const p = SVC_PRICES[s];
+    return '<tr><td>' + s + '</td><td style="text-align:right;font-weight:700;">' + (p > 0 ? '$' + p.toFixed(2) : 'Varies') + '</td></tr>';
+  }).join('');
+
+  const html = `<!DOCTYPE html><html><head><title>Work Order ${order.work_order||''}</title>
+<style>
+  @page { size: 8.5in 11in; margin: 0.6in; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: Arial, sans-serif; font-size: 13px; color: #111; }
+  .header { display: flex; justify-content: space-between; border-bottom: 3px solid #1a1a2e; padding-bottom: 12px; margin-bottom: 20px; }
+  .dz-name { font-size: 22px; font-weight: 900; text-transform: uppercase; color: #1a1a2e; }
+  .dz-sub { font-size: 11px; color: #555; letter-spacing: 1px; text-transform: uppercase; margin-top: 3px; }
+  .wo-num { font-size: 28px; font-weight: 900; color: #1a1a2e; text-align: right; }
+  .wo-date { font-size: 11px; color: #555; margin-top: 4px; text-align: right; }
+  ${rush ? '.rush { background:#fee2e2;border:2px solid #ef4444;border-radius:6px;padding:8px 14px;font-weight:900;font-size:14px;color:#b91c1c;text-align:center;margin-bottom:16px; }' : ''}
+  .section { margin-bottom: 18px; }
+  .section-title { font-size: 10px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: #555; border-bottom: 1px solid #ddd; padding-bottom: 4px; margin-bottom: 10px; }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .field { margin-bottom: 8px; }
+  .field label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: #777; display: block; margin-bottom: 2px; }
+  .field .val { font-size: 13px; font-weight: 500; }
+  table { width: 100%; border-collapse: collapse; }
+  td { padding: 6px 4px; border-bottom: 1px dashed #eee; }
+  .total-row td { font-size: 15px; font-weight: 900; border-top: 2px solid #1a1a2e; border-bottom: none; padding-top: 8px; }
+  .signoff { margin-top: 28px; border-top: 2px solid #1a1a2e; padding-top: 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
+  .signoff-field { border-bottom: 1px solid #aaa; min-height: 36px; }
+  .signoff-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: #777; margin-top: 6px; }
+</style></head><body>
+<div class="header">
+  <div><div class="dz-name">Skydive Sussex</div><div class="dz-sub">Rigging — Service Request</div></div>
+  <div><div class="wo-num">${order.work_order||'N/A'}</div><div class="wo-date">Date: ${date}</div></div>
+</div>
+${rush ? '<div class="rush">⚡ RUSH — ' + rush + '</div>' : ''}
+<div class="grid2">
+  <div class="section">
+    <div class="section-title">${isFJ ? 'Customer' : 'DZ Gear'}</div>
+    ${isFJ ? '<div class="field"><label>Name</label><div class="val">' + (order.customer_name||'—') + '</div></div><div class="field"><label>Phone</label><div class="val">' + (order.customer_phone||'—') + '</div></div><div class="field"><label>Email</label><div class="val">' + (order.customer_email||'—') + '</div></div>' : '<div class="field"><label>Rig #</label><div class="val">' + (order.rig_num||'—') + '</div></div><div class="field"><label>Type</label><div class="val">' + (order.gear_type==='tandem'?'Tandem':'Student') + '</div></div>'}
+  </div>
+  <div class="section">
+    <div class="section-title">Container</div>
+    <div class="field"><label>Make</label><div class="val">${order.rig_make||'—'}</div></div>
+    <div class="field"><label>S/N</label><div class="val">${order.rig_sn||'—'}</div></div>
+    ${order.res_make ? '<div class="field"><label>Reserve</label><div class="val">' + order.res_make + (order.res_repack_due ? ' · Due: ' + new Date(order.res_repack_due).toLocaleDateString() : '') + '</div></div>' : ''}
+    ${order.aad_make ? '<div class="field"><label>AAD</label><div class="val">' + order.aad_make + '</div></div>' : ''}
+  </div>
+</div>
+<div class="section">
+  <div class="section-title">Services</div>
+  <table>${svcRows}<tr class="total-row"><td>Estimated Total</td><td style="text-align:right;">$${total.toFixed(2)}${hasVaries ? ' + varies' : ''}</td></tr></table>
+</div>
+${order.extra_notes ? '<div class="section"><div class="section-title">Notes</div><p>' + order.extra_notes + '</p></div>' : ''}
+<div class="signoff">
+  <div><div class="signoff-field"></div><div class="signoff-label">Rigger Name</div></div>
+  <div><div class="signoff-field"></div><div class="signoff-label">Rigger Seal</div></div>
+  <div><div class="signoff-field"></div><div class="signoff-label">Date Completed</div></div>
+  <div><div class="signoff-field"></div><div class="signoff-label">Customer Pickup</div></div>
+</div>
+</body></html>`;
+
+  const w = window.open('', '_blank');
+  if (!w) { alert('Please allow popups for ssxgear.com to print work orders.'); return; }
+  w.document.write(html);
+  w.document.close();
+  setTimeout(() => w.print(), 600);
+}
+
 </script>
 
 <!-- SIGN-OFF MODAL -->
