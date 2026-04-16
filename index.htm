@@ -1807,22 +1807,29 @@ function renderGear(g) {
     rb.className = 'repack-bar rp-unknown';
     icon.textContent = '📋'; text.textContent = 'Reserve repack due date unknown'; days.textContent = '';
   } else {
-    const diff = Math.round((new Date(g.res_repack_due) - new Date()) / 86400000);
+    const dueDate = new Date(g.res_repack_due + 'T00:00:00');
+    const today   = new Date(); today.setHours(0,0,0,0);
+    const diff    = Math.round((dueDate - today) / 86400000);
     if (diff < 0) {
       rb.className = 'repack-bar rp-over';
       icon.textContent = '🚨';
       text.textContent = 'RESERVE OVERDUE — was due ' + g.res_repack_due;
       days.textContent = Math.abs(diff) + 'd overdue';
+    } else if (diff <= 14) {
+      rb.className = 'repack-bar rp-over';
+      icon.textContent = '⚠️';
+      text.textContent = 'Reserve due very soon — ' + g.res_repack_due;
+      days.textContent = diff + 'd left';
     } else if (diff <= 30) {
       rb.className = 'repack-bar rp-soon';
-      icon.textContent = '⚠️';
+      icon.textContent = '🕐';
       text.textContent = 'Repack due soon — ' + g.res_repack_due;
-      days.textContent = diff + ' days';
+      days.textContent = diff + 'd left';
     } else {
       rb.className = 'repack-bar rp-ok';
       icon.textContent = '✓';
       text.textContent = 'Reserve current — due ' + g.res_repack_due;
-      days.textContent = diff + ' days';
+      days.textContent = diff + 'd left';
     }
   }
 
@@ -2859,9 +2866,12 @@ function setFilter(f) {
 
 function repackStatus(due) {
   if (!due) return { cls: 'rrp-unknown', label: 'Unknown' };
-  const diff = Math.round((new Date(due) - new Date()) / 86400000);
-  if (diff < 0) return { cls: 'rrp-over', label: 'OVERDUE' };
-  if (diff <= 30) return { cls: 'rrp-soon', label: diff + 'd' };
+  const dueDate = new Date(due + 'T00:00:00');
+  const today   = new Date(); today.setHours(0,0,0,0);
+  const diff    = Math.round((dueDate - today) / 86400000);
+  if (diff < 0)       return { cls: 'rrp-over', label: 'OVERDUE' };
+  if (diff <= 14)     return { cls: 'rrp-over', label: diff + 'd' };
+  if (diff <= 30)     return { cls: 'rrp-soon', label: diff + 'd' };
   return { cls: 'rrp-ok', label: diff + 'd' };
 }
 
