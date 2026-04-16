@@ -2342,21 +2342,33 @@ function renderParts() {
     'DROGUE KILL LINES',
   ];
 
-  // Group by category, with Frequently Used first
-  const groups = {};
+  // Separate into frequently used and the rest (no duplicates)
   const freqItems = [];
+  const freqNames = new Set();
+  const restGroups = {};
+
   filtered.forEach(p => {
-    if (FREQ_USED.some(f => p.name.toUpperCase() === f || p.name.toUpperCase().includes(f))) {
+    const nameUp = p.name.toUpperCase();
+    if (FREQ_USED.some(f => nameUp === f || nameUp.includes(f))) {
       freqItems.push(p);
+      freqNames.add(p.name);
     }
-    const key = p.category || 'General';
-    if (!groups[key]) groups[key] = [];
-    groups[key].push(p);
   });
 
-  // Build ordered category list — Frequently Used first
-  const sortedKeys = Object.keys(groups).sort();
+  // Only add to category groups if NOT already in frequently used
+  filtered.forEach(p => {
+    if (freqNames.has(p.name)) return; // skip duplicates
+    const key = p.category || 'Other';
+    // Skip noise category names
+    const skip = ['getting low','general','reorder','getting low / reorder'].includes(key.toLowerCase());
+    const catKey = skip ? 'Other' : key;
+    if (!restGroups[catKey]) restGroups[catKey] = [];
+    restGroups[catKey].push(p);
+  });
+
+  const sortedKeys = Object.keys(restGroups).sort();
   const orderedKeys = freqItems.length > 0 ? ['⭐ Frequently Used', ...sortedKeys] : sortedKeys;
+  const groups = { ...restGroups };
   if (freqItems.length > 0) groups['⭐ Frequently Used'] = freqItems;
 
   listEl.innerHTML = '';
