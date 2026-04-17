@@ -171,6 +171,16 @@
   @keyframes spin{to{transform:rotate(360deg);}}
   .spinner-ring{width:16px;height:16px;border:2.5px solid rgba(14,17,23,0.3);border-top-color:#0e1117;border-radius:50%;animation:spin 0.65s linear infinite;flex-shrink:0;}
 
+  /* ── INVOICE EDIT MODAL ── */
+  .inv-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+  @media(max-width:480px){.inv-grid{grid-template-columns:1fr;}}
+  .inv-field{display:flex;flex-direction:column;gap:5px;}
+  .inv-field.full{grid-column:1/-1;}
+  .inv-field label{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-muted);}
+  .inv-field input,.inv-field textarea{background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:15px;padding:10px 12px;min-height:44px;outline:none;transition:border-color 0.2s;}
+  .inv-field input:focus,.inv-field textarea:focus{border-color:var(--sky);}
+  .inv-field textarea{resize:vertical;min-height:70px;}
+
   /* ── EDIT INFO MODAL ── */
   .edit-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.8);z-index:9999;align-items:flex-start;justify-content:center;padding:16px;overflow-y:auto;}
   .edit-modal.open{display:flex;}
@@ -1050,6 +1060,8 @@ function renderServiceHistory(orders) {
     const { total, hasVaries } = calcTotal(o.services);
     const totalStr = total > 0 ? '$' + total.toFixed(2) + (hasVaries ? '+' : '') : (hasVaries ? 'Varies' : '—');
     const completedDate = o.completed_at ? new Date(o.completed_at).toLocaleDateString() : '—';
+    const rushBadge = o.rush && o.rush !== 'Standard Turnaround'
+      ? '<span style="background:var(--red-dim);border:1px solid rgba(239,68,68,0.3);color:var(--red);font-size:10px;font-weight:800;padding:2px 8px;border-radius:20px;margin-left:4px;">⚡ RUSH</span>' : '';
     const card = document.createElement('div');
     card.className = 'order-card';
     card.id = 'sh-card-' + i;
@@ -1058,6 +1070,7 @@ function renderServiceHistory(orders) {
         <div>
           <div class="order-wo">${o.work_order||'—'}
             <span style="background:var(--green-dim);border:1px solid rgba(74,222,128,0.3);color:var(--green);font-size:10px;font-weight:800;padding:2px 8px;border-radius:20px;">✓ COMPLETE</span>
+            ${rushBadge}
           </div>
           <div class="order-rig">${rigLine}</div>
           <div class="order-meta">S/N: ${o.rig_sn||'—'} · Completed: ${completedDate} · Rigger: ${o.rigger||'—'}</div>
@@ -1074,13 +1087,147 @@ function renderServiceHistory(orders) {
             ${(o.services||'').split(' | ').filter(Boolean).map(s => '<li><span>' + s + '</span><span style="color:var(--text-muted);font-size:12px;">' + (SVC_PRICES[s]>0?'$'+SVC_PRICES[s]:'Varies') + '</span></li>').join('')}
           </ul>
         </div>
-        ${o.completion_notes ? '<div class="info-block"><div class="info-title">Rigger Notes</div><div class="info-content">' + o.completion_notes + '</div></div>' : ''}
+        ${o.completion_notes ? '<div class="info-block" style="margin-bottom:10px;"><div class="info-title">Rigger Notes</div><div class="info-content">' + o.completion_notes + '</div></div>' : ''}
+
+        <div style="border-top:1px solid var(--border);padding-top:14px;margin-top:4px;">
+          <button onclick="openInvoiceModal(${i})"
+            style="background:var(--sky-dim);border:1px solid rgba(56,189,248,0.35);color:var(--sky);border-radius:8px;padding:9px 18px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:6px;min-height:40px;">
+            ✏️ Edit &amp; Resend Invoice
+          </button>
+        </div>
       </div>`;
     listEl.appendChild(card);
   });
 }
 
 function toggleSHCard(i) { document.getElementById('sh-card-' + i).classList.toggle('expanded'); }
+
+// ── INVOICE EDIT MODAL ────────────────────────────────────────
+let invoiceModalIdx = null;
+
+function openInvoiceModal(i) {
+  invoiceModalIdx = i;
+  const o = allCompletedOrders[i];
+  if (!o) return;
+
+  // Populate header info
+  document.getElementById('inv-wo').textContent      = o.work_order || '—';
+  document.getElementById('inv-rig').textContent     = o.gear_type === 'fun-jumper'
+    ? (o.customer_name || 'Fun Jumper') + ' — S/N ' + (o.rig_sn || '')
+    : 'Rig #' + (o.rig_num || '') + ' — ' + (o.rig_make || '') + ' S/N ' + (o.rig_sn || '');
+  document.getElementById('inv-rigger').value        = o.rigger        || '';
+  document.getElementById('inv-notes').value         = o.completion_notes || '';
+  document.getElementById('inv-extra-charge').value  = '';
+  document.getElementById('inv-discount').value      = '';
+  document.getElementById('inv-email').value         = o.customer_email || '';
+  document.getElementById('inv-rigger-email').value  = '';
+
+  // Build service checkboxes
+  const svcs = (o.services || '').split(' | ').filter(Boolean);
+  const grid = document.getElementById('inv-svc-grid');
+  grid.innerHTML = '';
+  SERVICE_GROUPS.forEach(group => {
+    const hdr = document.createElement('div');
+    hdr.style.cssText = 'grid-column:1/-1;font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-muted);padding:8px 2px 4px;border-bottom:1px solid var(--border);margin-bottom:2px;';
+    hdr.textContent = group.group;
+    grid.appendChild(hdr);
+    group.items.forEach(svc => {
+      const checked = svcs.includes(svc.name);
+      const label = document.createElement('label');
+      label.className = 'svc-item' + (checked ? ' checked' : '');
+      label.innerHTML = '<input type="checkbox" value="' + svc.name + '"' + (checked ? ' checked' : '') + '><div class="svc-check"></div><span class="svc-label">' + svc.name + '<span class="svc-price">' + svc.price + '</span></span>';
+      label.addEventListener('click', function(e) {
+        const cb = label.querySelector('input[type="checkbox"]');
+        cb.checked = !cb.checked;
+        label.classList.toggle('checked', cb.checked);
+        updateInvoiceTotal();
+      });
+      grid.appendChild(label);
+    });
+  });
+
+  updateInvoiceTotal();
+
+  const statusEl = document.getElementById('inv-send-status');
+  statusEl.style.display = 'none';
+  statusEl.className = 'edit-save-status';
+
+  document.getElementById('invoice-edit-modal').classList.add('open');
+}
+
+function closeInvoiceModal() {
+  document.getElementById('invoice-edit-modal').classList.remove('open');
+  invoiceModalIdx = null;
+}
+
+function updateInvoiceTotal() {
+  const grid = document.getElementById('inv-svc-grid');
+  const checked = [...grid.querySelectorAll('input[type="checkbox"]:checked')].map(c => c.value);
+  let total = 0; let hasVaries = false;
+  checked.forEach(s => { const p = SVC_PRICES[s]; if (p > 0) total += p; else hasVaries = true; });
+  const extra    = parseFloat(document.getElementById('inv-extra-charge').value) || 0;
+  const discount = parseFloat(document.getElementById('inv-discount').value)     || 0;
+  total += extra - discount;
+  document.getElementById('inv-total-display').textContent =
+    '$' + Math.max(0, total).toFixed(2) + (hasVaries ? ' + varies' : '');
+}
+
+async function sendEditedInvoice() {
+  const i = invoiceModalIdx;
+  if (i === null) return;
+  const o = allCompletedOrders[i];
+  const statusEl = document.getElementById('inv-send-status');
+
+  const grid = document.getElementById('inv-svc-grid');
+  const updatedServices = [...grid.querySelectorAll('input[type="checkbox"]:checked')].map(c => c.value).join(' | ');
+  const rigger      = document.getElementById('inv-rigger').value.trim();
+  const notes       = document.getElementById('inv-notes').value.trim();
+  const extraCharge = parseFloat(document.getElementById('inv-extra-charge').value) || 0;
+  const discount    = parseFloat(document.getElementById('inv-discount').value)     || 0;
+  const toEmail     = document.getElementById('inv-email').value.trim();
+  const riggerEmail = document.getElementById('inv-rigger-email').value.trim();
+
+  if (!toEmail && !riggerEmail) {
+    statusEl.textContent = 'Please enter at least one email address to send to.';
+    statusEl.className = 'edit-save-status err';
+    statusEl.style.display = 'block';
+    return;
+  }
+
+  statusEl.textContent = 'Sending…';
+  statusEl.className = 'edit-save-status';
+  statusEl.style.display = 'block';
+
+  try {
+    await fetch(SCRIPT_URL, {
+      method: 'POST', mode: 'no-cors',
+      headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify({
+        action:        'resendInvoice',
+        work_order:    o.work_order || '',
+        gear_type:     o.gear_type  || '',
+        customer_name: o.customer_name || '',
+        customer_email: toEmail,
+        rigger_email:  riggerEmail,
+        rig_num:       o.rig_num  || '',
+        rig_make:      o.rig_make || '',
+        rig_sn:        o.rig_sn   || '',
+        completed_at:  o.completed_at || '',
+        rigger:        rigger,
+        services:      updatedServices,
+        notes:         notes,
+        extra_charge:  extraCharge,
+        discount:      discount,
+      })
+    });
+    statusEl.textContent = '✓ Invoice sent!';
+    statusEl.className = 'edit-save-status ok';
+    setTimeout(() => closeInvoiceModal(), 1800);
+  } catch(e) {
+    statusEl.textContent = '⚠ Send failed — check connection.';
+    statusEl.className = 'edit-save-status err';
+  }
+}
 
 async function searchHistory() {
   const email = document.getElementById('history-search-email').value.trim().toLowerCase();
@@ -1365,6 +1512,70 @@ ${order.extra_notes ? '<div class="section"><div class="section-title">Notes</di
     <div class="edit-actions">
       <button class="btn-save-edit" onclick="saveEditInfo()">💾 Save Changes</button>
       <button class="btn-cancel-edit" onclick="closeEditModal()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- INVOICE EDIT & RESEND MODAL -->
+<div class="edit-modal" id="invoice-edit-modal">
+  <div class="edit-modal-box" style="max-width:640px;">
+    <div class="edit-modal-title">📄 Edit &amp; Resend Invoice</div>
+    <div class="edit-modal-sub">Adjust services, add charges or notes, then send to any email.</div>
+
+    <div style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:10px 14px;margin-bottom:14px;">
+      <div style="font-size:11px;font-weight:700;color:var(--text-muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:3px;">Work Order</div>
+      <div id="inv-wo" style="font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--accent);"></div>
+      <div id="inv-rig" style="font-size:13px;font-weight:600;margin-top:2px;"></div>
+    </div>
+
+    <div class="edit-section-label">Services</div>
+    <div class="info-block" style="margin-bottom:12px;">
+      <div class="svc-edit-grid" id="inv-svc-grid"></div>
+    </div>
+
+    <div class="edit-section-label">Adjustments</div>
+    <div class="inv-grid" style="margin-bottom:12px;">
+      <div class="inv-field">
+        <label>Extra Charge ($)</label>
+        <input type="number" id="inv-extra-charge" placeholder="0.00" min="0" step="0.01" oninput="updateInvoiceTotal()">
+      </div>
+      <div class="inv-field">
+        <label>Discount ($)</label>
+        <input type="number" id="inv-discount" placeholder="0.00" min="0" step="0.01" oninput="updateInvoiceTotal()">
+      </div>
+      <div class="inv-field full">
+        <label>Rigger Name</label>
+        <input type="text" id="inv-rigger" placeholder="Rigger name">
+      </div>
+      <div class="inv-field full">
+        <label>Notes / Comments</label>
+        <textarea id="inv-notes" placeholder="Any additional notes to include on the invoice…"></textarea>
+      </div>
+    </div>
+
+    <div style="background:var(--surface2);border:1px solid rgba(56,189,248,0.2);border-radius:8px;padding:10px 14px;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;">
+      <span style="font-size:12px;font-weight:700;color:var(--text-muted);letter-spacing:1px;text-transform:uppercase;">Invoice Total</span>
+      <span id="inv-total-display" style="font-family:'JetBrains Mono',monospace;font-size:20px;font-weight:700;color:var(--green);">$0.00</span>
+    </div>
+
+    <div class="edit-section-label">Send To</div>
+    <div class="inv-grid" style="margin-bottom:4px;">
+      <div class="inv-field">
+        <label>Customer Email</label>
+        <input type="email" id="inv-email" placeholder="customer@email.com">
+      </div>
+      <div class="inv-field">
+        <label>Rigger Email <span style="font-weight:400;text-transform:none;letter-spacing:0;font-size:10px;color:var(--text-muted)">(copy)</span></label>
+        <input type="email" id="inv-rigger-email" placeholder="rigger@email.com">
+      </div>
+    </div>
+    <div style="font-size:11px;color:var(--text-muted);margin-bottom:14px;">Fill in at least one email address. Both will receive the invoice if provided.</div>
+
+    <div class="edit-save-status" id="inv-send-status"></div>
+
+    <div class="edit-actions">
+      <button class="btn-save-edit" onclick="sendEditedInvoice()" style="background:var(--green);color:#0e1117;">📧 Send Invoice</button>
+      <button class="btn-cancel-edit" onclick="closeInvoiceModal()">Cancel</button>
     </div>
   </div>
 </div>
