@@ -236,7 +236,7 @@ body {
         <p>Gear Service</p>
       </div>
     </div>
-    <a href="index.htm" class="btn-back">✚ <span class="btn-back-label">Request Service</span></a>
+    <a href="index.htm" class="btn-back">✚ <span class="btn-back-label">HOME</span></a>
   </div>
 </div>
 
@@ -404,7 +404,7 @@ async function lookupHistory(){
           ${h.rigger?`<div style="font-size:12px;color:var(--text-muted);margin-top:8px;">Serviced by: ${h.rigger}</div>`:''}
           <div style="margin-top:12px;">
             <a href="index.htm?prefill=1&sn=${encodeURIComponent(h.rig_sn)}&email=${encodeURIComponent(h.customer_email||'')}" 
-               class="btn-new-request" style="font-size:12px;padding:8px 16px;">+ Request Service on this Rig</a>
+               class="btn-new-request" style="font-size:12px;padding:8px 16px;">+ Resquest Service on this Rig</a>
           </div>
         </div>`;
       listEl.appendChild(card);
