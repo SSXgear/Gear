@@ -307,11 +307,12 @@
     <div id="tab-history" style="display:none">
       <div style="margin-bottom:16px;">
         <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:2px;margin-bottom:6px;">Customer History Lookup</div>
-        <div style="font-size:13px;color:var(--text-dim);margin-bottom:14px;">Search by customer email or container serial number.</div>
+        <div style="font-size:13px;color:var(--text-dim);margin-bottom:14px;">Search by customer name, email, or container serial number.</div>
       </div>
       <div class="history-search-wrap">
-        <input type="text" id="history-search-email" placeholder="Customer email address" autocomplete="off">
-        <input type="text" id="history-search-sn" placeholder="Container S/N" autocomplete="off" style="max-width:200px;">
+        <input type="text" id="history-search-name" placeholder="Customer name" autocomplete="off" style="max-width:220px;">
+        <input type="text" id="history-search-email" placeholder="Email address" autocomplete="off">
+        <input type="text" id="history-search-sn" placeholder="Container S/N" autocomplete="off" style="max-width:160px;">
         <button class="btn btn-primary btn-sm" onclick="searchHistory()" style="width:auto;">Search</button>
       </div>
       <div class="error-msg" id="history-error"></div>
@@ -448,6 +449,10 @@ document.addEventListener('DOMContentLoaded', () => {
   if (inp) inp.addEventListener('keydown', e => { if (e.key === 'Enter') login(); });
   const hs = document.getElementById('history-search-email');
   if (hs) hs.addEventListener('keydown', e => { if (e.key === 'Enter') searchHistory(); });
+  const hsn = document.getElementById('history-search-name');
+  if (hsn) hsn.addEventListener('keydown', e => { if (e.key === 'Enter') searchHistory(); });
+  const hss = document.getElementById('history-search-sn');
+  if (hss) hss.addEventListener('keydown', e => { if (e.key === 'Enter') searchHistory(); });
 });
 
 function logout() {
@@ -1230,15 +1235,17 @@ async function sendEditedInvoice() {
 }
 
 async function searchHistory() {
+  const name  = document.getElementById('history-search-name').value.trim();
   const email = document.getElementById('history-search-email').value.trim().toLowerCase();
   const sn    = document.getElementById('history-search-sn').value.trim();
   const errEl = document.getElementById('history-error');
   const resultsEl = document.getElementById('history-results');
   errEl.style.display = 'none';
-  if (!email && !sn) { errEl.textContent = 'Enter an email or serial number.'; errEl.style.display = 'block'; return; }
+  if (!name && !email && !sn) { errEl.textContent = 'Enter a name, email, or serial number.'; errEl.style.display = 'block'; return; }
   resultsEl.innerHTML = '<div style="color:var(--text-muted);padding:20px 0;">Searching...</div>';
   try {
     const params = new URLSearchParams({action:'getHistory'});
+    if (name)  params.append('name',  name.toLowerCase());
     if (email) params.append('email', email);
     if (sn)    params.append('sn', sn);
     const data = await jsonpFetch(SCRIPT_URL + '?' + params.toString());
