@@ -1,0 +1,1592 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link rel="manifest" href="manifest.json">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="SSXgear">
+<meta name="theme-color" content="#080c12">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SSX — Rigger Queue</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root{--bg:#0e1117;--surface:#161b25;--surface2:#1e2535;--border:rgba(255,255,255,0.08);--blue:#3b82f6;--blue-dim:rgba(59,130,246,0.15);--green:#22c55e;--green-dim:rgba(34,197,94,0.12);--red:#ef4444;--red-dim:rgba(239,68,68,0.12);--yellow:#f59e0b;--yellow-dim:rgba(245,158,11,0.12);--purple:#a78bfa;--purple-dim:rgba(167,139,250,0.12);--sky:#38bdf8;--sky-dim:rgba(56,189,248,0.12);--text:#f1f5f9;--text-dim:#94a3b8;--text-muted:#475569;--accent:#60a5fa;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;}
+  .header{background:linear-gradient(135deg,#0a0f1e,#0e1628,#0a1520);border-bottom:1px solid var(--border);}
+  .header-inner{max-width:960px;margin:0 auto;padding:14px 12px;display:flex;align-items:center;justify-content:space-between;gap:10px;}
+  .header-left{display:flex;align-items:center;gap:10px;min-width:0;flex:1;}
+  .header-logo{flex-shrink:0;}
+  .header-logo img{height:40px;width:auto;border-radius:6px;}
+  .header-text h1{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:2px;line-height:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .header-text p{font-size:10px;color:var(--text-dim);margin-top:2px;}
+  @media(max-width:480px){.header-text{display:none;}}
+  .header-req-btn{background:rgba(56,189,248,0.12);border:1px solid rgba(56,189,248,0.3);color:#38bdf8;border-radius:8px;padding:7px 14px;font-family:'Bebas Neue',sans-serif;font-size:13px;letter-spacing:1px;text-decoration:none;white-space:nowrap;flex-shrink:0;}
+  .header-req-label{display:inline;}
+  @media(max-width:400px){.header-req-label{display:none;}}
+  @media(max-width:500px){
+    .header-inner{padding:8px 10px;}
+    .header-text h1{font-size:14px;letter-spacing:1px;}
+    .header-text p{display:none;}
+    .header-logo img{height:32px;}
+  }
+  .logout-btn{background:transparent;border:1px solid var(--border);color:var(--text-dim);border-radius:7px;padding:10px 14px;font-family:'DM Sans',sans-serif;font-size:12px;cursor:pointer;transition:border-color 0.2s;min-height:44px;-webkit-tap-highlight-color:transparent;}
+  .logout-btn:hover{border-color:var(--red);color:var(--red);}
+  .main{max-width:960px;margin:0 auto;padding:16px 12px 80px;}
+  .screen{display:none;}.screen.active{display:block;}
+  .login-wrap{max-width:360px;margin:60px auto;text-align:center;padding:0 4px;}
+  .login-wrap h2{font-family:'Bebas Neue',sans-serif;font-size:30px;letter-spacing:2px;margin-bottom:8px;}
+  .login-wrap p{color:var(--text-dim);font-size:14px;margin-bottom:28px;}
+  .login-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:24px 20px;}
+  .field{margin-bottom:14px;text-align:left;}
+  .field label{display:block;font-size:12px;font-weight:600;color:var(--text-dim);margin-bottom:6px;}
+  .field input{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:16px;padding:12px 14px;transition:border-color 0.2s;min-height:48px;}
+  .field input:focus{outline:none;border-color:var(--blue);}
+  .btn{border:none;border-radius:8px;padding:14px 22px;font-family:'DM Sans',sans-serif;font-weight:700;font-size:14px;cursor:pointer;transition:opacity 0.2s;min-height:48px;-webkit-tap-highlight-color:transparent;}
+  .btn:hover{opacity:0.85;}
+  .btn-primary{background:var(--blue);color:#fff;width:100%;}
+  .btn-green{background:var(--green);color:#0e1117;}
+  .btn-sm{padding:10px 16px;font-size:13px;min-height:44px;}
+  .btn-ghost{background:transparent;border:1px solid var(--border);color:var(--text-dim);}
+  .btn-danger{background:var(--red-dim);border:1px solid rgba(239,68,68,0.3);color:var(--red);}
+  .error-msg{background:var(--red-dim);border:1px solid rgba(239,68,68,0.3);color:var(--red);border-radius:8px;padding:10px 14px;font-size:13px;margin-bottom:14px;display:none;}
+  .dash-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:20px;}
+  @media(max-width:600px){.dash-grid{grid-template-columns:repeat(2,1fr);}}
+  .dash-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px 16px;text-align:center;}
+  .dash-val{font-family:'Bebas Neue',sans-serif;font-size:32px;letter-spacing:1px;line-height:1;}
+  .dash-lbl{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-muted);margin-top:4px;}
+  .dash-val.v-total{color:var(--text);}
+  .dash-val.v-pending{color:var(--yellow);}
+  .dash-val.v-progress{color:var(--blue);}
+  .dash-val.v-ready{color:var(--green);}
+  .queue-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px;}
+  .queue-title{font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:2px;}
+  .queue-count{background:var(--yellow-dim);border:1px solid rgba(245,158,11,0.3);color:var(--yellow);border-radius:20px;padding:4px 12px;font-size:12px;font-weight:700;}
+  .queue-filters{display:flex;gap:6px;flex-wrap:wrap;}
+  .filter-btn{background:transparent;border:1px solid var(--border);color:var(--text-muted);border-radius:20px;padding:5px 14px;font-size:12px;font-weight:600;cursor:pointer;transition:all 0.15s;-webkit-tap-highlight-color:transparent;}
+  .filter-btn.active{border-color:var(--blue);color:var(--accent);background:var(--blue-dim);}
+  .queue-empty{text-align:center;padding:60px 20px;color:var(--text-muted);}
+  .queue-empty .icon{font-size:48px;margin-bottom:14px;}
+  .order-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;margin-bottom:12px;overflow:hidden;transition:border-color 0.2s;}
+  .order-card.status-IN_PROGRESS{border-color:rgba(59,130,246,0.35);}
+  .order-card.status-GEAR_READY{border-color:rgba(34,197,94,0.35);}
+  .order-card-header{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid var(--border);flex-wrap:wrap;gap:8px;cursor:pointer;-webkit-tap-highlight-color:transparent;}
+  .order-card-header:hover,.order-card-header:active{background:var(--surface2);}
+  .order-wo{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:600;color:var(--accent);display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+  .order-rig{font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:1px;}
+  .order-meta{font-size:12px;color:var(--text-dim);margin-top:2px;}
+  .order-time{font-size:11px;color:var(--text-muted);text-align:right;}
+  .order-expand{color:var(--text-muted);font-size:18px;transition:transform 0.2s;flex-shrink:0;}
+  .order-card.expanded .order-expand{transform:rotate(180deg);}
+  .order-body{display:none;padding:16px;}
+  .order-card.expanded .order-body{display:block;}
+  .status-badge{display:inline-block;padding:2px 10px;border-radius:20px;font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;}
+  .sb-PENDING{background:var(--yellow-dim);color:var(--yellow);border:1px solid rgba(245,158,11,0.3);}
+  .sb-IN_PROGRESS{background:var(--blue-dim);color:var(--accent);border:1px solid rgba(59,130,246,0.3);}
+  .sb-GEAR_READY{background:var(--green-dim);color:var(--green);border:1px solid rgba(34,197,94,0.3);}
+  .status-row{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;}
+  .status-opt{flex:1;min-width:100px;padding:10px 8px;border-radius:9px;border:2px solid var(--border);background:transparent;color:var(--text-dim);font-family:'DM Sans',sans-serif;font-size:12px;font-weight:700;cursor:pointer;text-align:center;transition:all 0.15s;-webkit-tap-highlight-color:transparent;}
+  .status-opt.sel-PENDING{border-color:var(--yellow);color:var(--yellow);background:var(--yellow-dim);}
+  .status-opt.sel-IN_PROGRESS{border-color:var(--blue);color:var(--accent);background:var(--blue-dim);}
+  .status-opt.sel-GEAR_READY{border-color:var(--green);color:var(--green);background:var(--green-dim);}
+  .order-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;}
+  @media(max-width:500px){.order-grid{grid-template-columns:1fr;}}
+  .info-block{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:12px 14px;}
+  .info-title{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-muted);margin-bottom:8px;}
+  .info-content{font-size:13px;color:var(--text);line-height:1.6;}
+  .complete-section{background:var(--green-dim);border:1px solid rgba(34,197,94,0.2);border-radius:10px;padding:14px;margin-top:14px;}
+  .complete-title{font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--green);margin-bottom:12px;}
+  .complete-row{display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap;}
+  .complete-field{flex:1;min-width:160px;}
+  .complete-field label{display:block;font-size:11px;font-weight:600;color:var(--text-dim);margin-bottom:5px;}
+  .complete-field input,.complete-field textarea{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:16px;padding:10px 12px;min-height:44px;}
+  .complete-field textarea{resize:vertical;min-height:60px;font-size:15px;}
+  .complete-actions{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;}
+  .gear-tabs{display:flex;gap:4px;margin-bottom:14px;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:4px;}
+  .gear-tab{flex:1;padding:8px 6px;text-align:center;border-radius:7px;cursor:pointer;font-size:12px;font-weight:700;color:var(--text-muted);transition:all 0.2s;-webkit-tap-highlight-color:transparent;}
+  .gear-tab.active-fj{background:var(--sky-dim);color:var(--sky);border:1px solid rgba(56,189,248,0.3);}
+  .gear-tab.active-dz{background:var(--red-dim);color:var(--red);border:1px solid rgba(239,68,68,0.3);}
+  .gear-tab.active-all{background:var(--blue-dim);color:var(--accent);border:1px solid rgba(59,130,246,0.3);}
+  .signin-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:9999;align-items:center;justify-content:center;padding:16px;}
+  .signin-modal.open{display:flex;}
+  .signin-box{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:24px 20px;width:100%;max-width:400px;box-shadow:0 24px 60px rgba(0,0,0,0.6);}
+  .signin-title{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:1.5px;color:var(--blue);margin-bottom:4px;}
+  .signin-sub{font-size:12px;color:var(--text-muted);margin-bottom:18px;}
+  .svc-list-view{list-style:none;}
+  .svc-list-view li{padding:5px 0;border-bottom:1px solid var(--border);font-size:13px;display:flex;justify-content:space-between;}
+  .svc-list-view li:last-child{border-bottom:none;}
+  .add-svc-toggle{background:var(--surface2);border:1px solid var(--border);color:var(--text-dim);border-radius:8px;padding:8px 14px;font-size:12px;font-weight:600;cursor:pointer;margin-top:8px;width:100%;text-align:left;}
+  .add-svc-panel{display:none;margin-top:8px;}
+  .add-svc-panel.open{display:block;}
+  .charge-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px;padding:10px 12px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;}
+  .charge-field label{font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text-muted);display:block;margin-bottom:4px;}
+  .charge-field input{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:7px;color:var(--text);font-family:'JetBrains Mono',monospace;font-size:14px;padding:8px 10px;min-height:40px;}
+  .history-search-wrap{display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap;}
+  .history-search-wrap input{flex:1;min-width:180px;background:var(--surface);border:1px solid var(--border);border-radius:9px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:15px;padding:12px 14px;min-height:48px;}
+  .history-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px 16px;margin-bottom:10px;}
+  .history-wo{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--accent);margin-bottom:4px;}
+  .history-rig{font-size:14px;font-weight:600;margin-bottom:3px;}
+  .history-svc{font-size:12px;color:var(--text-dim);line-height:1.5;}
+  .history-meta{font-size:11px;color:var(--text-muted);margin-top:6px;}
+  .settings-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:20px;margin-bottom:20px;}
+  .settings-title{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:1.5px;margin-bottom:18px;padding-bottom:12px;border-bottom:1px solid var(--border);}
+  .pw-row{display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap;}
+  .pw-field{flex:1;min-width:140px;}
+  .pw-field label{display:block;font-size:12px;font-weight:600;color:var(--text-dim);margin-bottom:6px;}
+  .pw-field input{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:16px;padding:12px 14px;min-height:48px;}
+  .success-toast{background:var(--green-dim);border:1px solid rgba(34,197,94,0.3);color:var(--green);border-radius:8px;padding:10px 14px;font-size:13px;margin-top:12px;display:none;}
+  .tab-bar{display:flex;gap:4px;margin-bottom:16px;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:4px;}
+  .tab{flex:1;padding:8px 6px;text-align:center;border-radius:7px;cursor:pointer;font-size:12px;font-weight:600;color:var(--text-dim);transition:all 0.2s;min-height:40px;display:flex;align-items:center;justify-content:center;gap:5px;-webkit-tap-highlight-color:transparent;white-space:nowrap;}
+  .tab.active{background:var(--blue);color:#fff;}
+  .tab-label{display:inline;}
+  @media(max-width:500px){.tab{font-size:11px;padding:7px 4px;}.tab-label{display:none;}}
+  .refresh-btn{background:var(--surface2);border:1px solid var(--border);color:var(--text-dim);border-radius:8px;padding:10px 16px;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:6px;min-height:44px;-webkit-tap-highlight-color:transparent;}
+  .svc-edit-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+  @media(max-width:500px){.svc-edit-grid{grid-template-columns:1fr;}}
+  .svc-item{display:flex;align-items:center;gap:10px;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:11px 12px;cursor:pointer;transition:border-color 0.15s,background 0.15s;user-select:none;min-height:48px;-webkit-tap-highlight-color:transparent;}
+  .svc-item.checked{background:var(--blue-dim);border-color:rgba(59,130,246,0.5);}
+  .svc-item input{display:none;}
+  .svc-check{width:20px;height:20px;border:2px solid var(--text-muted);border-radius:4px;flex-shrink:0;display:flex;align-items:center;justify-content:center;}
+  .svc-item.checked .svc-check{background:var(--blue);border-color:var(--blue);}
+  .svc-check::after{content:'✓';font-size:11px;color:#fff;display:none;}
+  .svc-item.checked .svc-check::after{display:block;}
+  .svc-label{font-size:13px;line-height:1.3;flex:1;display:flex;align-items:center;justify-content:space-between;gap:8px;}
+  .svc-price{font-size:11px;font-weight:700;color:var(--blue);white-space:nowrap;flex-shrink:0;}
+  .modal-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);display:none;align-items:center;justify-content:center;z-index:1000;padding:16px;}
+  .modal-overlay.open{display:flex;}
+  .modal-box{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:24px 20px;max-width:420px;width:100%;text-align:center;}
+  .modal-icon{font-size:40px;margin-bottom:14px;}
+  .modal-title{font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:2px;color:var(--yellow);margin-bottom:10px;}
+  .modal-text{color:var(--text-dim);font-size:14px;line-height:1.6;margin-bottom:20px;}
+  .modal-text strong{color:var(--text);}
+  .modal-actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;}
+  .btn-confirm{background:var(--green);color:#0e1117;border:none;border-radius:8px;padding:13px 28px;font-family:'Bebas Neue',sans-serif;font-size:17px;letter-spacing:1.5px;cursor:pointer;min-height:48px;}
+  .btn-cancel-modal{background:transparent;border:1px solid var(--border);color:var(--text-dim);border-radius:8px;padding:13px 20px;font-family:'DM Sans',sans-serif;font-weight:600;font-size:13px;cursor:pointer;min-height:48px;}
+  .btn-green{position:relative;overflow:hidden;}
+  .btn-green.submitting{opacity:0.85;pointer-events:none;}
+  .btn-green.submitting .btn-text{display:none;}
+  .btn-green .btn-spinner{display:none;align-items:center;justify-content:center;gap:8px;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);}
+  .btn-green.submitting .btn-spinner{display:flex;}
+  @keyframes spin{to{transform:rotate(360deg);}}
+  .spinner-ring{width:16px;height:16px;border:2.5px solid rgba(14,17,23,0.3);border-top-color:#0e1117;border-radius:50%;animation:spin 0.65s linear infinite;flex-shrink:0;}
+
+  /* ── INVOICE EDIT MODAL ── */
+  .inv-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+  @media(max-width:480px){.inv-grid{grid-template-columns:1fr;}}
+  .inv-field{display:flex;flex-direction:column;gap:5px;}
+  .inv-field.full{grid-column:1/-1;}
+  .inv-field label{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-muted);}
+  .inv-field input,.inv-field textarea{background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:15px;padding:10px 12px;min-height:44px;outline:none;transition:border-color 0.2s;}
+  .inv-field input:focus,.inv-field textarea:focus{border-color:var(--sky);}
+  .inv-field textarea{resize:vertical;min-height:70px;}
+
+  /* ── EDIT INFO MODAL ── */
+  .edit-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.8);z-index:9999;align-items:flex-start;justify-content:center;padding:16px;overflow-y:auto;}
+  .edit-modal.open{display:flex;}
+  .edit-modal-box{background:var(--surface);border:1px solid rgba(56,189,248,0.3);border-radius:16px;padding:24px 20px;width:100%;max-width:560px;margin:auto;box-shadow:0 24px 60px rgba(0,0,0,0.7);}
+  .edit-modal-title{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:1.5px;color:var(--sky);margin-bottom:4px;}
+  .edit-modal-sub{font-size:12px;color:var(--text-muted);margin-bottom:18px;}
+  .edit-section-label{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--text-muted);margin:16px 0 8px;padding-bottom:5px;border-bottom:1px solid var(--border);}
+  .edit-section-label:first-of-type{margin-top:0;}
+  .edit-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+  @media(max-width:480px){.edit-grid{grid-template-columns:1fr;}}
+  .edit-field{display:flex;flex-direction:column;gap:5px;}
+  .edit-field.full{grid-column:1/-1;}
+  .edit-field label{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-muted);}
+  .edit-field input{background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:15px;padding:10px 12px;min-height:44px;outline:none;transition:border-color 0.2s;}
+  .edit-field input:focus{border-color:var(--sky);}
+  .edit-actions{display:flex;gap:10px;margin-top:20px;padding-top:16px;border-top:1px solid var(--border);}
+  .btn-save-edit{background:var(--sky);color:#0e1117;border:none;border-radius:8px;padding:12px 24px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;cursor:pointer;flex:1;min-height:48px;}
+  .btn-cancel-edit{background:transparent;border:1px solid var(--border);color:var(--text-dim);border-radius:8px;padding:12px 18px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;min-height:48px;}
+  .edit-save-status{font-size:12px;margin-top:8px;display:none;padding:8px 12px;border-radius:7px;}
+  .edit-save-status.ok{background:var(--green-dim);border:1px solid rgba(34,197,94,0.3);color:var(--green);}
+  .edit-save-status.err{background:var(--red-dim);border:1px solid rgba(239,68,68,0.3);color:var(--red);}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-inner">
+    <div class="header-left">
+      <div class="header-logo"><img src="index_files/ssx-logo.png" alt="Skydive Sussex" onerror="this.style.display='none'"></div>
+      <div class="header-text"><h1>SSX Rigger Queue</h1><p>MANAGEMENT PORTAL</p></div>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px;">
+      <a href="index.htm" style="display:flex;align-items:center;gap:5px;padding:7px 14px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.15);border-radius:8px;color:var(--text-dim);font-family:'Bebas Neue',sans-serif;font-size:13px;letter-spacing:1px;text-decoration:none;white-space:nowrap;transition:border-color 0.2s,color 0.2s;-webkit-tap-highlight-color:transparent;" onmouseover="this.style.borderColor='var(--sky)';this.style.color='var(--sky)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.15)';this.style.color='var(--text-dim)'">🏠 Home</a>
+      <a href="index.htm" class="header-req-btn">🏠 <span class="header-req-label">HOME</span></a>
+      <button class="logout-btn" onclick="logout()" id="logout-btn" style="display:none">Logout</button>
+    </div>
+  </div>
+</div>
+
+<div class="main">
+  <div class="screen active" id="screen-login">
+    <div class="login-wrap">
+      <h2>Rigger Access</h2>
+      <p>Enter your password to view the service queue</p>
+      <div class="login-card">
+        <div class="field">
+          <label>Password</label>
+          <input type="password" id="pw-input" placeholder="Enter password" autocomplete="current-password">
+        </div>
+        <div class="error-msg" id="login-error">Incorrect password. Please try again.</div>
+        <button class="btn btn-primary" onclick="login()">Access Queue ▶</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="screen" id="screen-queue">
+    <div class="tab-bar">
+      <div class="tab active" onclick="switchTab('queue')" id="tab-btn-queue">📋 <span class="tab-label">Queue</span></div>
+      <div class="tab" onclick="switchTab('svchistory')" id="tab-btn-svchistory">📁 <span class="tab-label">History</span></div>
+      <div class="tab" onclick="switchTab('history')" id="tab-btn-history">🔍 <span class="tab-label">Customer</span></div>
+      <div class="tab" onclick="switchTab('settings')" id="tab-btn-settings">⚙ <span class="tab-label">Settings</span></div>
+    </div>
+
+    <div id="tab-queue">
+      <div class="dash-grid" id="dashboard-stats">
+        <div class="dash-card"><div class="dash-val v-total" id="ds-total">—</div><div class="dash-lbl">Total Active</div></div>
+        <div class="dash-card"><div class="dash-val v-pending" id="ds-pending">—</div><div class="dash-lbl">Pending</div></div>
+        <div class="dash-card"><div class="dash-val v-progress" id="ds-progress">—</div><div class="dash-lbl">In Progress</div></div>
+        <div class="dash-card"><div class="dash-val v-ready" id="ds-ready">—</div><div class="dash-lbl">Gear Ready</div></div>
+      </div>
+      <div class="queue-header">
+        <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+          <div class="queue-title">Service Queue</div>
+          <div class="queue-count" id="queue-count">0 orders</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+          <div class="queue-filters">
+            <button class="filter-btn active" onclick="setQueueFilter('ALL')" id="qf-ALL">All</button>
+            <button class="filter-btn" onclick="setQueueFilter('PENDING')" id="qf-PENDING">📥 Pending</button>
+            <button class="filter-btn" onclick="setQueueFilter('IN_PROGRESS')" id="qf-IN_PROGRESS">🔧 In Progress</button>
+            <button class="filter-btn" onclick="setQueueFilter('GEAR_READY')" id="qf-GEAR_READY">✅ Gear Ready</button>
+          </div>
+          <button class="refresh-btn" onclick="loadQueue()">↻ Refresh</button>
+        </div>
+      </div>
+      <div class="gear-tabs">
+        <div class="gear-tab active-all" id="gt-all" onclick="setGearType('all')">🔀 All Gear</div>
+        <div class="gear-tab" id="gt-fj" onclick="setGearType('fj')">🪂 Fun Jumper</div>
+        <div class="gear-tab" id="gt-dz" onclick="setGearType('dz')">🏫 DZ Gear</div>
+      </div>
+      <div id="queue-list"></div>
+    </div>
+
+    <div id="tab-svchistory" style="display:none">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px;">
+        <div>
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:2px;margin-bottom:4px;">Service History</div>
+          <div style="font-size:13px;color:var(--text-dim);">All completed service orders</div>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+          <a href="https://docs.google.com/spreadsheets/d/18xWrsryd3PUw_y02wrCJOPQ4ZBkFFPtZrCILRsrnSD8" target="_blank"
+             style="display:flex;align-items:center;gap:6px;padding:9px 14px;background:rgba(74,222,128,0.1);border:1px solid rgba(74,222,128,0.3);color:var(--green);border-radius:8px;font-size:12px;font-weight:700;text-decoration:none;white-space:nowrap;">
+            📊 Open in Sheets
+          </a>
+          <button class="refresh-btn" onclick="loadServiceHistory()">↻ Refresh</button>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;">
+        <input type="text" id="sh-search" placeholder="Search by name, rig #, S/N, rigger…"
+          style="flex:1;min-width:200px;background:var(--surface);border:1px solid var(--border);border-radius:9px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;padding:10px 14px;min-height:44px;outline:none;"
+          oninput="filterServiceHistory()">
+        <select id="sh-type-filter" onchange="filterServiceHistory()"
+          style="background:var(--surface);border:1px solid var(--border);border-radius:9px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;padding:10px 12px;min-height:44px;outline:none;cursor:pointer;">
+          <option value="all">All Types</option>
+          <option value="fun-jumper">Fun Jumper</option>
+          <option value="tandem">Tandem</option>
+          <option value="student">Student</option>
+        </select>
+      </div>
+      <div id="sh-stats" style="font-size:12px;color:var(--text-muted);margin-bottom:12px;"></div>
+      <div class="error-msg" id="sh-error"></div>
+      <div id="sh-list"><div style="text-align:center;padding:40px;color:var(--text-muted);">Click Refresh to load history</div></div>
+    </div>
+
+    <div id="tab-history" style="display:none">
+      <div style="margin-bottom:16px;">
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:2px;margin-bottom:6px;">Customer History Lookup</div>
+        <div style="font-size:13px;color:var(--text-dim);margin-bottom:14px;">Search by customer name, email, or container serial number.</div>
+      </div>
+      <div class="history-search-wrap">
+        <input type="text" id="history-search-name" placeholder="Customer name" autocomplete="off" style="max-width:220px;">
+        <input type="text" id="history-search-email" placeholder="Email address" autocomplete="off">
+        <input type="text" id="history-search-sn" placeholder="Container S/N" autocomplete="off" style="max-width:160px;">
+        <button class="btn btn-primary btn-sm" onclick="searchHistory()" style="width:auto;">Search</button>
+      </div>
+      <div class="error-msg" id="history-error"></div>
+      <div id="history-results"></div>
+    </div>
+
+    <div id="tab-settings" style="display:none">
+      <div class="settings-card">
+        <div class="settings-title">Change Password</div>
+        <div class="pw-row">
+          <div class="pw-field"><label>Current Password</label><input type="password" id="pw-current" placeholder="Current password"></div>
+          <div class="pw-field"><label>New Password</label><input type="password" id="pw-new" placeholder="New password"></div>
+          <div class="pw-field"><label>Confirm New Password</label><input type="password" id="pw-confirm" placeholder="Confirm new password"></div>
+        </div>
+        <div class="error-msg" id="pw-error" style="margin-top:12px;"></div>
+        <div class="success-toast" id="pw-success">✓ Password updated successfully!</div>
+        <button class="btn btn-primary" style="margin-top:14px;width:auto;padding:11px 24px;" onclick="changePassword()">Update Password</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwwQede6kkJjleWRAnMuZjCFXTzQ-Cy2-pavCKy1CiUN9X2wUTW4q5vHf7lCCUZlCSZvw/exec';
+
+const SERVICE_GROUPS = [
+  { group: '🔁 Repacks & Inspections', items: [
+    {name:"Reserve Inspection & Repack (Sport)",price:"$115"},
+    {name:"Assembly, Inspection & Pack Reserve (Sport)",price:"$140"},
+    {name:"Assembly, Inspection & Pack Main",price:"$75"},
+    {name:"Inspect Main or Reserve",price:"$25"},
+    {name:"Inspect Harness / Container",price:"$20"},
+    {name:"Inspect & Pack Pilot's Emergency Rig",price:"$120"},
+  ]},
+  { group: '📦 Packing', items: [{name:"Pack Main Sport",price:"$15"}]},
+  { group: '🔧 Hardware & Parts', items: [
+    {name:"Reserve Safety Stow Replacement",price:"$12"},
+    {name:"Slinks",price:"$35"},
+    {name:"Tack Slinks / Links",price:"$5"},
+    {name:"Install Slider Bumpers",price:"$25"},
+    {name:"BOC Replacement",price:"$100"},
+    {name:"Kill Line Replacement",price:"$25"},
+    {name:"Disassemble Main or Reserve",price:"$10"},
+  ]},
+  { group: '📏 Lines', items: [
+    {name:"Replace Lower Steering Lines",price:"$40"},
+    {name:"Replace Steering Lines Toggles to Cascades",price:"$65"},
+    {name:"Full Line Set",price:"Varies"},
+    {name:"Re-line Sport",price:"$130"},
+  ]},
+  { group: '⚡ AAD', items: [
+    {name:"Install AAD",price:"$10"},
+    {name:"AAD Batteries / Service",price:"Varies"},
+  ]},
+  { group: '🧵 Fabric & Repair', items: [
+    {name:"Canopy Patch",price:"Varies"},
+    {name:"Sewing",price:"$85/hr"},
+    {name:"Fabric Tensile Test",price:"$20"},
+  ]},
+  { group: '🧼 Cleaning', items: [{name:"Wash Rig",price:"$65"}]},
+];
+const SERVICES = SERVICE_GROUPS.flatMap(g => g.items);
+
+const SVC_PRICES = {
+  'Reserve Inspection & Repack (Sport)':115,'Inspect Main or Reserve':25,
+  'Inspect Harness / Container':20,"Inspect & Pack Pilot's Emergency Rig":120,
+  'Pack Main Sport':15,'Install AAD':10,'Reserve Safety Stow Replacement':12,
+  'Replace Lower Steering Lines':40,'Replace Steering Lines Toggles to Cascades':65,
+  'Re-line Sport':130,'Slinks':35,'Assembly, Inspection & Pack Reserve (Sport)':140,
+  'Assembly, Inspection & Pack Main':75,'Disassemble Main or Reserve':10,
+  'Install Slider Bumpers':25,'Fabric Tensile Test':20,'Kill Line Replacement':25,
+  'BOC Replacement':100,'Tack Slinks / Links':5,'Wash Rig':65,
+  '2–5 Day Rush +$40':40,'Same / Next Day Rush +$65':65,
+};
+
+let pendingOrders = [];
+let currentPassword = localStorage.getItem('ssxQueuePw') || '1234';
+let activeQueueFilter = 'ALL';
+let activeGearType = 'all';
+let allCompletedOrders = [];
+let editingOrderIdx = null;
+
+// ── JSONP HELPER ─────────────────────────────────────────────
+function jsonpFetch(url) {
+  return new Promise((resolve, reject) => {
+    const cb = '_gasCB_' + Date.now();
+    const script = document.createElement('script');
+    const timeout = setTimeout(() => {
+      delete window[cb]; script.remove();
+      reject(new Error('Timeout'));
+    }, 15000);
+    window[cb] = (data) => {
+      clearTimeout(timeout); delete window[cb]; script.remove();
+      resolve(data);
+    };
+    script.onerror = () => {
+      clearTimeout(timeout); delete window[cb]; script.remove();
+      reject(new Error('Load failed'));
+    };
+    script.src = url + (url.includes('?') ? '&' : '?') + 'callback=' + cb;
+    document.head.appendChild(script);
+  });
+}
+
+function setGearType(t) {
+  activeGearType = t;
+  ['all','fj','dz'].forEach(k => {
+    const el = document.getElementById('gt-' + k);
+    if (el) el.className = 'gear-tab' + (k === t ? ' active-' + k : '');
+  });
+  renderQueue();
+}
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+function login() {
+  const pw = document.getElementById('pw-input').value;
+  const errEl = document.getElementById('login-error');
+  if (pw === currentPassword) {
+    errEl.style.display = 'none';
+    showScreen('screen-queue');
+    document.getElementById('logout-btn').style.display = 'block';
+    loadQueue();
+  } else {
+    errEl.style.display = 'block';
+  }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  const inp = document.getElementById('pw-input');
+  if (inp) inp.addEventListener('keydown', e => { if (e.key === 'Enter') login(); });
+  const hs = document.getElementById('history-search-email');
+  if (hs) hs.addEventListener('keydown', e => { if (e.key === 'Enter') searchHistory(); });
+  const hsn = document.getElementById('history-search-name');
+  if (hsn) hsn.addEventListener('keydown', e => { if (e.key === 'Enter') searchHistory(); });
+  const hss = document.getElementById('history-search-sn');
+  if (hss) hss.addEventListener('keydown', e => { if (e.key === 'Enter') searchHistory(); });
+});
+
+function logout() {
+  document.getElementById('logout-btn').style.display = 'none';
+  document.getElementById('pw-input').value = '';
+  showScreen('screen-login');
+}
+
+function switchTab(tab) {
+  ['queue','svchistory','history','settings'].forEach(t => {
+    document.getElementById('tab-btn-' + t).classList.toggle('active', t === tab);
+    document.getElementById('tab-' + t).style.display = t === tab ? 'block' : 'none';
+  });
+  if (tab === 'svchistory' && allCompletedOrders.length === 0) loadServiceHistory();
+}
+
+function setQueueFilter(f) {
+  activeQueueFilter = f;
+  ['ALL','PENDING','IN_PROGRESS','GEAR_READY'].forEach(x => {
+    document.getElementById('qf-' + x).classList.toggle('active', x === f);
+  });
+  renderQueue();
+}
+
+async function loadQueue() {
+  const listEl = document.getElementById('queue-list');
+  listEl.innerHTML = '<div style="text-align:center;padding:40px;color:var(--text-muted);">Loading...</div>';
+  try {
+    const data = await jsonpFetch(SCRIPT_URL + '?action=getPending');
+    pendingOrders = (data.pending || []).map(o => {
+      if (o.activity_log) {
+        try { o._activity_log = JSON.parse(o.activity_log); }
+        catch(e) { o._activity_log = []; }
+      } else { o._activity_log = []; }
+      return o;
+    });
+    updateDashboard();
+    renderQueue();
+  } catch(e) {
+    listEl.innerHTML = '<div style="text-align:center;padding:40px;color:var(--red);">⚠️ Failed to load queue.<br><small style="color:var(--text-muted);">' + e.message + '</small><br><br><button onclick="loadQueue()" style="margin-top:8px;padding:10px 20px;background:var(--blue);color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:14px;">Retry</button></div>';
+  }
+}
+
+function updateDashboard() {
+  let total=0, pending=0, progress=0, ready=0;
+  pendingOrders.forEach(o => {
+    total++;
+    const s = (o.status || 'PENDING').toUpperCase();
+    if (s === 'PENDING') pending++;
+    if (s === 'IN_PROGRESS') progress++;
+    if (s === 'GEAR_READY') ready++;
+  });
+  document.getElementById('ds-total').textContent = total;
+  document.getElementById('ds-pending').textContent = pending;
+  document.getElementById('ds-progress').textContent = progress;
+  document.getElementById('ds-ready').textContent = ready;
+  document.getElementById('queue-count').textContent = total + ' order' + (total !== 1 ? 's' : '');
+}
+
+function statusLabel(s) {
+  if (s === 'IN_PROGRESS') return '🔧 In Progress';
+  if (s === 'GEAR_READY')  return '✅ Gear Ready';
+  return '📥 Pending';
+}
+
+function calcTotal(services) {
+  let total = 0, hasVaries = false;
+  (services || '').split(' | ').filter(Boolean).forEach(s => {
+    const p = SVC_PRICES[s];
+    if (p > 0) total += p;
+    else hasVaries = true;
+  });
+  return { total, hasVaries };
+}
+
+function renderQueue() {
+  const listEl = document.getElementById('queue-list');
+  let filtered = pendingOrders.filter(o => {
+    const status = (o.status || 'PENDING').toUpperCase();
+    if (activeQueueFilter !== 'ALL' && status !== activeQueueFilter) return false;
+    if (activeGearType === 'fj' && o.gear_type !== 'fun-jumper') return false;
+    if (activeGearType === 'dz' && o.gear_type === 'fun-jumper') return false;
+    return true;
+  });
+
+  if (filtered.length === 0) {
+    listEl.innerHTML = '<div class="queue-empty"><div class="icon">✅</div><p>' + (activeQueueFilter === 'ALL' ? 'No active service requests.' : 'No orders with this status.') + '</p></div>';
+    return;
+  }
+
+  listEl.innerHTML = '';
+  filtered.forEach((order) => {
+    const realIdx = pendingOrders.indexOf(order);
+    const card = document.createElement('div');
+    const status = (order.status || 'PENDING').toUpperCase();
+    card.className = 'order-card status-' + status;
+    card.id = 'order-' + realIdx;
+
+    const submittedDate = order.submitted_at ? new Date(order.submitted_at).toLocaleDateString() : 'Unknown';
+    const svcs = (order.services || '').split(' | ').filter(Boolean);
+    const isFJ = order.gear_type === 'fun-jumper';
+    const { total, hasVaries } = calcTotal(order.services);
+
+    const rigLine = isFJ
+      ? (order.customer_name || 'Fun Jumper')
+      : ((order.rig_num ? 'RIG #' + order.rig_num + ' — ' : '') + (order.rig_make || ''));
+    const metaLine = isFJ
+      ? 'S/N: ' + (order.rig_sn || '') + ' · ' + (order.rig_make || '') + ' · 📞 ' + (order.customer_phone || '')
+      : 'S/N: ' + (order.rig_sn || '') + ' · ' + (order.gear_type === 'tandem' ? 'Tandem' : 'Student');
+
+    const statusBadge = '<span class="status-badge sb-' + status + '">' + statusLabel(status) + '</span>';
+    const rushBadge = order.rush && order.rush !== 'Standard Turnaround'
+      ? '<span style="background:var(--red-dim);border:1px solid rgba(239,68,68,0.3);color:var(--red);font-size:10px;font-weight:800;padding:2px 8px;border-radius:20px;">⚡ RUSH</span>' : '';
+    const typeBadge = isFJ
+      ? '<span style="background:var(--sky-dim);border:1px solid rgba(56,189,248,0.3);color:var(--sky);font-size:10px;font-weight:800;padding:2px 8px;border-radius:20px;">🪂 FUN JUMPER</span>'
+      : '<span style="background:var(--red-dim);border:1px solid rgba(239,68,68,0.3);color:var(--red);font-size:10px;font-weight:800;padding:2px 8px;border-radius:20px;">🏫 DZ GEAR</span>';
+
+    const svcsHtml = svcs.length > 0
+      ? '<ul class="svc-list-view">' + svcs.map(s => {
+          const found = SERVICES.find(sv => sv.name === s);
+          return '<li><span>' + s + '</span><span style="color:var(--text-muted);font-size:12px;">' + (found ? found.price : '') + '</span></li>';
+        }).join('') + '</ul>'
+      : '<span style="color:var(--text-muted);font-size:13px;">No services selected</span>';
+
+    const isPending = status === 'PENDING';
+
+    card.innerHTML = `
+      <div class="order-card-header" onclick="toggleOrder(${realIdx})">
+        <div>
+          <div class="order-wo">${order.work_order || 'N/A'} ${statusBadge} ${typeBadge} ${rushBadge}</div>
+          <div class="order-rig">${rigLine}</div>
+          <div class="order-meta">${metaLine}</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px;">
+          <div class="order-time">${submittedDate}</div>
+          <div class="order-expand">▾</div>
+        </div>
+      </div>
+      <div class="order-body">
+
+        <!-- EDIT INFO BUTTON -->
+        <div style="margin-bottom:12px;">
+          <button onclick="openEditModal(${realIdx})" style="background:var(--sky-dim);border:1px solid rgba(56,189,248,0.35);color:var(--sky);border-radius:8px;padding:8px 16px;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:6px;min-height:40px;">
+            ✏️ Edit Customer &amp; Rig Info
+          </button>
+        </div>
+
+        ${isFJ ? `<div class="order-grid">
+          <div class="info-block"><div class="info-title">Customer Info</div>
+            <div class="info-content" id="cust-info-${realIdx}">${order.customer_name || ''}<br>${order.customer_phone || ''} · ${order.customer_email || ''}
+            ${order.completion_date ? '<br>Needed by: ' + order.completion_date : ''}
+            ${order.rush && order.rush !== 'Standard' ? '<br><strong>Rush:</strong> ' + order.rush : ''}</div>
+          </div>
+          <div class="info-block"><div class="info-title">Rig Info</div>
+            <div class="info-content" id="rig-info-${realIdx}">Container: ${order.rig_make || ''} S/N: ${order.rig_sn || ''}
+            ${order.res_make ? '<br>Reserve: ' + order.res_make + (order.res_repack_due ? ' Due: ' + new Date(order.res_repack_due + 'T00:00:00').toLocaleDateString() : '') : ''}
+            ${order.aad_make ? '<br>AAD: ' + order.aad_make : ''}
+            ${order.known_damage === 'yes' ? '<br>⚠ <strong>Known damage:</strong> ' + (order.damage_desc || '') : ''}</div>
+          </div></div>` : `<div class="order-grid">
+          <div class="info-block"><div class="info-title">Rig Info</div>
+            <div class="info-content" id="rig-info-${realIdx}">Rig #${order.rig_num || '—'} · ${order.rig_make || '—'}<br>S/N: ${order.rig_sn || '—'}
+            ${order.res_repack_due ? '<br>Reserve Due: ' + new Date(order.res_repack_due + 'T00:00:00').toLocaleDateString() : ''}
+            ${order.aad_make ? '<br>AAD: ' + order.aad_make : ''}</div>
+          </div>
+          <div class="info-block" id="cust-info-${realIdx}"></div>
+          </div>`}
+
+        <div class="info-block" style="margin-bottom:10px;">
+          <div class="info-title">Services (${svcs.length}) — Est. $${total.toFixed(2)}${hasVaries ? ' +varies' : ''}</div>
+          ${svcsHtml}
+        </div>
+
+        ${order.extra_notes ? `<div class="info-block" style="margin-bottom:10px;"><div class="info-title">Notes</div><div class="info-content">${order.extra_notes}</div></div>` : ''}
+
+        <button class="add-svc-toggle" onclick="toggleAddSvc(this)">➕ Add / Edit Services ▾</button>
+        <div class="add-svc-panel">
+          <div class="info-block"><div class="svc-edit-grid" id="svc-grid-${realIdx}"></div></div>
+          <div style="margin-top:8px;">
+            <div style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-muted);margin-bottom:5px;">📝 Rigger Notes</div>
+            <textarea id="rigger-notes-${realIdx}" placeholder="Notes on this service order..." style="width:100%;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;padding:10px 12px;min-height:64px;resize:vertical;"></textarea>
+          </div>
+          <div class="charge-row" style="margin-top:8px;">
+            <div class="charge-field"><label>➕ Extra Charge ($)</label><input type="number" id="extra-charge-${realIdx}" placeholder="0.00" min="0" step="0.01"></div>
+            <div class="charge-field"><label>➖ Discount ($)</label><input type="number" id="discount-${realIdx}" placeholder="0.00" min="0" step="0.01"></div>
+          </div>
+        </div>
+
+        <div class="info-block" style="margin-top:10px;${(order._activity_log && order._activity_log.length) ? '' : 'display:none;'}" id="activity-log-wrap-${realIdx}">
+          <div class="info-title">🔐 Rigger Activity Log</div>
+          <div id="activity-log-${realIdx}">${buildActivityLog(order._activity_log)}</div>
+        </div>
+        ${!(order._activity_log && order._activity_log.length) ? `<div id="activity-log-${realIdx}" style="display:none;"></div>` : ''}
+
+        ${isPending ? `
+        <div style="background:var(--yellow-dim);border:1px solid rgba(245,158,11,0.3);border-radius:10px;padding:14px;margin-top:12px;">
+          <div style="font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--yellow);margin-bottom:10px;">🔐 Rigger Sign-In Required</div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <button class="btn btn-sm" style="background:var(--blue);color:#fff;flex:1;" onclick="openSigninModal(${realIdx})">▶ Start This Service</button>
+            <button class="btn btn-danger btn-sm" onclick="deleteOrder(${realIdx})">✕ Delete</button>
+          </div>
+        </div>` : `
+        <div style="margin-bottom:10px;margin-top:12px;">
+          <div style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-muted);margin-bottom:8px;">Update Status</div>
+          <div class="status-row">
+            ${['IN_PROGRESS','GEAR_READY'].map(s => `<button class="status-opt${status===s?' sel-'+s:''}" onclick="changeStatus(${realIdx},'${s}')" id="st-${realIdx}-${s}">${statusLabel(s)}</button>`).join('')}
+          </div>
+        </div>
+        <div class="complete-section">
+          <div class="complete-title">✓ Mark as Completed</div>
+          <div class="complete-row">
+            <div class="complete-field"><label>Rigger Name *</label><input type="text" id="rigger-${realIdx}" placeholder="Your name" value="${order._rigger_name || ''}"></div>
+            <div class="complete-field"><label>Rigger Symbol *</label><input type="text" id="rigger-symbol-${realIdx}" placeholder="e.g. T.R." value="${order._rigger_symbol || ''}"></div>
+            <div class="complete-field" style="grid-column:1/-1;"><label>Rigger Email <span style="font-weight:400;font-size:10px;text-transform:none;letter-spacing:0;color:var(--text-muted)">(optional — invoice copy)</span></label><input type="email" id="rigger-email-${realIdx}" placeholder="your@email.com" value="${order._rigger_email || ''}"></div>
+            <div class="complete-field" style="grid-column:1/-1;"><label>Internal Notes (optional)</label><textarea id="comp-notes-${realIdx}" placeholder="Final notes..."></textarea></div>
+          </div>
+          <div class="error-msg" id="comp-error-${realIdx}" style="margin-top:8px;"></div>
+          <div class="complete-actions">
+            <button class="btn btn-green btn-sm" id="complete-btn-${realIdx}" onclick="markComplete(${realIdx})">
+              <span class="btn-text">✓ Mark Complete</span>
+              <span class="btn-spinner"><span class="spinner-ring"></span> Saving…</span>
+            </button>
+            <button class="btn btn-danger btn-sm" onclick="deleteOrder(${realIdx})">✕ Delete</button>
+            <button class="btn btn-sm" style="background:var(--surface2);border:1px solid var(--border);color:var(--text-dim);" onclick="printWorkOrder(${realIdx})">🖨 Print</button>
+          </div>
+        </div>`}
+      </div>`;
+
+    listEl.appendChild(card);
+
+    const svcGrid = document.getElementById('svc-grid-' + realIdx);
+    if (svcGrid) {
+      SERVICE_GROUPS.forEach(group => {
+        const hdr = document.createElement('div');
+        hdr.style.cssText = 'grid-column:1/-1;font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-muted);padding:8px 2px 4px;border-bottom:1px solid var(--border);margin-bottom:2px;';
+        hdr.textContent = group.group;
+        svcGrid.appendChild(hdr);
+        group.items.forEach(svc => {
+          const checked = svcs.includes(svc.name);
+          const label = document.createElement('label');
+          label.className = 'svc-item' + (checked ? ' checked' : '');
+          label.innerHTML = '<input type="checkbox" value="' + svc.name + '"' + (checked ? ' checked' : '') + '><div class="svc-check"></div><span class="svc-label">' + svc.name + '<span class="svc-price">' + svc.price + '</span></span>';
+          label.addEventListener('click', function(e) {
+            if (e.target.tagName === 'INPUT' && e.target.type !== 'checkbox') return;
+            const cb = label.querySelector('input[type="checkbox"]');
+            cb.checked = !cb.checked;
+            label.classList.toggle('checked', cb.checked);
+          });
+          svcGrid.appendChild(label);
+        });
+      });
+    }
+  });
+}
+
+// ── EDIT INFO MODAL ───────────────────────────────────────────
+function openEditModal(idx) {
+  editingOrderIdx = idx;
+  const o = pendingOrders[idx];
+  const isFJ = o.gear_type === 'fun-jumper';
+
+  // Populate fields
+  setEV('ei-cust-name',    o.customer_name    || '');
+  setEV('ei-cust-phone',   o.customer_phone   || '');
+  setEV('ei-cust-email',   o.customer_email   || '');
+  setEV('ei-rig-make',     o.rig_make         || '');
+  setEV('ei-rig-sn',       o.rig_sn           || '');
+  setEV('ei-rig-dom',      o.rig_dom          || '');
+  setEV('ei-res-make',     o.res_make         || '');
+  setEV('ei-res-sn',       o.res_sn           || '');
+  setEV('ei-res-pack',     o.res_pack_date    || '');
+  setEV('ei-res-due',      o.res_repack_due   || '');
+  setEV('ei-aad-make',     o.aad_make         || '');
+  setEV('ei-aad-sn',       o.aad_sn           || '');
+  setEV('ei-aad-dom',      o.aad_dom          || '');
+
+  // Show/hide customer section based on type
+  const custSection = document.getElementById('ei-cust-section');
+  if (custSection) custSection.style.display = isFJ ? 'block' : 'none';
+
+  const statusEl = document.getElementById('edit-save-status');
+  if (statusEl) { statusEl.style.display = 'none'; statusEl.className = 'edit-save-status'; }
+
+  document.getElementById('edit-info-modal').classList.add('open');
+  setTimeout(() => { const f = document.getElementById('ei-cust-name'); if (f) f.focus(); }, 100);
+}
+
+function closeEditModal() {
+  document.getElementById('edit-info-modal').classList.remove('open');
+  editingOrderIdx = null;
+}
+
+function setEV(id, val) {
+  const el = document.getElementById(id);
+  if (el) el.value = val;
+}
+function getEV(id) {
+  const el = document.getElementById(id);
+  return el ? el.value.trim() : '';
+}
+
+async function saveEditInfo() {
+  const idx = editingOrderIdx;
+  if (idx === null || idx === undefined) return;
+  const order = pendingOrders[idx];
+  const statusEl = document.getElementById('edit-save-status');
+
+  // Read values from modal
+  const updates = {
+    customer_name:  getEV('ei-cust-name'),
+    customer_phone: getEV('ei-cust-phone'),
+    customer_email: getEV('ei-cust-email'),
+    rig_make:       getEV('ei-rig-make'),
+    rig_sn:         getEV('ei-rig-sn'),
+    rig_dom:        getEV('ei-rig-dom'),
+    res_make:       getEV('ei-res-make'),
+    res_sn:         getEV('ei-res-sn'),
+    res_pack_date:  getEV('ei-res-pack'),
+    res_repack_due: getEV('ei-res-due'),
+    aad_make:       getEV('ei-aad-make'),
+    aad_sn:         getEV('ei-aad-sn'),
+    aad_dom:        getEV('ei-aad-dom'),
+  };
+
+  // Apply to local order object
+  Object.assign(order, updates);
+
+  statusEl.textContent = 'Saving…';
+  statusEl.className = 'edit-save-status';
+  statusEl.style.display = 'block';
+
+  try {
+    await fetch(SCRIPT_URL, {
+      method: 'POST', mode: 'no-cors',
+      headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify({
+        action:         'updateOrderInfo',
+        row:            order._row,
+        customer_name:  updates.customer_name,
+        customer_phone: updates.customer_phone,
+        customer_email: updates.customer_email,
+        rig_make:       updates.rig_make,
+        rig_sn:         updates.rig_sn,
+        rig_dom:        updates.rig_dom,
+        res_make:       updates.res_make,
+        res_sn:         updates.res_sn,
+        res_pack_date:  updates.res_pack_date,
+        res_repack_due: updates.res_repack_due,
+        aad_make:       updates.aad_make,
+        aad_sn:         updates.aad_sn,
+        aad_dom:        updates.aad_dom,
+      })
+    });
+    statusEl.textContent = '✓ Saved successfully!';
+    statusEl.className = 'edit-save-status ok';
+    setTimeout(() => {
+      closeEditModal();
+      renderQueue();
+      // Re-expand the card
+      setTimeout(() => {
+        const card = document.getElementById('order-' + idx);
+        if (card && !card.classList.contains('expanded')) card.classList.add('expanded');
+      }, 50);
+    }, 900);
+  } catch(e) {
+    statusEl.textContent = '⚠ Save failed — check connection.';
+    statusEl.className = 'edit-save-status err';
+  }
+}
+
+function toggleAddSvc(btn) {
+  const panel = btn.nextElementSibling;
+  panel.classList.toggle('open');
+  btn.textContent = panel.classList.contains('open') ? '➖ Hide Services ▴' : '➕ Add / Edit Services ▾';
+}
+
+function toggleOrder(idx) {
+  const card = document.getElementById('order-' + idx);
+  const isExpanding = !card.classList.contains('expanded');
+  card.classList.toggle('expanded');
+  if (isExpanding) {
+    const order = pendingOrders[idx];
+    const status = (order.status || 'PENDING').toUpperCase();
+    if (status === 'IN_PROGRESS') openReaccessModal(idx);
+  }
+}
+
+function openSigninModal(idx) {
+  document.getElementById('signin-order-idx').value = idx;
+  document.getElementById('signin-name').value = '';
+  document.getElementById('signin-symbol').value = '';
+  document.getElementById('signin-error').style.display = 'none';
+  document.getElementById('signin-modal').classList.add('open');
+  setTimeout(() => document.getElementById('signin-name').focus(), 100);
+}
+function closeSigninModal() { document.getElementById('signin-modal').classList.remove('open'); }
+
+async function logActivity(order, name, symbol, action, newStatus) {
+  if (!order._activity_log) order._activity_log = [];
+  order._activity_log.push({ name, symbol, action, timestamp: new Date().toLocaleDateString() });
+  const saveStatus = newStatus || order.status;
+  try {
+    await fetch(SCRIPT_URL, {
+      method: 'POST', mode: 'no-cors', headers: {'Content-Type':'text/plain'},
+      body: JSON.stringify({ action: 'updateStatus', row: order._row, status: saveStatus, activity_log: JSON.stringify(order._activity_log) })
+    });
+  } catch(e) { console.warn('logActivity failed', e); }
+}
+
+async function confirmStartService() {
+  const idx    = parseInt(document.getElementById('signin-order-idx').value);
+  const name   = document.getElementById('signin-name').value.trim();
+  const symbol = document.getElementById('signin-symbol').value.trim();
+  const errEl  = document.getElementById('signin-error');
+  errEl.style.display = 'none';
+  if (!name)   { errEl.textContent = 'Please enter your name.';        errEl.style.display = 'block'; return; }
+  if (!symbol) { errEl.textContent = 'Please enter your rigger seal.'; errEl.style.display = 'block'; return; }
+  const order = pendingOrders[idx];
+  order._rigger_name   = name;
+  order._rigger_symbol = symbol;
+  await logActivity(order, name, symbol, 'Started Service', 'IN_PROGRESS');
+  order.status = 'IN_PROGRESS';
+  closeSigninModal();
+  updateDashboard();
+  renderQueue();
+}
+
+function openReaccessModal(idx) {
+  document.getElementById('reaccess-order-idx').value = idx;
+  document.getElementById('reaccess-name').value = pendingOrders[idx]._rigger_name || '';
+  document.getElementById('reaccess-symbol').value = pendingOrders[idx]._rigger_symbol || '';
+  document.getElementById('reaccess-error').style.display = 'none';
+  document.getElementById('reaccess-modal').classList.add('open');
+  setTimeout(() => document.getElementById('reaccess-name').focus(), 100);
+}
+function closeReaccessModal() { document.getElementById('reaccess-modal').classList.remove('open'); }
+
+async function confirmReaccess() {
+  const idx    = parseInt(document.getElementById('reaccess-order-idx').value);
+  const name   = document.getElementById('reaccess-name').value.trim();
+  const symbol = document.getElementById('reaccess-symbol').value.trim();
+  const errEl  = document.getElementById('reaccess-error');
+  errEl.style.display = 'none';
+  if (!name)   { errEl.textContent = 'Please enter your name.';        errEl.style.display = 'block'; return; }
+  if (!symbol) { errEl.textContent = 'Please enter your rigger seal.'; errEl.style.display = 'block'; return; }
+  const order = pendingOrders[idx];
+  order._rigger_name   = name;
+  order._rigger_symbol = symbol;
+  await logActivity(order, name, symbol, 'Accessed Service');
+  closeReaccessModal();
+  const logEl = document.getElementById('activity-log-' + idx);
+  if (logEl) logEl.innerHTML = buildActivityLog(order._activity_log);
+  const wrapEl = document.getElementById('activity-log-wrap-' + idx);
+  if (wrapEl) wrapEl.style.display = 'block';
+  const nameEl   = document.getElementById('rigger-' + idx);
+  const symbolEl = document.getElementById('rigger-symbol-' + idx);
+  if (nameEl)   nameEl.value   = name;
+  if (symbolEl) symbolEl.value = symbol;
+}
+
+function buildActivityLog(log) {
+  if (!log || !log.length) return '';
+  return log.map(e =>
+    `<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border);font-size:12px;gap:8px;">
+      <div><span style="font-weight:700;">${e.name}</span> · <span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--accent);">${e.symbol}</span>
+      <span style="background:var(--blue-dim);color:var(--accent);border-radius:10px;padding:1px 7px;font-size:10px;font-weight:700;margin-left:6px;">${e.action}</span></div>
+      <div style="color:var(--text-muted);font-size:11px;">${e.timestamp}</div>
+    </div>`
+  ).join('');
+}
+
+async function changeStatus(idx, newStatus) {
+  const order = pendingOrders[idx];
+  order.status = newStatus;
+  const card = document.getElementById('order-' + idx);
+  if (card) {
+    card.className = 'order-card expanded status-' + newStatus;
+    ['PENDING','IN_PROGRESS','GEAR_READY'].forEach(s => {
+      const btn = document.getElementById('st-' + idx + '-' + s);
+      if (btn) btn.className = 'status-opt' + (s === newStatus ? ' sel-' + s : '');
+    });
+    const badge = card.querySelector('.status-badge');
+    if (badge) { badge.className = 'status-badge sb-' + newStatus; badge.textContent = statusLabel(newStatus); }
+  }
+  updateDashboard();
+  try {
+    await fetch(SCRIPT_URL, { method:'POST', mode:'no-cors', headers:{'Content-Type':'text/plain'},
+      body: JSON.stringify({ action:'updateStatus', row:order._row, status:newStatus }) });
+  } catch(e) { console.warn('updateStatus failed', e); }
+}
+
+let pendingCompleteIdx = null;
+function markComplete(idx) {
+  const rigger = document.getElementById('rigger-' + idx).value.trim();
+  const symbol = document.getElementById('rigger-symbol-' + idx).value.trim();
+  const errEl  = document.getElementById('comp-error-' + idx);
+  errEl.style.display = 'none';
+  if (!rigger) { errEl.textContent = 'Please enter the rigger name.';   errEl.style.display = 'block'; return; }
+  if (!symbol) { errEl.textContent = 'Please enter your rigger symbol.'; errEl.style.display = 'block'; return; }
+  pendingCompleteIdx = idx;
+  document.getElementById('signoff-modal').classList.add('open');
+}
+function closeSignoffModal() { document.getElementById('signoff-modal').classList.remove('open'); pendingCompleteIdx = null; }
+async function confirmAndComplete() {
+  document.getElementById('signoff-modal').classList.remove('open');
+  const idx = pendingCompleteIdx; pendingCompleteIdx = null;
+  await doMarkComplete(idx);
+}
+
+async function doMarkComplete(idx) {
+  const order        = pendingOrders[idx];
+  const rigger       = document.getElementById('rigger-' + idx).value.trim();
+  const symbol       = document.getElementById('rigger-symbol-' + idx).value.trim();
+  const riggerEmail  = (document.getElementById('rigger-email-' + idx)?.value || '').trim();
+  const compNotes    = document.getElementById('comp-notes-' + idx).value.trim();
+  const extraCharge  = parseFloat(document.getElementById('extra-charge-' + idx)?.value) || 0;
+  const discount     = parseFloat(document.getElementById('discount-' + idx)?.value)     || 0;
+  const riggerNotes  = (document.getElementById('rigger-notes-' + idx)?.value || '').trim();
+  const errEl = document.getElementById('comp-error-' + idx);
+  errEl.style.display = 'none';
+
+  // Save rigger email for this order session
+  order._rigger_email = riggerEmail;
+
+  const svcGrid = document.getElementById('svc-grid-' + idx);
+  const updatedServices = svcGrid
+    ? [...svcGrid.querySelectorAll('input[type="checkbox"]:checked')].map(c => c.value).join(' | ')
+    : order.services;
+
+  let finalNotes = riggerNotes || compNotes;
+  if (extraCharge > 0) finalNotes += (finalNotes ? '\n' : '') + 'Extra charge: +$' + extraCharge.toFixed(2);
+  if (discount > 0)    finalNotes += (finalNotes ? '\n' : '') + 'Discount: -$' + discount.toFixed(2);
+
+  const btn = document.getElementById('complete-btn-' + idx);
+  if (btn) btn.classList.add('submitting');
+
+  try {
+    await fetch(SCRIPT_URL, { method:'POST', mode:'no-cors', headers:{'Content-Type':'text/plain'},
+      body: JSON.stringify({
+        action:            'completeOrder',
+        work_order:        order.work_order,
+        rigger:            rigger + ' (' + symbol + ')',
+        rigger_email:      riggerEmail,
+        services:          updatedServices,
+        completion_notes:  finalNotes,
+        row:               order._row,
+      }) });
+    pendingOrders.splice(idx, 1);
+    updateDashboard();
+    renderQueue();
+  } catch(e) {
+    if (btn) btn.classList.remove('submitting');
+    errEl.textContent = 'Error completing order.'; errEl.style.display = 'block';
+  }
+}
+
+async function deleteOrder(idx) {
+  if (!confirm('Delete this service request?')) return;
+  const order = pendingOrders[idx];
+  try {
+    await fetch(SCRIPT_URL, { method:'POST', mode:'no-cors', headers:{'Content-Type':'text/plain'},
+      body: JSON.stringify({ action:'deleteOrder', work_order:order.work_order, row:order._row }) });
+    pendingOrders.splice(idx, 1);
+    updateDashboard();
+    renderQueue();
+  } catch(e) { alert('Error deleting order.'); }
+}
+
+async function loadServiceHistory() {
+  const listEl = document.getElementById('sh-list');
+  const errEl  = document.getElementById('sh-error');
+  errEl.style.display = 'none';
+  listEl.innerHTML = '<div style="text-align:center;padding:40px;color:var(--text-muted);">Loading…</div>';
+  try {
+    const data = await jsonpFetch(SCRIPT_URL + '?action=getCompleted');
+    allCompletedOrders = (data.completed || []).sort((a,b) => new Date(b.completed_at) - new Date(a.completed_at));
+    filterServiceHistory();
+  } catch(e) {
+    errEl.textContent = 'Failed to load history: ' + e.message;
+    errEl.style.display = 'block';
+    listEl.innerHTML = '';
+  }
+}
+
+function filterServiceHistory() {
+  const q    = (document.getElementById('sh-search').value || '').toLowerCase();
+  const type = document.getElementById('sh-type-filter').value;
+  const filtered = allCompletedOrders.filter(o => {
+    if (type !== 'all' && (o.gear_type || '') !== type) return false;
+    if (!q) return true;
+    return [o.work_order, o.rig_num, o.rig_sn, o.rig_make, o.customer_name, o.rigger]
+      .some(v => v && String(v).toLowerCase().includes(q));
+  });
+  let totalRevenue = 0;
+  filtered.forEach(o => { totalRevenue += calcTotal(o.services).total; });
+  document.getElementById('sh-stats').textContent = filtered.length + ' completed order' + (filtered.length !== 1 ? 's' : '')
+    + (filtered.length > 0 ? ' · Est. Revenue: $' + totalRevenue.toFixed(2) : '');
+  renderServiceHistory(filtered);
+}
+
+function renderServiceHistory(orders) {
+  const listEl = document.getElementById('sh-list');
+  if (orders.length === 0) {
+    listEl.innerHTML = '<div class="queue-empty"><div class="icon">📋</div><p>No completed orders found.</p></div>';
+    return;
+  }
+  listEl.innerHTML = '';
+  orders.forEach((o, i) => {
+    const isFJ = o.gear_type === 'fun-jumper';
+    const rigLine = isFJ ? (o.customer_name || 'Fun Jumper') : ((o.rig_num ? 'Rig #' + o.rig_num + ' — ' : '') + (o.rig_make || ''));
+    const { total, hasVaries } = calcTotal(o.services);
+    const totalStr = total > 0 ? '$' + total.toFixed(2) + (hasVaries ? '+' : '') : (hasVaries ? 'Varies' : '—');
+    const completedDate = o.completed_at ? new Date(o.completed_at).toLocaleDateString() : '—';
+    const rushBadge = o.rush && o.rush !== 'Standard Turnaround'
+      ? '<span style="background:var(--red-dim);border:1px solid rgba(239,68,68,0.3);color:var(--red);font-size:10px;font-weight:800;padding:2px 8px;border-radius:20px;margin-left:4px;">⚡ RUSH</span>' : '';
+    const card = document.createElement('div');
+    card.className = 'order-card';
+    card.id = 'sh-card-' + i;
+    card.innerHTML = `
+      <div class="order-card-header" onclick="toggleSHCard(${i})">
+        <div>
+          <div class="order-wo">${o.work_order||'—'}
+            <span style="background:var(--green-dim);border:1px solid rgba(74,222,128,0.3);color:var(--green);font-size:10px;font-weight:800;padding:2px 8px;border-radius:20px;">✓ COMPLETE</span>
+            ${rushBadge}
+          </div>
+          <div class="order-rig">${rigLine}</div>
+          <div class="order-meta">S/N: ${o.rig_sn||'—'} · Completed: ${completedDate} · Rigger: ${o.rigger||'—'}</div>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;">
+          <div style="font-family:'JetBrains Mono',monospace;font-size:15px;font-weight:700;color:var(--green);">${totalStr}</div>
+          <div class="order-expand">▾</div>
+        </div>
+      </div>
+      <div class="order-body">
+        <div class="info-block" style="margin-bottom:10px;">
+          <div class="info-title">Services</div>
+          <ul class="svc-list-view">
+            ${(o.services||'').split(' | ').filter(Boolean).map(s => '<li><span>' + s + '</span><span style="color:var(--text-muted);font-size:12px;">' + (SVC_PRICES[s]>0?'$'+SVC_PRICES[s]:'Varies') + '</span></li>').join('')}
+          </ul>
+        </div>
+        ${o.completion_notes ? '<div class="info-block" style="margin-bottom:10px;"><div class="info-title">Rigger Notes</div><div class="info-content">' + o.completion_notes + '</div></div>' : ''}
+
+        <div style="border-top:1px solid var(--border);padding-top:14px;margin-top:4px;">
+          <button onclick="openInvoiceModal(${i})"
+            style="background:var(--sky-dim);border:1px solid rgba(56,189,248,0.35);color:var(--sky);border-radius:8px;padding:9px 18px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:6px;min-height:40px;">
+            ✏️ Edit &amp; Resend Invoice
+          </button>
+        </div>
+      </div>`;
+    listEl.appendChild(card);
+  });
+}
+
+function toggleSHCard(i) { document.getElementById('sh-card-' + i).classList.toggle('expanded'); }
+
+// ── INVOICE EDIT MODAL ────────────────────────────────────────
+let invoiceModalIdx = null;
+
+function openInvoiceModal(i) {
+  invoiceModalIdx = i;
+  const o = allCompletedOrders[i];
+  if (!o) return;
+
+  // Populate header info
+  document.getElementById('inv-wo').textContent      = o.work_order || '—';
+  document.getElementById('inv-rig').textContent     = o.gear_type === 'fun-jumper'
+    ? (o.customer_name || 'Fun Jumper') + ' — S/N ' + (o.rig_sn || '')
+    : 'Rig #' + (o.rig_num || '') + ' — ' + (o.rig_make || '') + ' S/N ' + (o.rig_sn || '');
+  document.getElementById('inv-rigger').value        = o.rigger        || '';
+  document.getElementById('inv-notes').value         = o.completion_notes || '';
+  document.getElementById('inv-extra-charge').value  = '';
+  document.getElementById('inv-discount').value      = '';
+  document.getElementById('inv-email').value         = o.customer_email || '';
+  document.getElementById('inv-rigger-email').value  = '';
+
+  // Build service checkboxes
+  const svcs = (o.services || '').split(' | ').filter(Boolean);
+  const grid = document.getElementById('inv-svc-grid');
+  grid.innerHTML = '';
+  SERVICE_GROUPS.forEach(group => {
+    const hdr = document.createElement('div');
+    hdr.style.cssText = 'grid-column:1/-1;font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-muted);padding:8px 2px 4px;border-bottom:1px solid var(--border);margin-bottom:2px;';
+    hdr.textContent = group.group;
+    grid.appendChild(hdr);
+    group.items.forEach(svc => {
+      const checked = svcs.includes(svc.name);
+      const label = document.createElement('label');
+      label.className = 'svc-item' + (checked ? ' checked' : '');
+      label.innerHTML = '<input type="checkbox" value="' + svc.name + '"' + (checked ? ' checked' : '') + '><div class="svc-check"></div><span class="svc-label">' + svc.name + '<span class="svc-price">' + svc.price + '</span></span>';
+      label.addEventListener('click', function(e) {
+        const cb = label.querySelector('input[type="checkbox"]');
+        cb.checked = !cb.checked;
+        label.classList.toggle('checked', cb.checked);
+        updateInvoiceTotal();
+      });
+      grid.appendChild(label);
+    });
+  });
+
+  updateInvoiceTotal();
+
+  const statusEl = document.getElementById('inv-send-status');
+  statusEl.style.display = 'none';
+  statusEl.className = 'edit-save-status';
+
+  document.getElementById('invoice-edit-modal').classList.add('open');
+}
+
+function closeInvoiceModal() {
+  document.getElementById('invoice-edit-modal').classList.remove('open');
+  invoiceModalIdx = null;
+}
+
+function updateInvoiceTotal() {
+  const grid = document.getElementById('inv-svc-grid');
+  const checked = [...grid.querySelectorAll('input[type="checkbox"]:checked')].map(c => c.value);
+  let total = 0; let hasVaries = false;
+  checked.forEach(s => { const p = SVC_PRICES[s]; if (p > 0) total += p; else hasVaries = true; });
+  const extra    = parseFloat(document.getElementById('inv-extra-charge').value) || 0;
+  const discount = parseFloat(document.getElementById('inv-discount').value)     || 0;
+  total += extra - discount;
+  document.getElementById('inv-total-display').textContent =
+    '$' + Math.max(0, total).toFixed(2) + (hasVaries ? ' + varies' : '');
+}
+
+async function sendEditedInvoice() {
+  const i = invoiceModalIdx;
+  if (i === null) return;
+  const o = allCompletedOrders[i];
+  const statusEl = document.getElementById('inv-send-status');
+
+  const grid = document.getElementById('inv-svc-grid');
+  const updatedServices = [...grid.querySelectorAll('input[type="checkbox"]:checked')].map(c => c.value).join(' | ');
+  const rigger      = document.getElementById('inv-rigger').value.trim();
+  const notes       = document.getElementById('inv-notes').value.trim();
+  const extraCharge = parseFloat(document.getElementById('inv-extra-charge').value) || 0;
+  const discount    = parseFloat(document.getElementById('inv-discount').value)     || 0;
+  const toEmail     = document.getElementById('inv-email').value.trim();
+  const riggerEmail = document.getElementById('inv-rigger-email').value.trim();
+
+  if (!toEmail && !riggerEmail) {
+    statusEl.textContent = 'Please enter at least one email address to send to.';
+    statusEl.className = 'edit-save-status err';
+    statusEl.style.display = 'block';
+    return;
+  }
+
+  statusEl.textContent = 'Sending…';
+  statusEl.className = 'edit-save-status';
+  statusEl.style.display = 'block';
+
+  try {
+    await fetch(SCRIPT_URL, {
+      method: 'POST', mode: 'no-cors',
+      headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify({
+        action:        'resendInvoice',
+        work_order:    o.work_order || '',
+        gear_type:     o.gear_type  || '',
+        customer_name: o.customer_name || '',
+        customer_email: toEmail,
+        rigger_email:  riggerEmail,
+        rig_num:       o.rig_num  || '',
+        rig_make:      o.rig_make || '',
+        rig_sn:        o.rig_sn   || '',
+        completed_at:  o.completed_at || '',
+        rigger:        rigger,
+        services:      updatedServices,
+        notes:         notes,
+        extra_charge:  extraCharge,
+        discount:      discount,
+      })
+    });
+    statusEl.textContent = '✓ Invoice sent!';
+    statusEl.className = 'edit-save-status ok';
+    setTimeout(() => closeInvoiceModal(), 1800);
+  } catch(e) {
+    statusEl.textContent = '⚠ Send failed — check connection.';
+    statusEl.className = 'edit-save-status err';
+  }
+}
+
+async function searchHistory() {
+  const name  = document.getElementById('history-search-name').value.trim();
+  const email = document.getElementById('history-search-email').value.trim().toLowerCase();
+  const sn    = document.getElementById('history-search-sn').value.trim();
+  const errEl = document.getElementById('history-error');
+  const resultsEl = document.getElementById('history-results');
+  errEl.style.display = 'none';
+  if (!name && !email && !sn) { errEl.textContent = 'Enter a name, email, or serial number.'; errEl.style.display = 'block'; return; }
+  resultsEl.innerHTML = '<div style="color:var(--text-muted);padding:20px 0;">Searching...</div>';
+  try {
+    const params = new URLSearchParams({action:'getHistory'});
+    if (name)  params.append('name',  name.toLowerCase());
+    if (email) params.append('email', email);
+    if (sn)    params.append('sn', sn);
+    const data = await jsonpFetch(SCRIPT_URL + '?' + params.toString());
+    const history = data.history || [];
+    if (history.length === 0) { resultsEl.innerHTML = '<div style="color:var(--text-muted);padding:20px 0;">No records found.</div>'; return; }
+    resultsEl.innerHTML = '<div style="font-size:12px;color:var(--text-muted);margin-bottom:12px;">' + history.length + ' record' + (history.length!==1?'s':'') + ' found</div>';
+    history.forEach(h => {
+      const card = document.createElement('div');
+      card.className = 'history-card';
+
+      // Status badge
+      const hStatus = (h.status || 'PENDING').toUpperCase();
+      const statusColors = {
+        'COMPLETE':    'background:rgba(34,197,94,0.15);border:1px solid rgba(34,197,94,0.3);color:#22c55e;',
+        'IN_PROGRESS': 'background:rgba(59,130,246,0.15);border:1px solid rgba(59,130,246,0.3);color:#60a5fa;',
+        'GEAR_READY':  'background:rgba(34,197,94,0.15);border:1px solid rgba(34,197,94,0.3);color:#22c55e;',
+        'PENDING':     'background:rgba(245,158,11,0.15);border:1px solid rgba(245,158,11,0.3);color:#f59e0b;',
+      };
+      const statusLabel = { COMPLETE:'✓ Complete', IN_PROGRESS:'🔧 In Progress', GEAR_READY:'✅ Gear Ready', PENDING:'📥 Pending' };
+      const sBadge = `<span style="font-size:10px;font-weight:700;padding:2px 9px;border-radius:20px;${statusColors[hStatus]||statusColors.PENDING}">${statusLabel[hStatus]||hStatus}</span>`;
+      const rushBadge = h.rush && h.rush !== 'Standard Turnaround'
+        ? `<span style="font-size:10px;font-weight:800;padding:2px 8px;border-radius:20px;background:rgba(239,68,68,0.12);border:1px solid rgba(239,68,68,0.3);color:#ef4444;margin-left:4px;">⚡ RUSH</span>` : '';
+
+      // Services list with prices
+      const svcs = (h.services || '').split(' | ').filter(Boolean);
+      const SVC_P = {'Reserve Inspection & Repack (Sport)':115,'Inspect Main or Reserve':25,'Inspect Harness / Container':20,"Inspect & Pack Pilot's Emergency Rig":120,'Pack Main Sport':15,'Install AAD':10,'Reserve Safety Stow Replacement':12,'Replace Lower Steering Lines':40,'Replace Steering Lines Toggles to Cascades':65,'Re-line Sport':130,'Slinks':35,'Assembly, Inspection & Pack Reserve (Sport)':140,'Assembly, Inspection & Pack Main':75,'Disassemble Main or Reserve':10,'Install Slider Bumpers':25,'Fabric Tensile Test':20,'Kill Line Replacement':25,'BOC Replacement':100,'Tack Slinks / Links':5,'Wash Rig':65};
+      let total = 0; let hasVaries = false;
+      svcs.forEach(s => { const p = SVC_P[s]; if (p > 0) total += p; else hasVaries = true; });
+      const totalStr = total > 0 ? '$' + total.toFixed(2) + (hasVaries ? '+' : '') : (hasVaries ? 'Varies' : '—');
+      const svcsHtml = svcs.length > 0
+        ? svcs.map(s => `<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--border);font-size:12px;"><span>${s}</span><span style="color:var(--text-muted);font-size:11px;">${SVC_P[s]>0?'$'+SVC_P[s]:'Varies'}</span></div>`).join('')
+        : '<span style="color:var(--text-muted);font-size:12px;">No services listed</span>';
+
+      const isFJ = h.gear_type === 'fun-jumper';
+      const rigLine = isFJ
+        ? (h.customer_name || 'Fun Jumper')
+        : ((h.rig_num ? 'Rig #' + h.rig_num + ' — ' : '') + (h.rig_make || ''));
+
+      card.innerHTML = `
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:10px;flex-wrap:wrap;">
+          <div>
+            <div class="history-wo" style="margin-bottom:5px;">${h.work_order||'—'} ${sBadge} ${rushBadge}</div>
+            <div class="history-rig">${rigLine}</div>
+            <div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text-muted);margin-top:2px;">S/N: ${h.rig_sn||'—'}</div>
+          </div>
+          <div style="text-align:right;flex-shrink:0;">
+            <div style="font-family:'JetBrains Mono',monospace;font-size:18px;font-weight:700;color:var(--green);">${totalStr}</div>
+            <div style="font-size:11px;color:var(--text-muted);margin-top:2px;">${h.completed_at?'Completed: '+new Date(h.completed_at).toLocaleDateString():h.submitted_at?'Submitted: '+new Date(h.submitted_at).toLocaleDateString():''}</div>
+          </div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;">
+          ${isFJ ? `<div style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:10px 12px;">
+            <div style="font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-muted);margin-bottom:6px;">Customer</div>
+            <div style="font-size:13px;font-weight:600;">${h.customer_name||'—'}</div>
+            ${h.customer_phone ? `<div style="font-size:12px;color:var(--text-dim);margin-top:2px;">📞 ${h.customer_phone}</div>` : ''}
+            ${h.customer_email ? `<div style="font-size:12px;color:var(--text-dim);margin-top:1px;">✉ ${h.customer_email}</div>` : ''}
+          </div>` : `<div style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:10px 12px;">
+            <div style="font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-muted);margin-bottom:6px;">Rig</div>
+            <div style="font-size:13px;font-weight:600;">${h.rig_make||'—'}</div>
+            <div style="font-size:12px;color:var(--text-dim);margin-top:2px;">S/N: ${h.rig_sn||'—'}</div>
+          </div>`}
+          <div style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:10px 12px;">
+            <div style="font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-muted);margin-bottom:6px;">Details</div>
+            ${h.rigger ? `<div style="font-size:12px;color:var(--text-dim);">👤 Rigger: ${h.rigger}</div>` : ''}
+            ${h.res_repack_due ? `<div style="font-size:12px;color:var(--text-dim);margin-top:2px;">📅 Reserve Due: ${h.res_repack_due}</div>` : ''}
+            ${h.aad_make ? `<div style="font-size:12px;color:var(--text-dim);margin-top:2px;">⚡ AAD: ${h.aad_make}</div>` : ''}
+            <div style="font-size:11px;color:var(--text-muted);margin-top:4px;">Submitted: ${h.submitted_at?new Date(h.submitted_at).toLocaleDateString():'—'}</div>
+          </div>
+        </div>
+
+        <div style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:10px 12px;margin-bottom:${h.completion_notes||h.extra_notes?'8px':'0'};">
+          <div style="font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-muted);margin-bottom:6px;">Services (${svcs.length}) — ${totalStr}</div>
+          ${svcsHtml}
+        </div>
+
+        ${h.completion_notes ? `<div style="background:rgba(59,130,246,0.08);border:1px solid rgba(59,130,246,0.2);border-radius:8px;padding:10px 12px;margin-bottom:${h.extra_notes?'8px':'0'};">
+          <div style="font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-muted);margin-bottom:4px;">Rigger Notes</div>
+          <div style="font-size:12px;color:var(--text-dim);line-height:1.5;">${h.completion_notes}</div>
+        </div>` : ''}
+        ${h.extra_notes ? `<div style="background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.2);border-radius:8px;padding:10px 12px;">
+          <div style="font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-muted);margin-bottom:4px;">Customer Notes</div>
+          <div style="font-size:12px;color:var(--text-dim);line-height:1.5;">${h.extra_notes}</div>
+        </div>` : ''}`;
+      resultsEl.appendChild(card);
+    });
+  } catch(e) {
+    errEl.textContent = 'Search failed: ' + e.message; errEl.style.display = 'block';
+    resultsEl.innerHTML = '';
+  }
+}
+
+function changePassword() {
+  const cur  = document.getElementById('pw-current').value;
+  const nw   = document.getElementById('pw-new').value;
+  const conf = document.getElementById('pw-confirm').value;
+  const errEl = document.getElementById('pw-error');
+  const successEl = document.getElementById('pw-success');
+  errEl.style.display = 'none'; successEl.style.display = 'none';
+  if (cur !== currentPassword) { errEl.textContent = 'Current password is incorrect.'; errEl.style.display = 'block'; return; }
+  if (nw.length < 4)           { errEl.textContent = 'New password must be at least 4 characters.'; errEl.style.display = 'block'; return; }
+  if (nw !== conf)             { errEl.textContent = 'Passwords do not match.'; errEl.style.display = 'block'; return; }
+  currentPassword = nw;
+  localStorage.setItem('ssxQueuePw', nw);
+  ['pw-current','pw-new','pw-confirm'].forEach(id => document.getElementById(id).value = '');
+  successEl.style.display = 'block';
+  setTimeout(() => successEl.style.display = 'none', 3000);
+}
+
+function printWorkOrder(idx) {
+  const order = pendingOrders[idx];
+  if (!order) return;
+  const isFJ = order.gear_type === 'fun-jumper';
+  const svcs = (order.services || '').split(' | ').filter(Boolean);
+  const { total, hasVaries } = calcTotal(order.services);
+  const date = order.submitted_at ? new Date(order.submitted_at).toLocaleDateString() : new Date().toLocaleDateString();
+  const rush = order.rush && order.rush !== 'Standard Turnaround' ? order.rush : null;
+
+  const svcRows = svcs.map(s => {
+    const p = SVC_PRICES[s];
+    return '<tr><td>' + s + '</td><td style="text-align:right;font-weight:700;">' + (p > 0 ? '$' + p.toFixed(2) : 'Varies') + '</td></tr>';
+  }).join('');
+
+  const html = `<!DOCTYPE html><html><head><title>Work Order ${order.work_order||''}</title>
+<style>
+  @page { size: 8.5in 11in; margin: 0.6in; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: Arial, sans-serif; font-size: 13px; color: #111; }
+  .header { display: flex; justify-content: space-between; border-bottom: 3px solid #1a1a2e; padding-bottom: 12px; margin-bottom: 20px; }
+  .dz-name { font-size: 22px; font-weight: 900; text-transform: uppercase; color: #1a1a2e; }
+  .dz-sub { font-size: 11px; color: #555; letter-spacing: 1px; text-transform: uppercase; margin-top: 3px; }
+  .wo-num { font-size: 28px; font-weight: 900; color: #1a1a2e; text-align: right; }
+  .wo-date { font-size: 11px; color: #555; margin-top: 4px; text-align: right; }
+  ${rush ? '.rush { background:#fee2e2;border:2px solid #ef4444;border-radius:6px;padding:8px 14px;font-weight:900;font-size:14px;color:#b91c1c;text-align:center;margin-bottom:16px; }' : ''}
+  .section { margin-bottom: 18px; }
+  .section-title { font-size: 10px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: #555; border-bottom: 1px solid #ddd; padding-bottom: 4px; margin-bottom: 10px; }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .field { margin-bottom: 8px; }
+  .field label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: #777; display: block; margin-bottom: 2px; }
+  .field .val { font-size: 13px; font-weight: 500; }
+  table { width: 100%; border-collapse: collapse; }
+  td { padding: 6px 4px; border-bottom: 1px dashed #eee; }
+  .total-row td { font-size: 15px; font-weight: 900; border-top: 2px solid #1a1a2e; border-bottom: none; padding-top: 8px; }
+  .signoff { margin-top: 28px; border-top: 2px solid #1a1a2e; padding-top: 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
+  .signoff-field { border-bottom: 1px solid #aaa; min-height: 36px; }
+  .signoff-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: #777; margin-top: 6px; }
+</style></head><body>
+<div class="header">
+  <div><div class="dz-name">Skydive Sussex</div><div class="dz-sub">Rigging — Service Request</div></div>
+  <div><div class="wo-num">${order.work_order||'N/A'}</div><div class="wo-date">Date: ${date}</div></div>
+</div>
+${rush ? '<div class="rush">⚡ RUSH — ' + rush + '</div>' : ''}
+<div class="grid2">
+  <div class="section">
+    <div class="section-title">${isFJ ? 'Customer' : 'DZ Gear'}</div>
+    ${isFJ ? '<div class="field"><label>Name</label><div class="val">' + (order.customer_name||'—') + '</div></div><div class="field"><label>Phone</label><div class="val">' + (order.customer_phone||'—') + '</div></div><div class="field"><label>Email</label><div class="val">' + (order.customer_email||'—') + '</div></div>' : '<div class="field"><label>Rig #</label><div class="val">' + (order.rig_num||'—') + '</div></div><div class="field"><label>Type</label><div class="val">' + (order.gear_type==='tandem'?'Tandem':'Student') + '</div></div>'}
+  </div>
+  <div class="section">
+    <div class="section-title">Container</div>
+    <div class="field"><label>Make</label><div class="val">${order.rig_make||'—'}</div></div>
+    <div class="field"><label>S/N</label><div class="val">${order.rig_sn||'—'}</div></div>
+    ${order.res_make ? '<div class="field"><label>Reserve</label><div class="val">' + order.res_make + (order.res_repack_due ? ' · Due: ' + new Date(order.res_repack_due + 'T00:00:00').toLocaleDateString() : '') + '</div></div>' : ''}
+    ${order.aad_make ? '<div class="field"><label>AAD</label><div class="val">' + order.aad_make + '</div></div>' : ''}
+  </div>
+</div>
+<div class="section">
+  <div class="section-title">Services</div>
+  <table>${svcRows}<tr class="total-row"><td>Estimated Total</td><td style="text-align:right;">$${total.toFixed(2)}${hasVaries ? ' + varies' : ''}</td></tr></table>
+</div>
+${order.extra_notes ? '<div class="section"><div class="section-title">Notes</div><p>' + order.extra_notes + '</p></div>' : ''}
+<div class="signoff">
+  <div><div class="signoff-field"></div><div class="signoff-label">Rigger Name</div></div>
+  <div><div class="signoff-field"></div><div class="signoff-label">Rigger Seal</div></div>
+  <div><div class="signoff-field"></div><div class="signoff-label">Date Completed</div></div>
+  <div><div class="signoff-field"></div><div class="signoff-label">Customer Pickup</div></div>
+</div>
+</body></html>`;
+
+  const w = window.open('', '_blank');
+  if (!w) { alert('Please allow popups for ssxgear.com to print work orders.'); return; }
+  w.document.write(html);
+  w.document.close();
+  setTimeout(() => w.print(), 600);
+}
+</script>
+
+<!-- SIGN-OFF MODAL -->
+<div class="modal-overlay" id="signoff-modal">
+  <div class="modal-box">
+    <div class="modal-icon">✍️</div>
+    <div class="modal-title">Sign-Off Required</div>
+    <div class="modal-text">Confirm the <strong>physical service record has been signed</strong> with your name and rigger symbol. This cannot be undone.</div>
+    <div class="modal-actions">
+      <button class="btn-cancel-modal" onclick="closeSignoffModal()">← Go Back</button>
+      <button class="btn-confirm" onclick="confirmAndComplete()">✓ I Confirm</button>
+    </div>
+  </div>
+</div>
+
+<!-- RIGGER SIGN-IN MODAL -->
+<div class="signin-modal" id="signin-modal">
+  <div class="signin-box">
+    <div class="signin-title">🔧 Start Service</div>
+    <div class="signin-sub">Enter your name and seal to begin work.</div>
+    <input type="hidden" id="signin-order-idx">
+    <div class="field"><label>Rigger Name *</label><input type="text" id="signin-name" placeholder="Your full name"></div>
+    <div class="field"><label>Rigger Seal / Symbol *</label><input type="text" id="signin-symbol" placeholder="e.g. T.R."></div>
+    <div class="error-msg" id="signin-error"></div>
+    <div style="display:flex;gap:10px;margin-top:4px;">
+      <button class="btn btn-primary" style="flex:1;" onclick="confirmStartService()">▶ Start Service</button>
+      <button class="btn btn-ghost btn-sm" onclick="closeSigninModal()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- RIGGER RE-ACCESS MODAL -->
+<div class="signin-modal" id="reaccess-modal">
+  <div class="signin-box">
+    <div class="signin-title">🔍 Accessing Service</div>
+    <div class="signin-sub">Enter your name and seal — this will be logged.</div>
+    <input type="hidden" id="reaccess-order-idx">
+    <div class="field"><label>Rigger Name *</label><input type="text" id="reaccess-name" placeholder="Your full name"></div>
+    <div class="field"><label>Rigger Seal / Symbol *</label><input type="text" id="reaccess-symbol" placeholder="e.g. T.R."></div>
+    <div class="error-msg" id="reaccess-error"></div>
+    <div style="display:flex;gap:10px;margin-top:4px;">
+      <button class="btn btn-primary" style="flex:1;" onclick="confirmReaccess()">✓ Log & Continue</button>
+      <button class="btn btn-ghost btn-sm" onclick="closeReaccessModal()">Skip</button>
+    </div>
+  </div>
+</div>
+
+<!-- EDIT CUSTOMER & RIG INFO MODAL -->
+<div class="edit-modal" id="edit-info-modal">
+  <div class="edit-modal-box">
+    <div class="edit-modal-title">✏️ Edit Order Info</div>
+    <div class="edit-modal-sub">Changes save directly to the service log sheet.</div>
+
+    <div id="ei-cust-section">
+      <div class="edit-section-label">Customer</div>
+      <div class="edit-grid">
+        <div class="edit-field full"><label>Full Name</label><input type="text" id="ei-cust-name" placeholder="Customer name"></div>
+        <div class="edit-field"><label>Phone</label><input type="tel" id="ei-cust-phone" placeholder="Phone number"></div>
+        <div class="edit-field"><label>Email</label><input type="email" id="ei-cust-email" placeholder="Email address"></div>
+      </div>
+    </div>
+
+    <div class="edit-section-label">Container</div>
+    <div class="edit-grid">
+      <div class="edit-field"><label>Make / Model</label><input type="text" id="ei-rig-make" placeholder="e.g. Javelin Odyssey"></div>
+      <div class="edit-field"><label>Serial Number</label><input type="text" id="ei-rig-sn" placeholder="Container S/N"></div>
+      <div class="edit-field"><label>DOM</label><input type="text" id="ei-rig-dom" placeholder="YYYY-MM-DD"></div>
+    </div>
+
+    <div class="edit-section-label">Reserve</div>
+    <div class="edit-grid">
+      <div class="edit-field"><label>Make</label><input type="text" id="ei-res-make" placeholder="e.g. Tempo"></div>
+      <div class="edit-field"><label>Serial Number</label><input type="text" id="ei-res-sn" placeholder="Reserve S/N"></div>
+      <div class="edit-field"><label>Last Pack Date</label><input type="text" id="ei-res-pack" placeholder="YYYY-MM-DD"></div>
+      <div class="edit-field"><label>Repack Due</label><input type="text" id="ei-res-due" placeholder="YYYY-MM-DD"></div>
+    </div>
+
+    <div class="edit-section-label">AAD</div>
+    <div class="edit-grid">
+      <div class="edit-field"><label>Make</label><input type="text" id="ei-aad-make" placeholder="e.g. Vigil Cuatro"></div>
+      <div class="edit-field"><label>Serial Number</label><input type="text" id="ei-aad-sn" placeholder="AAD S/N"></div>
+      <div class="edit-field"><label>DOM</label><input type="text" id="ei-aad-dom" placeholder="YYYY-MM-DD"></div>
+    </div>
+
+    <div class="edit-save-status" id="edit-save-status"></div>
+
+    <div class="edit-actions">
+      <button class="btn-save-edit" onclick="saveEditInfo()">💾 Save Changes</button>
+      <button class="btn-cancel-edit" onclick="closeEditModal()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- INVOICE EDIT & RESEND MODAL -->
+<div class="edit-modal" id="invoice-edit-modal">
+  <div class="edit-modal-box" style="max-width:640px;">
+    <div class="edit-modal-title">📄 Edit &amp; Resend Invoice</div>
+    <div class="edit-modal-sub">Adjust services, add charges or notes, then send to any email.</div>
+
+    <div style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:10px 14px;margin-bottom:14px;">
+      <div style="font-size:11px;font-weight:700;color:var(--text-muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:3px;">Work Order</div>
+      <div id="inv-wo" style="font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--accent);"></div>
+      <div id="inv-rig" style="font-size:13px;font-weight:600;margin-top:2px;"></div>
+    </div>
+
+    <div class="edit-section-label">Services</div>
+    <div class="info-block" style="margin-bottom:12px;">
+      <div class="svc-edit-grid" id="inv-svc-grid"></div>
+    </div>
+
+    <div class="edit-section-label">Adjustments</div>
+    <div class="inv-grid" style="margin-bottom:12px;">
+      <div class="inv-field">
+        <label>Extra Charge ($)</label>
+        <input type="number" id="inv-extra-charge" placeholder="0.00" min="0" step="0.01" oninput="updateInvoiceTotal()">
+      </div>
+      <div class="inv-field">
+        <label>Discount ($)</label>
+        <input type="number" id="inv-discount" placeholder="0.00" min="0" step="0.01" oninput="updateInvoiceTotal()">
+      </div>
+      <div class="inv-field full">
+        <label>Rigger Name</label>
+        <input type="text" id="inv-rigger" placeholder="Rigger name">
+      </div>
+      <div class="inv-field full">
+        <label>Notes / Comments</label>
+        <textarea id="inv-notes" placeholder="Any additional notes to include on the invoice…"></textarea>
+      </div>
+    </div>
+
+    <div style="background:var(--surface2);border:1px solid rgba(56,189,248,0.2);border-radius:8px;padding:10px 14px;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;">
+      <span style="font-size:12px;font-weight:700;color:var(--text-muted);letter-spacing:1px;text-transform:uppercase;">Invoice Total</span>
+      <span id="inv-total-display" style="font-family:'JetBrains Mono',monospace;font-size:20px;font-weight:700;color:var(--green);">$0.00</span>
+    </div>
+
+    <div class="edit-section-label">Send To</div>
+    <div class="inv-grid" style="margin-bottom:4px;">
+      <div class="inv-field">
+        <label>Customer Email</label>
+        <input type="email" id="inv-email" placeholder="customer@email.com">
+      </div>
+      <div class="inv-field">
+        <label>Rigger Email <span style="font-weight:400;text-transform:none;letter-spacing:0;font-size:10px;color:var(--text-muted)">(copy)</span></label>
+        <input type="email" id="inv-rigger-email" placeholder="rigger@email.com">
+      </div>
+    </div>
+    <div style="font-size:11px;color:var(--text-muted);margin-bottom:14px;">Fill in at least one email address. Both will receive the invoice if provided.</div>
+
+    <div class="edit-save-status" id="inv-send-status"></div>
+
+    <div class="edit-actions">
+      <button class="btn-save-edit" onclick="sendEditedInvoice()" style="background:var(--green);color:#0e1117;">📧 Send Invoice</button>
+      <button class="btn-cancel-edit" onclick="closeInvoiceModal()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
