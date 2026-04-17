@@ -1101,10 +1101,81 @@ async function searchHistory() {
     history.forEach(h => {
       const card = document.createElement('div');
       card.className = 'history-card';
-      card.innerHTML = `<div class="history-wo">${h.work_order||'—'}</div>
-        <div class="history-rig">${h.rig_make||''} · S/N ${h.rig_sn||''}</div>
-        <div class="history-svc">${(h.services||'').replace(/\|/g,'·')||'No services listed'}</div>
-        <div class="history-meta">Submitted: ${h.submitted_at?new Date(h.submitted_at).toLocaleDateString():'—'}${h.completed_at?' · Completed: '+new Date(h.completed_at).toLocaleDateString():''}${h.rigger?' · Rigger: '+h.rigger:''}</div>`;
+
+      // Status badge
+      const hStatus = (h.status || 'PENDING').toUpperCase();
+      const statusColors = {
+        'COMPLETE':    'background:rgba(34,197,94,0.15);border:1px solid rgba(34,197,94,0.3);color:#22c55e;',
+        'IN_PROGRESS': 'background:rgba(59,130,246,0.15);border:1px solid rgba(59,130,246,0.3);color:#60a5fa;',
+        'GEAR_READY':  'background:rgba(34,197,94,0.15);border:1px solid rgba(34,197,94,0.3);color:#22c55e;',
+        'PENDING':     'background:rgba(245,158,11,0.15);border:1px solid rgba(245,158,11,0.3);color:#f59e0b;',
+      };
+      const statusLabel = { COMPLETE:'✓ Complete', IN_PROGRESS:'🔧 In Progress', GEAR_READY:'✅ Gear Ready', PENDING:'📥 Pending' };
+      const sBadge = `<span style="font-size:10px;font-weight:700;padding:2px 9px;border-radius:20px;${statusColors[hStatus]||statusColors.PENDING}">${statusLabel[hStatus]||hStatus}</span>`;
+      const rushBadge = h.rush && h.rush !== 'Standard Turnaround'
+        ? `<span style="font-size:10px;font-weight:800;padding:2px 8px;border-radius:20px;background:rgba(239,68,68,0.12);border:1px solid rgba(239,68,68,0.3);color:#ef4444;margin-left:4px;">⚡ RUSH</span>` : '';
+
+      // Services list with prices
+      const svcs = (h.services || '').split(' | ').filter(Boolean);
+      const SVC_P = {'Reserve Inspection & Repack (Sport)':115,'Inspect Main or Reserve':25,'Inspect Harness / Container':20,"Inspect & Pack Pilot's Emergency Rig":120,'Pack Main Sport':15,'Install AAD':10,'Reserve Safety Stow Replacement':12,'Replace Lower Steering Lines':40,'Replace Steering Lines Toggles to Cascades':65,'Re-line Sport':130,'Slinks':35,'Assembly, Inspection & Pack Reserve (Sport)':140,'Assembly, Inspection & Pack Main':75,'Disassemble Main or Reserve':10,'Install Slider Bumpers':25,'Fabric Tensile Test':20,'Kill Line Replacement':25,'BOC Replacement':100,'Tack Slinks / Links':5,'Wash Rig':65};
+      let total = 0; let hasVaries = false;
+      svcs.forEach(s => { const p = SVC_P[s]; if (p > 0) total += p; else hasVaries = true; });
+      const totalStr = total > 0 ? '$' + total.toFixed(2) + (hasVaries ? '+' : '') : (hasVaries ? 'Varies' : '—');
+      const svcsHtml = svcs.length > 0
+        ? svcs.map(s => `<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--border);font-size:12px;"><span>${s}</span><span style="color:var(--text-muted);font-size:11px;">${SVC_P[s]>0?'$'+SVC_P[s]:'Varies'}</span></div>`).join('')
+        : '<span style="color:var(--text-muted);font-size:12px;">No services listed</span>';
+
+      const isFJ = h.gear_type === 'fun-jumper';
+      const rigLine = isFJ
+        ? (h.customer_name || 'Fun Jumper')
+        : ((h.rig_num ? 'Rig #' + h.rig_num + ' — ' : '') + (h.rig_make || ''));
+
+      card.innerHTML = `
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:10px;flex-wrap:wrap;">
+          <div>
+            <div class="history-wo" style="margin-bottom:5px;">${h.work_order||'—'} ${sBadge} ${rushBadge}</div>
+            <div class="history-rig">${rigLine}</div>
+            <div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text-muted);margin-top:2px;">S/N: ${h.rig_sn||'—'}</div>
+          </div>
+          <div style="text-align:right;flex-shrink:0;">
+            <div style="font-family:'JetBrains Mono',monospace;font-size:18px;font-weight:700;color:var(--green);">${totalStr}</div>
+            <div style="font-size:11px;color:var(--text-muted);margin-top:2px;">${h.completed_at?'Completed: '+new Date(h.completed_at).toLocaleDateString():h.submitted_at?'Submitted: '+new Date(h.submitted_at).toLocaleDateString():''}</div>
+          </div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;">
+          ${isFJ ? `<div style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:10px 12px;">
+            <div style="font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-muted);margin-bottom:6px;">Customer</div>
+            <div style="font-size:13px;font-weight:600;">${h.customer_name||'—'}</div>
+            ${h.customer_phone ? `<div style="font-size:12px;color:var(--text-dim);margin-top:2px;">📞 ${h.customer_phone}</div>` : ''}
+            ${h.customer_email ? `<div style="font-size:12px;color:var(--text-dim);margin-top:1px;">✉ ${h.customer_email}</div>` : ''}
+          </div>` : `<div style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:10px 12px;">
+            <div style="font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-muted);margin-bottom:6px;">Rig</div>
+            <div style="font-size:13px;font-weight:600;">${h.rig_make||'—'}</div>
+            <div style="font-size:12px;color:var(--text-dim);margin-top:2px;">S/N: ${h.rig_sn||'—'}</div>
+          </div>`}
+          <div style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:10px 12px;">
+            <div style="font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-muted);margin-bottom:6px;">Details</div>
+            ${h.rigger ? `<div style="font-size:12px;color:var(--text-dim);">👤 Rigger: ${h.rigger}</div>` : ''}
+            ${h.res_repack_due ? `<div style="font-size:12px;color:var(--text-dim);margin-top:2px;">📅 Reserve Due: ${h.res_repack_due}</div>` : ''}
+            ${h.aad_make ? `<div style="font-size:12px;color:var(--text-dim);margin-top:2px;">⚡ AAD: ${h.aad_make}</div>` : ''}
+            <div style="font-size:11px;color:var(--text-muted);margin-top:4px;">Submitted: ${h.submitted_at?new Date(h.submitted_at).toLocaleDateString():'—'}</div>
+          </div>
+        </div>
+
+        <div style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:10px 12px;margin-bottom:${h.completion_notes||h.extra_notes?'8px':'0'};">
+          <div style="font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-muted);margin-bottom:6px;">Services (${svcs.length}) — ${totalStr}</div>
+          ${svcsHtml}
+        </div>
+
+        ${h.completion_notes ? `<div style="background:rgba(59,130,246,0.08);border:1px solid rgba(59,130,246,0.2);border-radius:8px;padding:10px 12px;margin-bottom:${h.extra_notes?'8px':'0'};">
+          <div style="font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-muted);margin-bottom:4px;">Rigger Notes</div>
+          <div style="font-size:12px;color:var(--text-dim);line-height:1.5;">${h.completion_notes}</div>
+        </div>` : ''}
+        ${h.extra_notes ? `<div style="background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.2);border-radius:8px;padding:10px 12px;">
+          <div style="font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-muted);margin-bottom:4px;">Customer Notes</div>
+          <div style="font-size:12px;color:var(--text-dim);line-height:1.5;">${h.extra_notes}</div>
+        </div>` : ''}`;
       resultsEl.appendChild(card);
     });
   } catch(e) {
