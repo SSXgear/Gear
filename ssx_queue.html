@@ -170,6 +170,28 @@
   .btn-green.submitting .btn-spinner{display:flex;}
   @keyframes spin{to{transform:rotate(360deg);}}
   .spinner-ring{width:16px;height:16px;border:2.5px solid rgba(14,17,23,0.3);border-top-color:#0e1117;border-radius:50%;animation:spin 0.65s linear infinite;flex-shrink:0;}
+
+  /* ── EDIT INFO MODAL ── */
+  .edit-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.8);z-index:9999;align-items:flex-start;justify-content:center;padding:16px;overflow-y:auto;}
+  .edit-modal.open{display:flex;}
+  .edit-modal-box{background:var(--surface);border:1px solid rgba(56,189,248,0.3);border-radius:16px;padding:24px 20px;width:100%;max-width:560px;margin:auto;box-shadow:0 24px 60px rgba(0,0,0,0.7);}
+  .edit-modal-title{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:1.5px;color:var(--sky);margin-bottom:4px;}
+  .edit-modal-sub{font-size:12px;color:var(--text-muted);margin-bottom:18px;}
+  .edit-section-label{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--text-muted);margin:16px 0 8px;padding-bottom:5px;border-bottom:1px solid var(--border);}
+  .edit-section-label:first-of-type{margin-top:0;}
+  .edit-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+  @media(max-width:480px){.edit-grid{grid-template-columns:1fr;}}
+  .edit-field{display:flex;flex-direction:column;gap:5px;}
+  .edit-field.full{grid-column:1/-1;}
+  .edit-field label{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-muted);}
+  .edit-field input{background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:15px;padding:10px 12px;min-height:44px;outline:none;transition:border-color 0.2s;}
+  .edit-field input:focus{border-color:var(--sky);}
+  .edit-actions{display:flex;gap:10px;margin-top:20px;padding-top:16px;border-top:1px solid var(--border);}
+  .btn-save-edit{background:var(--sky);color:#0e1117;border:none;border-radius:8px;padding:12px 24px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;cursor:pointer;flex:1;min-height:48px;}
+  .btn-cancel-edit{background:transparent;border:1px solid var(--border);color:var(--text-dim);border-radius:8px;padding:12px 18px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;min-height:48px;}
+  .edit-save-status{font-size:12px;margin-top:8px;display:none;padding:8px 12px;border-radius:7px;}
+  .edit-save-status.ok{background:var(--green-dim);border:1px solid rgba(34,197,94,0.3);color:var(--green);}
+  .edit-save-status.err{background:var(--red-dim);border:1px solid rgba(239,68,68,0.3);color:var(--red);}
 </style>
 </head>
 <body>
@@ -360,6 +382,7 @@ let currentPassword = localStorage.getItem('ssxQueuePw') || '1234';
 let activeQueueFilter = 'ALL';
 let activeGearType = 'all';
 let allCompletedOrders = [];
+let editingOrderIdx = null;
 
 // ── JSONP HELPER ─────────────────────────────────────────────
 function jsonpFetch(url) {
@@ -554,18 +577,33 @@ function renderQueue() {
         </div>
       </div>
       <div class="order-body">
+
+        <!-- EDIT INFO BUTTON -->
+        <div style="margin-bottom:12px;">
+          <button onclick="openEditModal(${realIdx})" style="background:var(--sky-dim);border:1px solid rgba(56,189,248,0.35);color:var(--sky);border-radius:8px;padding:8px 16px;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:6px;min-height:40px;">
+            ✏️ Edit Customer &amp; Rig Info
+          </button>
+        </div>
+
         ${isFJ ? `<div class="order-grid">
           <div class="info-block"><div class="info-title">Customer Info</div>
-            <div class="info-content">${order.customer_name || ''}<br>${order.customer_phone || ''} · ${order.customer_email || ''}
+            <div class="info-content" id="cust-info-${realIdx}">${order.customer_name || ''}<br>${order.customer_phone || ''} · ${order.customer_email || ''}
             ${order.completion_date ? '<br>Needed by: ' + order.completion_date : ''}
             ${order.rush && order.rush !== 'Standard' ? '<br><strong>Rush:</strong> ' + order.rush : ''}</div>
           </div>
           <div class="info-block"><div class="info-title">Rig Info</div>
-            <div class="info-content">Container: ${order.rig_make || ''} S/N: ${order.rig_sn || ''}
-            ${order.res_make ? '<br>Reserve: ' + order.res_make + (order.res_repack_due ? ' Due: ' + new Date(order.res_repack_due).toLocaleDateString() : '') : ''}
+            <div class="info-content" id="rig-info-${realIdx}">Container: ${order.rig_make || ''} S/N: ${order.rig_sn || ''}
+            ${order.res_make ? '<br>Reserve: ' + order.res_make + (order.res_repack_due ? ' Due: ' + new Date(order.res_repack_due + 'T00:00:00').toLocaleDateString() : '') : ''}
             ${order.aad_make ? '<br>AAD: ' + order.aad_make : ''}
             ${order.known_damage === 'yes' ? '<br>⚠ <strong>Known damage:</strong> ' + (order.damage_desc || '') : ''}</div>
-          </div></div>` : ''}
+          </div></div>` : `<div class="order-grid">
+          <div class="info-block"><div class="info-title">Rig Info</div>
+            <div class="info-content" id="rig-info-${realIdx}">Rig #${order.rig_num || '—'} · ${order.rig_make || '—'}<br>S/N: ${order.rig_sn || '—'}
+            ${order.res_repack_due ? '<br>Reserve Due: ' + new Date(order.res_repack_due + 'T00:00:00').toLocaleDateString() : ''}
+            ${order.aad_make ? '<br>AAD: ' + order.aad_make : ''}</div>
+          </div>
+          <div class="info-block" id="cust-info-${realIdx}"></div>
+          </div>`}
 
         <div class="info-block" style="margin-bottom:10px;">
           <div class="info-title">Services (${svcs.length}) — Est. $${total.toFixed(2)}${hasVaries ? ' +varies' : ''}</div>
@@ -651,6 +689,121 @@ function renderQueue() {
       });
     }
   });
+}
+
+// ── EDIT INFO MODAL ───────────────────────────────────────────
+function openEditModal(idx) {
+  editingOrderIdx = idx;
+  const o = pendingOrders[idx];
+  const isFJ = o.gear_type === 'fun-jumper';
+
+  // Populate fields
+  setEV('ei-cust-name',    o.customer_name    || '');
+  setEV('ei-cust-phone',   o.customer_phone   || '');
+  setEV('ei-cust-email',   o.customer_email   || '');
+  setEV('ei-rig-make',     o.rig_make         || '');
+  setEV('ei-rig-sn',       o.rig_sn           || '');
+  setEV('ei-rig-dom',      o.rig_dom          || '');
+  setEV('ei-res-make',     o.res_make         || '');
+  setEV('ei-res-sn',       o.res_sn           || '');
+  setEV('ei-res-pack',     o.res_pack_date    || '');
+  setEV('ei-res-due',      o.res_repack_due   || '');
+  setEV('ei-aad-make',     o.aad_make         || '');
+  setEV('ei-aad-sn',       o.aad_sn           || '');
+  setEV('ei-aad-dom',      o.aad_dom          || '');
+
+  // Show/hide customer section based on type
+  const custSection = document.getElementById('ei-cust-section');
+  if (custSection) custSection.style.display = isFJ ? 'block' : 'none';
+
+  const statusEl = document.getElementById('edit-save-status');
+  if (statusEl) { statusEl.style.display = 'none'; statusEl.className = 'edit-save-status'; }
+
+  document.getElementById('edit-info-modal').classList.add('open');
+  setTimeout(() => { const f = document.getElementById('ei-cust-name'); if (f) f.focus(); }, 100);
+}
+
+function closeEditModal() {
+  document.getElementById('edit-info-modal').classList.remove('open');
+  editingOrderIdx = null;
+}
+
+function setEV(id, val) {
+  const el = document.getElementById(id);
+  if (el) el.value = val;
+}
+function getEV(id) {
+  const el = document.getElementById(id);
+  return el ? el.value.trim() : '';
+}
+
+async function saveEditInfo() {
+  const idx = editingOrderIdx;
+  if (idx === null || idx === undefined) return;
+  const order = pendingOrders[idx];
+  const statusEl = document.getElementById('edit-save-status');
+
+  // Read values from modal
+  const updates = {
+    customer_name:  getEV('ei-cust-name'),
+    customer_phone: getEV('ei-cust-phone'),
+    customer_email: getEV('ei-cust-email'),
+    rig_make:       getEV('ei-rig-make'),
+    rig_sn:         getEV('ei-rig-sn'),
+    rig_dom:        getEV('ei-rig-dom'),
+    res_make:       getEV('ei-res-make'),
+    res_sn:         getEV('ei-res-sn'),
+    res_pack_date:  getEV('ei-res-pack'),
+    res_repack_due: getEV('ei-res-due'),
+    aad_make:       getEV('ei-aad-make'),
+    aad_sn:         getEV('ei-aad-sn'),
+    aad_dom:        getEV('ei-aad-dom'),
+  };
+
+  // Apply to local order object
+  Object.assign(order, updates);
+
+  statusEl.textContent = 'Saving…';
+  statusEl.className = 'edit-save-status';
+  statusEl.style.display = 'block';
+
+  try {
+    await fetch(SCRIPT_URL, {
+      method: 'POST', mode: 'no-cors',
+      headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify({
+        action:         'updateOrderInfo',
+        row:            order._row,
+        customer_name:  updates.customer_name,
+        customer_phone: updates.customer_phone,
+        customer_email: updates.customer_email,
+        rig_make:       updates.rig_make,
+        rig_sn:         updates.rig_sn,
+        rig_dom:        updates.rig_dom,
+        res_make:       updates.res_make,
+        res_sn:         updates.res_sn,
+        res_pack_date:  updates.res_pack_date,
+        res_repack_due: updates.res_repack_due,
+        aad_make:       updates.aad_make,
+        aad_sn:         updates.aad_sn,
+        aad_dom:        updates.aad_dom,
+      })
+    });
+    statusEl.textContent = '✓ Saved successfully!';
+    statusEl.className = 'edit-save-status ok';
+    setTimeout(() => {
+      closeEditModal();
+      renderQueue();
+      // Re-expand the card
+      setTimeout(() => {
+        const card = document.getElementById('order-' + idx);
+        if (card && !card.classList.contains('expanded')) card.classList.add('expanded');
+      }, 50);
+    }, 900);
+  } catch(e) {
+    statusEl.textContent = '⚠ Save failed — check connection.';
+    statusEl.className = 'edit-save-status err';
+  }
 }
 
 function toggleAddSvc(btn) {
@@ -965,6 +1118,7 @@ function changePassword() {
   successEl.style.display = 'block';
   setTimeout(() => successEl.style.display = 'none', 3000);
 }
+
 function printWorkOrder(idx) {
   const order = pendingOrders[idx];
   if (!order) return;
@@ -1017,7 +1171,7 @@ ${rush ? '<div class="rush">⚡ RUSH — ' + rush + '</div>' : ''}
     <div class="section-title">Container</div>
     <div class="field"><label>Make</label><div class="val">${order.rig_make||'—'}</div></div>
     <div class="field"><label>S/N</label><div class="val">${order.rig_sn||'—'}</div></div>
-    ${order.res_make ? '<div class="field"><label>Reserve</label><div class="val">' + order.res_make + (order.res_repack_due ? ' · Due: ' + new Date(order.res_repack_due).toLocaleDateString() : '') + '</div></div>' : ''}
+    ${order.res_make ? '<div class="field"><label>Reserve</label><div class="val">' + order.res_make + (order.res_repack_due ? ' · Due: ' + new Date(order.res_repack_due + 'T00:00:00').toLocaleDateString() : '') + '</div></div>' : ''}
     ${order.aad_make ? '<div class="field"><label>AAD</label><div class="val">' + order.aad_make + '</div></div>' : ''}
   </div>
 </div>
@@ -1040,7 +1194,6 @@ ${order.extra_notes ? '<div class="section"><div class="section-title">Notes</di
   w.document.close();
   setTimeout(() => w.print(), 600);
 }
-
 </script>
 
 <!-- SIGN-OFF MODAL -->
@@ -1084,6 +1237,52 @@ ${order.extra_notes ? '<div class="section"><div class="section-title">Notes</di
     <div style="display:flex;gap:10px;margin-top:4px;">
       <button class="btn btn-primary" style="flex:1;" onclick="confirmReaccess()">✓ Log & Continue</button>
       <button class="btn btn-ghost btn-sm" onclick="closeReaccessModal()">Skip</button>
+    </div>
+  </div>
+</div>
+
+<!-- EDIT CUSTOMER & RIG INFO MODAL -->
+<div class="edit-modal" id="edit-info-modal">
+  <div class="edit-modal-box">
+    <div class="edit-modal-title">✏️ Edit Order Info</div>
+    <div class="edit-modal-sub">Changes save directly to the service log sheet.</div>
+
+    <div id="ei-cust-section">
+      <div class="edit-section-label">Customer</div>
+      <div class="edit-grid">
+        <div class="edit-field full"><label>Full Name</label><input type="text" id="ei-cust-name" placeholder="Customer name"></div>
+        <div class="edit-field"><label>Phone</label><input type="tel" id="ei-cust-phone" placeholder="Phone number"></div>
+        <div class="edit-field"><label>Email</label><input type="email" id="ei-cust-email" placeholder="Email address"></div>
+      </div>
+    </div>
+
+    <div class="edit-section-label">Container</div>
+    <div class="edit-grid">
+      <div class="edit-field"><label>Make / Model</label><input type="text" id="ei-rig-make" placeholder="e.g. Javelin Odyssey"></div>
+      <div class="edit-field"><label>Serial Number</label><input type="text" id="ei-rig-sn" placeholder="Container S/N"></div>
+      <div class="edit-field"><label>DOM</label><input type="text" id="ei-rig-dom" placeholder="YYYY-MM-DD"></div>
+    </div>
+
+    <div class="edit-section-label">Reserve</div>
+    <div class="edit-grid">
+      <div class="edit-field"><label>Make</label><input type="text" id="ei-res-make" placeholder="e.g. Tempo"></div>
+      <div class="edit-field"><label>Serial Number</label><input type="text" id="ei-res-sn" placeholder="Reserve S/N"></div>
+      <div class="edit-field"><label>Last Pack Date</label><input type="text" id="ei-res-pack" placeholder="YYYY-MM-DD"></div>
+      <div class="edit-field"><label>Repack Due</label><input type="text" id="ei-res-due" placeholder="YYYY-MM-DD"></div>
+    </div>
+
+    <div class="edit-section-label">AAD</div>
+    <div class="edit-grid">
+      <div class="edit-field"><label>Make</label><input type="text" id="ei-aad-make" placeholder="e.g. Vigil Cuatro"></div>
+      <div class="edit-field"><label>Serial Number</label><input type="text" id="ei-aad-sn" placeholder="AAD S/N"></div>
+      <div class="edit-field"><label>DOM</label><input type="text" id="ei-aad-dom" placeholder="YYYY-MM-DD"></div>
+    </div>
+
+    <div class="edit-save-status" id="edit-save-status"></div>
+
+    <div class="edit-actions">
+      <button class="btn-save-edit" onclick="saveEditInfo()">💾 Save Changes</button>
+      <button class="btn-cancel-edit" onclick="closeEditModal()">Cancel</button>
     </div>
   </div>
 </div>
