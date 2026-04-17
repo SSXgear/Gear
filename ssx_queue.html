@@ -650,6 +650,7 @@ function renderQueue() {
           <div class="complete-row">
             <div class="complete-field"><label>Rigger Name *</label><input type="text" id="rigger-${realIdx}" placeholder="Your name" value="${order._rigger_name || ''}"></div>
             <div class="complete-field"><label>Rigger Symbol *</label><input type="text" id="rigger-symbol-${realIdx}" placeholder="e.g. T.R." value="${order._rigger_symbol || ''}"></div>
+            <div class="complete-field" style="grid-column:1/-1;"><label>Rigger Email <span style="font-weight:400;font-size:10px;text-transform:none;letter-spacing:0;color:var(--text-muted)">(optional — invoice copy)</span></label><input type="email" id="rigger-email-${realIdx}" placeholder="your@email.com" value="${order._rigger_email || ''}"></div>
             <div class="complete-field" style="grid-column:1/-1;"><label>Internal Notes (optional)</label><textarea id="comp-notes-${realIdx}" placeholder="Final notes..."></textarea></div>
           </div>
           <div class="error-msg" id="comp-error-${realIdx}" style="margin-top:8px;"></div>
@@ -946,15 +947,19 @@ async function confirmAndComplete() {
 }
 
 async function doMarkComplete(idx) {
-  const order      = pendingOrders[idx];
-  const rigger     = document.getElementById('rigger-' + idx).value.trim();
-  const symbol     = document.getElementById('rigger-symbol-' + idx).value.trim();
-  const compNotes  = document.getElementById('comp-notes-' + idx).value.trim();
-  const extraCharge = parseFloat(document.getElementById('extra-charge-' + idx)?.value) || 0;
-  const discount    = parseFloat(document.getElementById('discount-' + idx)?.value)    || 0;
-  const riggerNotes = (document.getElementById('rigger-notes-' + idx)?.value || '').trim();
+  const order        = pendingOrders[idx];
+  const rigger       = document.getElementById('rigger-' + idx).value.trim();
+  const symbol       = document.getElementById('rigger-symbol-' + idx).value.trim();
+  const riggerEmail  = (document.getElementById('rigger-email-' + idx)?.value || '').trim();
+  const compNotes    = document.getElementById('comp-notes-' + idx).value.trim();
+  const extraCharge  = parseFloat(document.getElementById('extra-charge-' + idx)?.value) || 0;
+  const discount     = parseFloat(document.getElementById('discount-' + idx)?.value)     || 0;
+  const riggerNotes  = (document.getElementById('rigger-notes-' + idx)?.value || '').trim();
   const errEl = document.getElementById('comp-error-' + idx);
   errEl.style.display = 'none';
+
+  // Save rigger email for this order session
+  order._rigger_email = riggerEmail;
 
   const svcGrid = document.getElementById('svc-grid-' + idx);
   const updatedServices = svcGrid
@@ -970,9 +975,15 @@ async function doMarkComplete(idx) {
 
   try {
     await fetch(SCRIPT_URL, { method:'POST', mode:'no-cors', headers:{'Content-Type':'text/plain'},
-      body: JSON.stringify({ action:'completeOrder', work_order:order.work_order,
-        rigger: rigger + ' (' + symbol + ')', services:updatedServices,
-        completion_notes:finalNotes, row:order._row }) });
+      body: JSON.stringify({
+        action:            'completeOrder',
+        work_order:        order.work_order,
+        rigger:            rigger + ' (' + symbol + ')',
+        rigger_email:      riggerEmail,
+        services:          updatedServices,
+        completion_notes:  finalNotes,
+        row:               order._row,
+      }) });
     pendingOrders.splice(idx, 1);
     updateDashboard();
     renderQueue();
