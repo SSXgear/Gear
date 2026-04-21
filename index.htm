@@ -1579,7 +1579,7 @@ body {
 </div>
 
 <script>
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwwQede6kkJjleWRAnMuZjCFXTzQ-Cy2-pavCKy1CiUN9X2wUTW4q5vHf7lCCUZlCSZvw/exec';
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxsa7cRdN-TWw8oCXZ3KXpLk8_qrqtIU8itWWhmMDIdfNYFio0v69_v8GWy7S2WJY1yQw/exec';
 
 let GEAR_DATA = []; // loaded from Google Sheet on init
 let gearLoaded = false;
@@ -2740,7 +2740,7 @@ function selectRush(el, value, groupId) {
     if (d && d.admin_password) localStorage.setItem('ssxQueuePw', d.admin_password);
   };
   s.onerror = function() { clearTimeout(t); delete window[cb]; if(s.parentNode) s.remove(); };
-  s.src = 'https://script.google.com/macros/s/AKfycbwwQede6kkJjleWRAnMuZjCFXTzQ-Cy2-pavCKy1CiUN9X2wUTW4q5vHf7lCCUZlCSZvw/exec?action=getSettings&callback=' + cb;
+  s.src = 'https://script.google.com/macros/s/AKfycbxsa7cRdN-TWw8oCXZ3KXpLk8_qrqtIU8itWWhmMDIdfNYFio0v69_v8GWy7S2WJY1yQw/exec?action=getSettings&callback=' + cb;
   document.head.appendChild(s);
 })();
 
