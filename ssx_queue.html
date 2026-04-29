@@ -969,7 +969,7 @@ function filterServiceHistory() {
     return [o.work_order,o.rig_num,o.rig_sn,o.rig_make,o.customer_name,o.rigger].some(v=>v&&String(v).toLowerCase().includes(q));
   });
   let totalRevenue=0;
-  filtered.forEach(o => { totalRevenue += calcTotal(o.services).total; });
+  filtered.forEach(o => { const {total} = calcTotal(o.services, o.extra_charge, o.discount); totalRevenue += total; });
   document.getElementById('sh-stats').textContent = filtered.length+' completed order'+(filtered.length!==1?'s':'')
     +(filtered.length>0?' · Est. Revenue: $'+totalRevenue.toFixed(2):'');
   renderServiceHistory(filtered);
@@ -982,7 +982,7 @@ function renderServiceHistory(orders) {
   orders.forEach((o,i) => {
     const isFJ = o.gear_type==='fun-jumper';
     const rigLine = isFJ?(o.customer_name||'Fun Jumper'):((o.rig_num?'Rig #'+o.rig_num+' — ':'')+( o.rig_make||''));
-    const { total, hasVaries } = calcTotal(o.services);
+    const { total, hasVaries } = calcTotal(o.services, o.extra_charge, o.discount);
     const totalStr = total>0?'$'+total.toFixed(2)+(hasVaries?'+':''):(hasVaries?'Varies':'—');
     const completedDate = o.completed_at?new Date(o.completed_at).toLocaleDateString():'—';
     const rushBadge = o.rush&&o.rush!=='Standard Turnaround'
