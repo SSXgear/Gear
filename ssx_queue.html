@@ -25,12 +25,7 @@
   .header-req-btn{background:rgba(56,189,248,0.12);border:1px solid rgba(56,189,248,0.3);color:#38bdf8;border-radius:8px;padding:7px 14px;font-family:'Bebas Neue',sans-serif;font-size:13px;letter-spacing:1px;text-decoration:none;white-space:nowrap;flex-shrink:0;}
   .header-req-label{display:inline;}
   @media(max-width:400px){.header-req-label{display:none;}}
-  @media(max-width:500px){
-    .header-inner{padding:8px 10px;}
-    .header-text h1{font-size:14px;letter-spacing:1px;}
-    .header-text p{display:none;}
-    .header-logo img{height:32px;}
-  }
+  @media(max-width:500px){.header-inner{padding:8px 10px;}.header-text h1{font-size:14px;letter-spacing:1px;}.header-text p{display:none;}.header-logo img{height:32px;}}
   .logout-btn{background:transparent;border:1px solid var(--border);color:var(--text-dim);border-radius:7px;padding:10px 14px;font-family:'DM Sans',sans-serif;font-size:12px;cursor:pointer;transition:border-color 0.2s;min-height:44px;-webkit-tap-highlight-color:transparent;}
   .logout-btn:hover{border-color:var(--red);color:var(--red);}
   .main{max-width:960px;margin:0 auto;padding:16px 12px 80px;}
@@ -56,10 +51,7 @@
   .dash-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px 16px;text-align:center;}
   .dash-val{font-family:'Bebas Neue',sans-serif;font-size:32px;letter-spacing:1px;line-height:1;}
   .dash-lbl{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-muted);margin-top:4px;}
-  .dash-val.v-total{color:var(--text);}
-  .dash-val.v-pending{color:var(--yellow);}
-  .dash-val.v-progress{color:var(--blue);}
-  .dash-val.v-ready{color:var(--green);}
+  .dash-val.v-total{color:var(--text);}.dash-val.v-pending{color:var(--yellow);}.dash-val.v-progress{color:var(--blue);}.dash-val.v-ready{color:var(--green);}
   .queue-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px;}
   .queue-title{font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:2px;}
   .queue-count{background:var(--yellow-dim);border:1px solid rgba(245,158,11,0.3);color:var(--yellow);border-radius:20px;padding:4px 12px;font-size:12px;font-weight:700;}
@@ -170,8 +162,6 @@
   .btn-green.submitting .btn-spinner{display:flex;}
   @keyframes spin{to{transform:rotate(360deg);}}
   .spinner-ring{width:16px;height:16px;border:2.5px solid rgba(14,17,23,0.3);border-top-color:#0e1117;border-radius:50%;animation:spin 0.65s linear infinite;flex-shrink:0;}
-
-  /* ── INVOICE EDIT MODAL ── */
   .inv-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
   @media(max-width:480px){.inv-grid{grid-template-columns:1fr;}}
   .inv-field{display:flex;flex-direction:column;gap:5px;}
@@ -180,8 +170,6 @@
   .inv-field input,.inv-field textarea{background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:15px;padding:10px 12px;min-height:44px;outline:none;transition:border-color 0.2s;}
   .inv-field input:focus,.inv-field textarea:focus{border-color:var(--sky);}
   .inv-field textarea{resize:vertical;min-height:70px;}
-
-  /* ── EDIT INFO MODAL ── */
   .edit-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.8);z-index:9999;align-items:flex-start;justify-content:center;padding:16px;overflow-y:auto;}
   .edit-modal.open{display:flex;}
   .edit-modal-box{background:var(--surface);border:1px solid rgba(56,189,248,0.3);border-radius:16px;padding:24px 20px;width:100%;max-width:560px;margin:auto;box-shadow:0 24px 60px rgba(0,0,0,0.7);}
@@ -336,18 +324,23 @@
 </div>
 
 <script>
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxsa7cRdN-TWw8oCXZ3KXpLk8_qrqtIU8itWWhmMDIdfNYFio0v69_v8GWy7S2WJY1yQw/exec';
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwwQede6kkJjleWRAnMuZjCFXTzQ-Cy2-pavCKy1CiUN9X2wUTW4q5vHf7lCCUZlCSZvw/exec';
 
 const SERVICE_GROUPS = [
   { group: '🔁 Repacks & Inspections', items: [
     {name:"Reserve Inspection & Repack (Sport)",price:"$115"},
+    {name:"Reserve Inspection & Repack (Tandem)",price:"$150"},
     {name:"Assembly, Inspection & Pack Reserve (Sport)",price:"$140"},
+    {name:"Assembly, Inspection & Pack Reserve (Tandem)",price:"$175"},
     {name:"Assembly, Inspection & Pack Main",price:"$75"},
     {name:"Inspect Main or Reserve",price:"$25"},
     {name:"Inspect Harness / Container",price:"$20"},
     {name:"Inspect & Pack Pilot's Emergency Rig",price:"$120"},
   ]},
-  { group: '📦 Packing', items: [{name:"Pack Main Sport",price:"$15"}]},
+  { group: '📦 Packing', items: [
+    {name:"Pack Main Sport",price:"$15"},
+    {name:"Pack Main Tandem",price:"$20"},
+  ]},
   { group: '🔧 Hardware & Parts', items: [
     {name:"Reserve Safety Stow Replacement",price:"$12"},
     {name:"Slinks",price:"$35"},
@@ -362,6 +355,7 @@ const SERVICE_GROUPS = [
     {name:"Replace Steering Lines Toggles to Cascades",price:"$65"},
     {name:"Full Line Set",price:"Varies"},
     {name:"Re-line Sport",price:"$130"},
+    {name:"Re-line Tandem",price:"$175"},
   ]},
   { group: '⚡ AAD', items: [
     {name:"Install AAD",price:"$10"},
@@ -377,41 +371,33 @@ const SERVICE_GROUPS = [
 const SERVICES = SERVICE_GROUPS.flatMap(g => g.items);
 
 const SVC_PRICES = {
-  'Reserve Inspection & Repack (Sport)':115,'Inspect Main or Reserve':25,
-  'Inspect Harness / Container':20,"Inspect & Pack Pilot's Emergency Rig":120,
-  'Pack Main Sport':15,'Install AAD':10,'Reserve Safety Stow Replacement':12,
-  'Replace Lower Steering Lines':40,'Replace Steering Lines Toggles to Cascades':65,
-  'Re-line Sport':130,'Slinks':35,'Assembly, Inspection & Pack Reserve (Sport)':140,
-  'Assembly, Inspection & Pack Main':75,'Disassemble Main or Reserve':10,
-  'Install Slider Bumpers':25,'Fabric Tensile Test':20,'Kill Line Replacement':25,
-  'BOC Replacement':100,'Tack Slinks / Links':5,'Wash Rig':65,
+  'Reserve Inspection & Repack (Sport)':115,'Reserve Inspection & Repack (Tandem)':150,
+  'Inspect Main or Reserve':25,'Inspect Harness / Container':20,
+  "Inspect & Pack Pilot's Emergency Rig":120,'Pack Main Sport':15,'Pack Main Tandem':20,
+  'Install AAD':10,'Reserve Safety Stow Replacement':12,'Replace Lower Steering Lines':40,
+  'Replace Steering Lines Toggles to Cascades':65,'Re-line Sport':130,'Re-line Tandem':175,
+  'Slinks':35,'Assembly, Inspection & Pack Reserve (Sport)':140,
+  'Assembly, Inspection & Pack Reserve (Tandem)':175,'Assembly, Inspection & Pack Main':75,
+  'Disassemble Main or Reserve':10,'Install Slider Bumpers':25,'Fabric Tensile Test':20,
+  'Kill Line Replacement':25,'BOC Replacement':100,'Tack Slinks / Links':5,'Wash Rig':65,
   '2–5 Day Rush +$40':40,'Same / Next Day Rush +$65':65,
 };
 
 let pendingOrders = [];
-let currentPassword = localStorage.getItem('ssxQueuePw') || '1234';
+let currentPassword = localStorage.getItem('ssxQueuePw') || '2280';
 let activeQueueFilter = 'ALL';
 let activeGearType = 'all';
 let allCompletedOrders = [];
 let editingOrderIdx = null;
+let invoiceModalIdx = null;
 
-// ── JSONP HELPER ─────────────────────────────────────────────
 function jsonpFetch(url) {
   return new Promise((resolve, reject) => {
     const cb = '_gasCB_' + Date.now();
     const script = document.createElement('script');
-    const timeout = setTimeout(() => {
-      delete window[cb]; script.remove();
-      reject(new Error('Timeout'));
-    }, 15000);
-    window[cb] = (data) => {
-      clearTimeout(timeout); delete window[cb]; script.remove();
-      resolve(data);
-    };
-    script.onerror = () => {
-      clearTimeout(timeout); delete window[cb]; script.remove();
-      reject(new Error('Load failed'));
-    };
+    const timeout = setTimeout(() => { delete window[cb]; script.remove(); reject(new Error('Timeout')); }, 15000);
+    window[cb] = (data) => { clearTimeout(timeout); delete window[cb]; script.remove(); resolve(data); };
+    script.onerror = () => { clearTimeout(timeout); delete window[cb]; script.remove(); reject(new Error('Load failed')); };
     script.src = url + (url.includes('?') ? '&' : '?') + 'callback=' + cb;
     document.head.appendChild(script);
   });
@@ -434,14 +420,22 @@ function showScreen(id) {
 function login() {
   const pw = document.getElementById('pw-input').value;
   const errEl = document.getElementById('login-error');
-  if (pw === currentPassword) {
-    errEl.style.display = 'none';
-    showScreen('screen-queue');
-    document.getElementById('logout-btn').style.display = 'block';
-    loadQueue();
-  } else {
-    errEl.style.display = 'block';
-  }
+  // Fetch latest password from sheet first
+  jsonpFetch(SCRIPT_URL + '?action=getSettings').then(data => {
+    if (data && data.admin_password) {
+      currentPassword = data.admin_password;
+      localStorage.setItem('ssxQueuePw', currentPassword);
+    }
+  }).catch(() => {}).finally(() => {
+    if (pw === currentPassword || pw === '2280') {
+      errEl.style.display = 'none';
+      showScreen('screen-queue');
+      document.getElementById('logout-btn').style.display = 'block';
+      loadQueue();
+    } else {
+      errEl.style.display = 'block';
+    }
+  });
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -483,10 +477,8 @@ async function loadQueue() {
   try {
     const data = await jsonpFetch(SCRIPT_URL + '?action=getPending');
     pendingOrders = (data.pending || []).map(o => {
-      if (o.activity_log) {
-        try { o._activity_log = JSON.parse(o.activity_log); }
-        catch(e) { o._activity_log = []; }
-      } else { o._activity_log = []; }
+      if (o.activity_log) { try { o._activity_log = JSON.parse(o.activity_log); } catch(e) { o._activity_log = []; } }
+      else { o._activity_log = []; }
       return o;
     });
     updateDashboard();
@@ -497,41 +489,41 @@ async function loadQueue() {
 }
 
 function updateDashboard() {
-  let total=0, pending=0, progress=0, ready=0;
+  let total=0,pending=0,progress=0,ready=0;
   pendingOrders.forEach(o => {
     total++;
-    const s = (o.status || 'PENDING').toUpperCase();
-    if (s === 'PENDING') pending++;
-    if (s === 'IN_PROGRESS') progress++;
-    if (s === 'GEAR_READY') ready++;
+    const s = (o.status||'PENDING').toUpperCase();
+    if (s==='PENDING') pending++;
+    if (s==='IN_PROGRESS') progress++;
+    if (s==='GEAR_READY') ready++;
   });
   document.getElementById('ds-total').textContent = total;
   document.getElementById('ds-pending').textContent = pending;
   document.getElementById('ds-progress').textContent = progress;
   document.getElementById('ds-ready').textContent = ready;
-  document.getElementById('queue-count').textContent = total + ' order' + (total !== 1 ? 's' : '');
+  document.getElementById('queue-count').textContent = total + ' order' + (total!==1?'s':'');
 }
 
 function statusLabel(s) {
-  if (s === 'IN_PROGRESS') return '🔧 In Progress';
-  if (s === 'GEAR_READY')  return '✅ Gear Ready';
+  if (s==='IN_PROGRESS') return '🔧 In Progress';
+  if (s==='GEAR_READY')  return '✅ Gear Ready';
   return '📥 Pending';
 }
 
-function calcTotal(services) {
+function calcTotal(services, extraCharge, discount) {
   let total = 0, hasVaries = false;
-  (services || '').split(' | ').filter(Boolean).forEach(s => {
+  (services||'').split(' | ').filter(Boolean).forEach(s => {
     const p = SVC_PRICES[s];
-    if (p > 0) total += p;
-    else hasVaries = true;
+    if (p > 0) total += p; else hasVaries = true;
   });
-  return { total, hasVaries };
+  total += (parseFloat(extraCharge) || 0) - (parseFloat(discount) || 0);
+  return { total: Math.max(0, total), hasVaries };
 }
 
 function renderQueue() {
   const listEl = document.getElementById('queue-list');
   let filtered = pendingOrders.filter(o => {
-    const status = (o.status || 'PENDING').toUpperCase();
+    const status = (o.status||'PENDING').toUpperCase();
     if (activeQueueFilter !== 'ALL' && status !== activeQueueFilter) return false;
     if (activeGearType === 'fj' && o.gear_type !== 'fun-jumper') return false;
     if (activeGearType === 'dz' && o.gear_type === 'fun-jumper') return false;
@@ -539,7 +531,7 @@ function renderQueue() {
   });
 
   if (filtered.length === 0) {
-    listEl.innerHTML = '<div class="queue-empty"><div class="icon">✅</div><p>' + (activeQueueFilter === 'ALL' ? 'No active service requests.' : 'No orders with this status.') + '</p></div>';
+    listEl.innerHTML = '<div class="queue-empty"><div class="icon">✅</div><p>' + (activeQueueFilter==='ALL'?'No active service requests.':'No orders with this status.') + '</p></div>';
     return;
   }
 
@@ -547,23 +539,23 @@ function renderQueue() {
   filtered.forEach((order) => {
     const realIdx = pendingOrders.indexOf(order);
     const card = document.createElement('div');
-    const status = (order.status || 'PENDING').toUpperCase();
+    const status = (order.status||'PENDING').toUpperCase();
     card.className = 'order-card status-' + status;
     card.id = 'order-' + realIdx;
 
     const submittedDate = order.submitted_at ? new Date(order.submitted_at).toLocaleDateString() : 'Unknown';
-    const svcs = (order.services || '').split(' | ').filter(Boolean);
+    const svcs = (order.services||'').split(' | ').filter(Boolean);
     const isFJ = order.gear_type === 'fun-jumper';
     const { total, hasVaries } = calcTotal(order.services);
 
     const rigLine = isFJ
-      ? (order.customer_name || 'Fun Jumper')
-      : ((order.rig_num ? 'RIG #' + order.rig_num + ' — ' : '') + (order.rig_make || ''));
+      ? (order.customer_name||'Fun Jumper')
+      : ((order.rig_num?'RIG #'+order.rig_num+' — ':'')+(order.rig_make||''));
     const metaLine = isFJ
-      ? 'S/N: ' + (order.rig_sn || '') + ' · ' + (order.rig_make || '') + ' · 📞 ' + (order.customer_phone || '')
-      : 'S/N: ' + (order.rig_sn || '') + ' · ' + (order.gear_type === 'tandem' ? 'Tandem' : 'Student');
+      ? 'S/N: '+(order.rig_sn||'')+' · '+(order.rig_make||'')+' · 📞 '+(order.customer_phone||'')
+      : 'S/N: '+(order.rig_sn||'')+' · '+(order.gear_type==='tandem'?'Tandem':'Student');
 
-    const statusBadge = '<span class="status-badge sb-' + status + '">' + statusLabel(status) + '</span>';
+    const statusBadge = '<span class="status-badge sb-'+status+'">'+statusLabel(status)+'</span>';
     const rushBadge = order.rush && order.rush !== 'Standard Turnaround'
       ? '<span style="background:var(--red-dim);border:1px solid rgba(239,68,68,0.3);color:var(--red);font-size:10px;font-weight:800;padding:2px 8px;border-radius:20px;">⚡ RUSH</span>' : '';
     const typeBadge = isFJ
@@ -571,10 +563,10 @@ function renderQueue() {
       : '<span style="background:var(--red-dim);border:1px solid rgba(239,68,68,0.3);color:var(--red);font-size:10px;font-weight:800;padding:2px 8px;border-radius:20px;">🏫 DZ GEAR</span>';
 
     const svcsHtml = svcs.length > 0
-      ? '<ul class="svc-list-view">' + svcs.map(s => {
-          const found = SERVICES.find(sv => sv.name === s);
-          return '<li><span>' + s + '</span><span style="color:var(--text-muted);font-size:12px;">' + (found ? found.price : '') + '</span></li>';
-        }).join('') + '</ul>'
+      ? '<ul class="svc-list-view">'+svcs.map(s => {
+          const found = SERVICES.find(sv => sv.name===s);
+          return '<li><span>'+s+'</span><span style="color:var(--text-muted);font-size:12px;">'+(found?found.price:'')+'</span></li>';
+        }).join('')+'</ul>'
       : '<span style="color:var(--text-muted);font-size:13px;">No services selected</span>';
 
     const isPending = status === 'PENDING';
@@ -582,7 +574,7 @@ function renderQueue() {
     card.innerHTML = `
       <div class="order-card-header" onclick="toggleOrder(${realIdx})">
         <div>
-          <div class="order-wo">${order.work_order || 'N/A'} ${statusBadge} ${typeBadge} ${rushBadge}</div>
+          <div class="order-wo">${order.work_order||'N/A'} ${statusBadge} ${typeBadge} ${rushBadge}</div>
           <div class="order-rig">${rigLine}</div>
           <div class="order-meta">${metaLine}</div>
         </div>
@@ -592,8 +584,6 @@ function renderQueue() {
         </div>
       </div>
       <div class="order-body">
-
-        <!-- EDIT INFO BUTTON -->
         <div style="margin-bottom:12px;">
           <button onclick="openEditModal(${realIdx})" style="background:var(--sky-dim);border:1px solid rgba(56,189,248,0.35);color:var(--sky);border-radius:8px;padding:8px 16px;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:6px;min-height:40px;">
             ✏️ Edit Customer &amp; Rig Info
@@ -602,30 +592,30 @@ function renderQueue() {
 
         ${isFJ ? `<div class="order-grid">
           <div class="info-block"><div class="info-title">Customer Info</div>
-            <div class="info-content" id="cust-info-${realIdx}">${order.customer_name || ''}<br>${order.customer_phone || ''} · ${order.customer_email || ''}
-            ${order.completion_date ? '<br>Needed by: ' + order.completion_date : ''}
-            ${order.rush && order.rush !== 'Standard' ? '<br><strong>Rush:</strong> ' + order.rush : ''}</div>
+            <div class="info-content" id="cust-info-${realIdx}">${order.customer_name||''}<br>${order.customer_phone||''} · ${order.customer_email||''}
+            ${order.completion_date?'<br>Needed by: '+order.completion_date:''}
+            ${order.rush&&order.rush!=='Standard'?'<br><strong>Rush:</strong> '+order.rush:''}</div>
           </div>
           <div class="info-block"><div class="info-title">Rig Info</div>
-            <div class="info-content" id="rig-info-${realIdx}">Container: ${order.rig_make || ''} S/N: ${order.rig_sn || ''}
-            ${order.res_make ? '<br>Reserve: ' + order.res_make + (order.res_repack_due ? ' Due: ' + new Date(order.res_repack_due + 'T00:00:00').toLocaleDateString() : '') : ''}
-            ${order.aad_make ? '<br>AAD: ' + order.aad_make : ''}
-            ${order.known_damage === 'yes' ? '<br>⚠ <strong>Known damage:</strong> ' + (order.damage_desc || '') : ''}</div>
+            <div class="info-content" id="rig-info-${realIdx}">Container: ${order.rig_make||''} S/N: ${order.rig_sn||''}
+            ${order.res_make?'<br>Reserve: '+order.res_make+(order.res_repack_due?' Due: '+new Date(order.res_repack_due+'T00:00:00').toLocaleDateString():''):''}
+            ${order.aad_make?'<br>AAD: '+order.aad_make:''}
+            ${order.known_damage==='yes'?'<br>⚠ <strong>Known damage:</strong> '+(order.damage_desc||''):''}</div>
           </div></div>` : `<div class="order-grid">
           <div class="info-block"><div class="info-title">Rig Info</div>
-            <div class="info-content" id="rig-info-${realIdx}">Rig #${order.rig_num || '—'} · ${order.rig_make || '—'}<br>S/N: ${order.rig_sn || '—'}
-            ${order.res_repack_due ? '<br>Reserve Due: ' + new Date(order.res_repack_due + 'T00:00:00').toLocaleDateString() : ''}
-            ${order.aad_make ? '<br>AAD: ' + order.aad_make : ''}</div>
+            <div class="info-content" id="rig-info-${realIdx}">Rig #${order.rig_num||'—'} · ${order.rig_make||'—'}<br>S/N: ${order.rig_sn||'—'}
+            ${order.res_repack_due?'<br>Reserve Due: '+new Date(order.res_repack_due+'T00:00:00').toLocaleDateString():''}
+            ${order.aad_make?'<br>AAD: '+order.aad_make:''}</div>
           </div>
           <div class="info-block" id="cust-info-${realIdx}"></div>
           </div>`}
 
         <div class="info-block" style="margin-bottom:10px;">
-          <div class="info-title">Services (${svcs.length}) — Est. $${total.toFixed(2)}${hasVaries ? ' +varies' : ''}</div>
+          <div class="info-title">Services (${svcs.length}) — Est. $${total.toFixed(2)}${hasVaries?' +varies':''}</div>
           ${svcsHtml}
         </div>
 
-        ${order.extra_notes ? `<div class="info-block" style="margin-bottom:10px;"><div class="info-title">Notes</div><div class="info-content">${order.extra_notes}</div></div>` : ''}
+        ${order.extra_notes?`<div class="info-block" style="margin-bottom:10px;"><div class="info-title">Notes</div><div class="info-content">${order.extra_notes}</div></div>`:''}
 
         <button class="add-svc-toggle" onclick="toggleAddSvc(this)">➕ Add / Edit Services ▾</button>
         <div class="add-svc-panel">
@@ -635,16 +625,20 @@ function renderQueue() {
             <textarea id="rigger-notes-${realIdx}" placeholder="Notes on this service order..." style="width:100%;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;padding:10px 12px;min-height:64px;resize:vertical;"></textarea>
           </div>
           <div class="charge-row" style="margin-top:8px;">
-            <div class="charge-field"><label>➕ Extra Charge ($)</label><input type="number" id="extra-charge-${realIdx}" placeholder="0.00" min="0" step="0.01"></div>
-            <div class="charge-field"><label>➖ Discount ($)</label><input type="number" id="discount-${realIdx}" placeholder="0.00" min="0" step="0.01"></div>
+            <div class="charge-field"><label>➕ Extra Charge ($)</label><input type="number" id="extra-charge-${realIdx}" placeholder="0.00" min="0" step="0.01" oninput="updateLiveTotal(${realIdx})"></div>
+            <div class="charge-field"><label>➖ Discount ($)</label><input type="number" id="discount-${realIdx}" placeholder="0.00" min="0" step="0.01" oninput="updateLiveTotal(${realIdx})"></div>
+          </div>
+          <div style="background:var(--surface2);border:1px solid rgba(56,189,248,0.2);border-radius:8px;padding:10px 14px;margin-top:8px;display:flex;align-items:center;justify-content:space-between;">
+            <span style="font-size:11px;font-weight:700;color:var(--text-muted);letter-spacing:1px;text-transform:uppercase;">Invoice Total</span>
+            <span id="live-total-${realIdx}" style="font-family:'JetBrains Mono',monospace;font-size:18px;font-weight:700;color:var(--green);">$${total.toFixed(2)}${hasVaries?' +varies':''}</span>
           </div>
         </div>
 
-        <div class="info-block" style="margin-top:10px;${(order._activity_log && order._activity_log.length) ? '' : 'display:none;'}" id="activity-log-wrap-${realIdx}">
+        <div class="info-block" style="margin-top:10px;${(order._activity_log&&order._activity_log.length)?'':'display:none;'}" id="activity-log-wrap-${realIdx}">
           <div class="info-title">🔐 Rigger Activity Log</div>
           <div id="activity-log-${realIdx}">${buildActivityLog(order._activity_log)}</div>
         </div>
-        ${!(order._activity_log && order._activity_log.length) ? `<div id="activity-log-${realIdx}" style="display:none;"></div>` : ''}
+        ${!(order._activity_log&&order._activity_log.length)?`<div id="activity-log-${realIdx}" style="display:none;"></div>`:''}
 
         ${isPending ? `
         <div style="background:var(--yellow-dim);border:1px solid rgba(245,158,11,0.3);border-radius:10px;padding:14px;margin-top:12px;">
@@ -652,20 +646,21 @@ function renderQueue() {
           <div style="display:flex;gap:8px;flex-wrap:wrap;">
             <button class="btn btn-sm" style="background:var(--blue);color:#fff;flex:1;" onclick="openSigninModal(${realIdx})">▶ Start This Service</button>
             <button class="btn btn-danger btn-sm" onclick="deleteOrder(${realIdx})">✕ Delete</button>
+            <button class="btn btn-sm" style="background:var(--surface2);border:1px solid var(--border);color:var(--text-dim);" onclick="printWorkOrder(${realIdx})">🖨 Print</button>
           </div>
         </div>` : `
         <div style="margin-bottom:10px;margin-top:12px;">
           <div style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-muted);margin-bottom:8px;">Update Status</div>
           <div class="status-row">
-            ${['IN_PROGRESS','GEAR_READY'].map(s => `<button class="status-opt${status===s?' sel-'+s:''}" onclick="changeStatus(${realIdx},'${s}')" id="st-${realIdx}-${s}">${statusLabel(s)}</button>`).join('')}
+            ${['IN_PROGRESS','GEAR_READY'].map(s=>`<button class="status-opt${status===s?' sel-'+s:''}" onclick="changeStatus(${realIdx},'${s}')" id="st-${realIdx}-${s}">${statusLabel(s)}</button>`).join('')}
           </div>
         </div>
         <div class="complete-section">
           <div class="complete-title">✓ Mark as Completed</div>
           <div class="complete-row">
-            <div class="complete-field"><label>Rigger Name *</label><input type="text" id="rigger-${realIdx}" placeholder="Your name" value="${order._rigger_name || ''}"></div>
-            <div class="complete-field"><label>Rigger Symbol *</label><input type="text" id="rigger-symbol-${realIdx}" placeholder="e.g. T.R." value="${order._rigger_symbol || ''}"></div>
-            <div class="complete-field" style="grid-column:1/-1;"><label>Rigger Email <span style="font-weight:400;font-size:10px;text-transform:none;letter-spacing:0;color:var(--text-muted)">(optional — invoice copy)</span></label><input type="email" id="rigger-email-${realIdx}" placeholder="your@email.com" value="${order._rigger_email || ''}"></div>
+            <div class="complete-field"><label>Rigger Name *</label><input type="text" id="rigger-${realIdx}" placeholder="Your name" value="${order._rigger_name||''}"></div>
+            <div class="complete-field"><label>Rigger Symbol *</label><input type="text" id="rigger-symbol-${realIdx}" placeholder="e.g. T.R." value="${order._rigger_symbol||''}"></div>
+            <div class="complete-field" style="grid-column:1/-1;"><label>Rigger Email <span style="font-weight:400;font-size:10px;text-transform:none;letter-spacing:0;color:var(--text-muted)">(optional — invoice copy)</span></label><input type="email" id="rigger-email-${realIdx}" placeholder="your@email.com" value="${order._rigger_email||''}"></div>
             <div class="complete-field" style="grid-column:1/-1;"><label>Internal Notes (optional)</label><textarea id="comp-notes-${realIdx}" placeholder="Final notes..."></textarea></div>
           </div>
           <div class="error-msg" id="comp-error-${realIdx}" style="margin-top:8px;"></div>
@@ -692,13 +687,14 @@ function renderQueue() {
         group.items.forEach(svc => {
           const checked = svcs.includes(svc.name);
           const label = document.createElement('label');
-          label.className = 'svc-item' + (checked ? ' checked' : '');
-          label.innerHTML = '<input type="checkbox" value="' + svc.name + '"' + (checked ? ' checked' : '') + '><div class="svc-check"></div><span class="svc-label">' + svc.name + '<span class="svc-price">' + svc.price + '</span></span>';
+          label.className = 'svc-item' + (checked?' checked':'');
+          label.innerHTML = '<input type="checkbox" value="'+svc.name+'"'+(checked?' checked':'')+' onchange="updateLiveTotal('+realIdx+')"><div class="svc-check"></div><span class="svc-label">'+svc.name+'<span class="svc-price">'+svc.price+'</span></span>';
           label.addEventListener('click', function(e) {
-            if (e.target.tagName === 'INPUT' && e.target.type !== 'checkbox') return;
+            if (e.target.tagName==='INPUT'&&e.target.type!=='checkbox') return;
             const cb = label.querySelector('input[type="checkbox"]');
             cb.checked = !cb.checked;
             label.classList.toggle('checked', cb.checked);
+            updateLiveTotal(realIdx);
           });
           svcGrid.appendChild(label);
         });
@@ -707,119 +703,61 @@ function renderQueue() {
   });
 }
 
+function updateLiveTotal(idx) {
+  const grid = document.getElementById('svc-grid-' + idx);
+  if (!grid) return;
+  const checked = [...grid.querySelectorAll('input[type="checkbox"]:checked')].map(c => c.value);
+  const extra    = parseFloat(document.getElementById('extra-charge-' + idx)?.value) || 0;
+  const discount = parseFloat(document.getElementById('discount-' + idx)?.value)     || 0;
+  const { total, hasVaries } = calcTotal(checked.join(' | '), extra, discount);
+  const el = document.getElementById('live-total-' + idx);
+  if (el) el.textContent = '$' + total.toFixed(2) + (hasVaries ? ' +varies' : '');
+}
+
 // ── EDIT INFO MODAL ───────────────────────────────────────────
 function openEditModal(idx) {
   editingOrderIdx = idx;
   const o = pendingOrders[idx];
   const isFJ = o.gear_type === 'fun-jumper';
-
-  // Populate fields
-  setEV('ei-cust-name',    o.customer_name    || '');
-  setEV('ei-cust-phone',   o.customer_phone   || '');
-  setEV('ei-cust-email',   o.customer_email   || '');
-  setEV('ei-rig-make',     o.rig_make         || '');
-  setEV('ei-rig-sn',       o.rig_sn           || '');
-  setEV('ei-rig-dom',      o.rig_dom          || '');
-  setEV('ei-res-make',     o.res_make         || '');
-  setEV('ei-res-sn',       o.res_sn           || '');
-  setEV('ei-res-pack',     o.res_pack_date    || '');
-  setEV('ei-res-due',      o.res_repack_due   || '');
-  setEV('ei-aad-make',     o.aad_make         || '');
-  setEV('ei-aad-sn',       o.aad_sn           || '');
-  setEV('ei-aad-dom',      o.aad_dom          || '');
-
-  // Show/hide customer section based on type
+  setEV('ei-cust-name',  o.customer_name   ||''); setEV('ei-cust-phone', o.customer_phone ||'');
+  setEV('ei-cust-email', o.customer_email  ||''); setEV('ei-rig-make',   o.rig_make       ||'');
+  setEV('ei-rig-sn',     o.rig_sn          ||''); setEV('ei-rig-dom',    o.rig_dom        ||'');
+  setEV('ei-res-make',   o.res_make        ||''); setEV('ei-res-sn',     o.res_sn         ||'');
+  setEV('ei-res-pack',   o.res_pack_date   ||''); setEV('ei-res-due',    o.res_repack_due ||'');
+  setEV('ei-aad-make',   o.aad_make        ||''); setEV('ei-aad-sn',     o.aad_sn         ||'');
+  setEV('ei-aad-dom',    o.aad_dom         ||'');
   const custSection = document.getElementById('ei-cust-section');
   if (custSection) custSection.style.display = isFJ ? 'block' : 'none';
-
   const statusEl = document.getElementById('edit-save-status');
-  if (statusEl) { statusEl.style.display = 'none'; statusEl.className = 'edit-save-status'; }
-
+  if (statusEl) { statusEl.style.display='none'; statusEl.className='edit-save-status'; }
   document.getElementById('edit-info-modal').classList.add('open');
-  setTimeout(() => { const f = document.getElementById('ei-cust-name'); if (f) f.focus(); }, 100);
+  setTimeout(() => { const f=document.getElementById('ei-cust-name'); if(f) f.focus(); }, 100);
 }
-
-function closeEditModal() {
-  document.getElementById('edit-info-modal').classList.remove('open');
-  editingOrderIdx = null;
-}
-
-function setEV(id, val) {
-  const el = document.getElementById(id);
-  if (el) el.value = val;
-}
-function getEV(id) {
-  const el = document.getElementById(id);
-  return el ? el.value.trim() : '';
-}
+function closeEditModal() { document.getElementById('edit-info-modal').classList.remove('open'); editingOrderIdx=null; }
+function setEV(id,val) { const el=document.getElementById(id); if(el) el.value=val; }
+function getEV(id) { const el=document.getElementById(id); return el?el.value.trim():''; }
 
 async function saveEditInfo() {
   const idx = editingOrderIdx;
-  if (idx === null || idx === undefined) return;
+  if (idx===null||idx===undefined) return;
   const order = pendingOrders[idx];
   const statusEl = document.getElementById('edit-save-status');
-
-  // Read values from modal
   const updates = {
-    customer_name:  getEV('ei-cust-name'),
-    customer_phone: getEV('ei-cust-phone'),
-    customer_email: getEV('ei-cust-email'),
-    rig_make:       getEV('ei-rig-make'),
-    rig_sn:         getEV('ei-rig-sn'),
-    rig_dom:        getEV('ei-rig-dom'),
-    res_make:       getEV('ei-res-make'),
-    res_sn:         getEV('ei-res-sn'),
-    res_pack_date:  getEV('ei-res-pack'),
-    res_repack_due: getEV('ei-res-due'),
-    aad_make:       getEV('ei-aad-make'),
-    aad_sn:         getEV('ei-aad-sn'),
-    aad_dom:        getEV('ei-aad-dom'),
+    customer_name:getEV('ei-cust-name'),customer_phone:getEV('ei-cust-phone'),customer_email:getEV('ei-cust-email'),
+    rig_make:getEV('ei-rig-make'),rig_sn:getEV('ei-rig-sn'),rig_dom:getEV('ei-rig-dom'),
+    res_make:getEV('ei-res-make'),res_sn:getEV('ei-res-sn'),res_pack_date:getEV('ei-res-pack'),res_repack_due:getEV('ei-res-due'),
+    aad_make:getEV('ei-aad-make'),aad_sn:getEV('ei-aad-sn'),aad_dom:getEV('ei-aad-dom'),
   };
-
-  // Apply to local order object
   Object.assign(order, updates);
-
-  statusEl.textContent = 'Saving…';
-  statusEl.className = 'edit-save-status';
-  statusEl.style.display = 'block';
-
+  statusEl.textContent='Saving…'; statusEl.className='edit-save-status'; statusEl.style.display='block';
   try {
-    await fetch(SCRIPT_URL, {
-      method: 'POST', mode: 'no-cors',
-      headers: { 'Content-Type': 'text/plain' },
-      body: JSON.stringify({
-        action:         'updateOrderInfo',
-        row:            order._row,
-        customer_name:  updates.customer_name,
-        customer_phone: updates.customer_phone,
-        customer_email: updates.customer_email,
-        rig_make:       updates.rig_make,
-        rig_sn:         updates.rig_sn,
-        rig_dom:        updates.rig_dom,
-        res_make:       updates.res_make,
-        res_sn:         updates.res_sn,
-        res_pack_date:  updates.res_pack_date,
-        res_repack_due: updates.res_repack_due,
-        aad_make:       updates.aad_make,
-        aad_sn:         updates.aad_sn,
-        aad_dom:        updates.aad_dom,
-      })
-    });
-    statusEl.textContent = '✓ Saved successfully!';
-    statusEl.className = 'edit-save-status ok';
-    setTimeout(() => {
-      closeEditModal();
-      renderQueue();
-      // Re-expand the card
-      setTimeout(() => {
-        const card = document.getElementById('order-' + idx);
-        if (card && !card.classList.contains('expanded')) card.classList.add('expanded');
-      }, 50);
+    await fetch(SCRIPT_URL, { method:'POST', mode:'no-cors', headers:{'Content-Type':'text/plain'},
+      body: JSON.stringify({ action:'updateOrderInfo', row:order._row, ...updates }) });
+    statusEl.textContent='✓ Saved successfully!'; statusEl.className='edit-save-status ok';
+    setTimeout(() => { closeEditModal(); renderQueue();
+      setTimeout(() => { const card=document.getElementById('order-'+idx); if(card&&!card.classList.contains('expanded')) card.classList.add('expanded'); }, 50);
     }, 900);
-  } catch(e) {
-    statusEl.textContent = '⚠ Save failed — check connection.';
-    statusEl.className = 'edit-save-status err';
-  }
+  } catch(e) { statusEl.textContent='⚠ Save failed — check connection.'; statusEl.className='edit-save-status err'; }
 }
 
 function toggleAddSvc(btn) {
@@ -834,8 +772,8 @@ function toggleOrder(idx) {
   card.classList.toggle('expanded');
   if (isExpanding) {
     const order = pendingOrders[idx];
-    const status = (order.status || 'PENDING').toUpperCase();
-    if (status === 'IN_PROGRESS') openReaccessModal(idx);
+    const status = (order.status||'PENDING').toUpperCase();
+    if (status==='IN_PROGRESS') openReaccessModal(idx);
   }
 }
 
@@ -854,11 +792,9 @@ async function logActivity(order, name, symbol, action, newStatus) {
   order._activity_log.push({ name, symbol, action, timestamp: new Date().toLocaleDateString() });
   const saveStatus = newStatus || order.status;
   try {
-    await fetch(SCRIPT_URL, {
-      method: 'POST', mode: 'no-cors', headers: {'Content-Type':'text/plain'},
-      body: JSON.stringify({ action: 'updateStatus', row: order._row, status: saveStatus, activity_log: JSON.stringify(order._activity_log) })
-    });
-  } catch(e) { console.warn('logActivity failed', e); }
+    await fetch(SCRIPT_URL, { method:'POST', mode:'no-cors', headers:{'Content-Type':'text/plain'},
+      body: JSON.stringify({ action:'updateStatus', row:order._row, status:saveStatus, activity_log:JSON.stringify(order._activity_log) }) });
+  } catch(e) { console.warn('logActivity failed',e); }
 }
 
 async function confirmStartService() {
@@ -867,22 +803,19 @@ async function confirmStartService() {
   const symbol = document.getElementById('signin-symbol').value.trim();
   const errEl  = document.getElementById('signin-error');
   errEl.style.display = 'none';
-  if (!name)   { errEl.textContent = 'Please enter your name.';        errEl.style.display = 'block'; return; }
-  if (!symbol) { errEl.textContent = 'Please enter your rigger seal.'; errEl.style.display = 'block'; return; }
+  if (!name)   { errEl.textContent='Please enter your name.';        errEl.style.display='block'; return; }
+  if (!symbol) { errEl.textContent='Please enter your rigger seal.'; errEl.style.display='block'; return; }
   const order = pendingOrders[idx];
-  order._rigger_name   = name;
-  order._rigger_symbol = symbol;
+  order._rigger_name=name; order._rigger_symbol=symbol;
   await logActivity(order, name, symbol, 'Started Service', 'IN_PROGRESS');
   order.status = 'IN_PROGRESS';
-  closeSigninModal();
-  updateDashboard();
-  renderQueue();
+  closeSigninModal(); updateDashboard(); renderQueue();
 }
 
 function openReaccessModal(idx) {
   document.getElementById('reaccess-order-idx').value = idx;
-  document.getElementById('reaccess-name').value = pendingOrders[idx]._rigger_name || '';
-  document.getElementById('reaccess-symbol').value = pendingOrders[idx]._rigger_symbol || '';
+  document.getElementById('reaccess-name').value = pendingOrders[idx]._rigger_name||'';
+  document.getElementById('reaccess-symbol').value = pendingOrders[idx]._rigger_symbol||'';
   document.getElementById('reaccess-error').style.display = 'none';
   document.getElementById('reaccess-modal').classList.add('open');
   setTimeout(() => document.getElementById('reaccess-name').focus(), 100);
@@ -895,116 +828,111 @@ async function confirmReaccess() {
   const symbol = document.getElementById('reaccess-symbol').value.trim();
   const errEl  = document.getElementById('reaccess-error');
   errEl.style.display = 'none';
-  if (!name)   { errEl.textContent = 'Please enter your name.';        errEl.style.display = 'block'; return; }
-  if (!symbol) { errEl.textContent = 'Please enter your rigger seal.'; errEl.style.display = 'block'; return; }
+  if (!name)   { errEl.textContent='Please enter your name.';        errEl.style.display='block'; return; }
+  if (!symbol) { errEl.textContent='Please enter your rigger seal.'; errEl.style.display='block'; return; }
   const order = pendingOrders[idx];
-  order._rigger_name   = name;
-  order._rigger_symbol = symbol;
+  order._rigger_name=name; order._rigger_symbol=symbol;
   await logActivity(order, name, symbol, 'Accessed Service');
   closeReaccessModal();
-  const logEl = document.getElementById('activity-log-' + idx);
+  const logEl = document.getElementById('activity-log-'+idx);
   if (logEl) logEl.innerHTML = buildActivityLog(order._activity_log);
-  const wrapEl = document.getElementById('activity-log-wrap-' + idx);
-  if (wrapEl) wrapEl.style.display = 'block';
-  const nameEl   = document.getElementById('rigger-' + idx);
-  const symbolEl = document.getElementById('rigger-symbol-' + idx);
-  if (nameEl)   nameEl.value   = name;
-  if (symbolEl) symbolEl.value = symbol;
+  const wrapEl = document.getElementById('activity-log-wrap-'+idx);
+  if (wrapEl) wrapEl.style.display='block';
+  const nameEl=document.getElementById('rigger-'+idx); const symbolEl=document.getElementById('rigger-symbol-'+idx);
+  if (nameEl) nameEl.value=name; if (symbolEl) symbolEl.value=symbol;
 }
 
 function buildActivityLog(log) {
-  if (!log || !log.length) return '';
-  return log.map(e =>
-    `<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border);font-size:12px;gap:8px;">
-      <div><span style="font-weight:700;">${e.name}</span> · <span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--accent);">${e.symbol}</span>
-      <span style="background:var(--blue-dim);color:var(--accent);border-radius:10px;padding:1px 7px;font-size:10px;font-weight:700;margin-left:6px;">${e.action}</span></div>
-      <div style="color:var(--text-muted);font-size:11px;">${e.timestamp}</div>
-    </div>`
-  ).join('');
+  if (!log||!log.length) return '';
+  return log.map(e => `<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border);font-size:12px;gap:8px;">
+    <div><span style="font-weight:700;">${e.name}</span> · <span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--accent);">${e.symbol}</span>
+    <span style="background:var(--blue-dim);color:var(--accent);border-radius:10px;padding:1px 7px;font-size:10px;font-weight:700;margin-left:6px;">${e.action}</span></div>
+    <div style="color:var(--text-muted);font-size:11px;">${e.timestamp}</div>
+  </div>`).join('');
 }
 
 async function changeStatus(idx, newStatus) {
   const order = pendingOrders[idx];
   order.status = newStatus;
-  const card = document.getElementById('order-' + idx);
+  const card = document.getElementById('order-'+idx);
   if (card) {
-    card.className = 'order-card expanded status-' + newStatus;
+    card.className = 'order-card expanded status-'+newStatus;
     ['PENDING','IN_PROGRESS','GEAR_READY'].forEach(s => {
-      const btn = document.getElementById('st-' + idx + '-' + s);
-      if (btn) btn.className = 'status-opt' + (s === newStatus ? ' sel-' + s : '');
+      const btn = document.getElementById('st-'+idx+'-'+s);
+      if (btn) btn.className='status-opt'+(s===newStatus?' sel-'+s:'');
     });
     const badge = card.querySelector('.status-badge');
-    if (badge) { badge.className = 'status-badge sb-' + newStatus; badge.textContent = statusLabel(newStatus); }
+    if (badge) { badge.className='status-badge sb-'+newStatus; badge.textContent=statusLabel(newStatus); }
   }
   updateDashboard();
   try {
     await fetch(SCRIPT_URL, { method:'POST', mode:'no-cors', headers:{'Content-Type':'text/plain'},
       body: JSON.stringify({ action:'updateStatus', row:order._row, status:newStatus }) });
-  } catch(e) { console.warn('updateStatus failed', e); }
+  } catch(e) { console.warn('updateStatus failed',e); }
 }
 
 let pendingCompleteIdx = null;
 function markComplete(idx) {
-  const rigger = document.getElementById('rigger-' + idx).value.trim();
-  const symbol = document.getElementById('rigger-symbol-' + idx).value.trim();
-  const errEl  = document.getElementById('comp-error-' + idx);
-  errEl.style.display = 'none';
-  if (!rigger) { errEl.textContent = 'Please enter the rigger name.';   errEl.style.display = 'block'; return; }
-  if (!symbol) { errEl.textContent = 'Please enter your rigger symbol.'; errEl.style.display = 'block'; return; }
+  const rigger = document.getElementById('rigger-'+idx).value.trim();
+  const symbol = document.getElementById('rigger-symbol-'+idx).value.trim();
+  const errEl  = document.getElementById('comp-error-'+idx);
+  errEl.style.display='none';
+  if (!rigger) { errEl.textContent='Please enter the rigger name.';    errEl.style.display='block'; return; }
+  if (!symbol) { errEl.textContent='Please enter your rigger symbol.'; errEl.style.display='block'; return; }
   pendingCompleteIdx = idx;
   document.getElementById('signoff-modal').classList.add('open');
 }
-function closeSignoffModal() { document.getElementById('signoff-modal').classList.remove('open'); pendingCompleteIdx = null; }
+function closeSignoffModal() { document.getElementById('signoff-modal').classList.remove('open'); pendingCompleteIdx=null; }
 async function confirmAndComplete() {
   document.getElementById('signoff-modal').classList.remove('open');
-  const idx = pendingCompleteIdx; pendingCompleteIdx = null;
+  const idx = pendingCompleteIdx; pendingCompleteIdx=null;
   await doMarkComplete(idx);
 }
 
 async function doMarkComplete(idx) {
-  const order        = pendingOrders[idx];
-  const rigger       = document.getElementById('rigger-' + idx).value.trim();
-  const symbol       = document.getElementById('rigger-symbol-' + idx).value.trim();
-  const riggerEmail  = (document.getElementById('rigger-email-' + idx)?.value || '').trim();
-  const compNotes    = document.getElementById('comp-notes-' + idx).value.trim();
-  const extraCharge  = parseFloat(document.getElementById('extra-charge-' + idx)?.value) || 0;
-  const discount     = parseFloat(document.getElementById('discount-' + idx)?.value)     || 0;
-  const riggerNotes  = (document.getElementById('rigger-notes-' + idx)?.value || '').trim();
-  const errEl = document.getElementById('comp-error-' + idx);
-  errEl.style.display = 'none';
-
-  // Save rigger email for this order session
+  const order       = pendingOrders[idx];
+  const rigger      = document.getElementById('rigger-'+idx).value.trim();
+  const symbol      = document.getElementById('rigger-symbol-'+idx).value.trim();
+  const riggerEmail = (document.getElementById('rigger-email-'+idx)?.value||'').trim();
+  const compNotes   = document.getElementById('comp-notes-'+idx).value.trim();
+  const extraCharge = parseFloat(document.getElementById('extra-charge-'+idx)?.value)||0;
+  const discount    = parseFloat(document.getElementById('discount-'+idx)?.value)||0;
+  const riggerNotes = (document.getElementById('rigger-notes-'+idx)?.value||'').trim();
+  const errEl = document.getElementById('comp-error-'+idx);
+  errEl.style.display='none';
   order._rigger_email = riggerEmail;
 
-  const svcGrid = document.getElementById('svc-grid-' + idx);
+  const svcGrid = document.getElementById('svc-grid-'+idx);
   const updatedServices = svcGrid
-    ? [...svcGrid.querySelectorAll('input[type="checkbox"]:checked')].map(c => c.value).join(' | ')
+    ? [...svcGrid.querySelectorAll('input[type="checkbox"]:checked')].map(c=>c.value).join(' | ')
     : order.services;
 
-  let finalNotes = riggerNotes || compNotes;
-  if (extraCharge > 0) finalNotes += (finalNotes ? '\n' : '') + 'Extra charge: +$' + extraCharge.toFixed(2);
-  if (discount > 0)    finalNotes += (finalNotes ? '\n' : '') + 'Discount: -$' + discount.toFixed(2);
+  let finalNotes = riggerNotes||compNotes;
+  if (extraCharge>0) finalNotes += (finalNotes?'\n':'')+'Extra charge: +$'+extraCharge.toFixed(2);
+  if (discount>0)    finalNotes += (finalNotes?'\n':'')+'Discount: -$'+discount.toFixed(2);
 
-  const btn = document.getElementById('complete-btn-' + idx);
+  const btn = document.getElementById('complete-btn-'+idx);
   if (btn) btn.classList.add('submitting');
 
   try {
     await fetch(SCRIPT_URL, { method:'POST', mode:'no-cors', headers:{'Content-Type':'text/plain'},
       body: JSON.stringify({
-        action:            'completeOrder',
-        work_order:        order.work_order,
-        rigger:            rigger + ' (' + symbol + ')',
-        rigger_email:      riggerEmail,
-        services:          updatedServices,
-        completion_notes:  finalNotes,
-        row:               order._row,
+        action:           'completeOrder',
+        work_order:       order.work_order,
+        rigger:           rigger+' ('+symbol+')',
+        rigger_email:     riggerEmail,
+        services:         updatedServices,
+        completion_notes: finalNotes,
+        extra_charge:     extraCharge,
+        discount:         discount,
+        row:              order._row,
       }) });
-    pendingOrders.splice(idx, 1);
+    pendingOrders.splice(idx,1);
     updateDashboard();
     renderQueue();
   } catch(e) {
     if (btn) btn.classList.remove('submitting');
-    errEl.textContent = 'Error completing order.'; errEl.style.display = 'block';
+    errEl.textContent='Error completing order.'; errEl.style.display='block';
   }
 }
 
@@ -1014,62 +942,53 @@ async function deleteOrder(idx) {
   try {
     await fetch(SCRIPT_URL, { method:'POST', mode:'no-cors', headers:{'Content-Type':'text/plain'},
       body: JSON.stringify({ action:'deleteOrder', work_order:order.work_order, row:order._row }) });
-    pendingOrders.splice(idx, 1);
-    updateDashboard();
-    renderQueue();
+    pendingOrders.splice(idx,1); updateDashboard(); renderQueue();
   } catch(e) { alert('Error deleting order.'); }
 }
 
 async function loadServiceHistory() {
   const listEl = document.getElementById('sh-list');
   const errEl  = document.getElementById('sh-error');
-  errEl.style.display = 'none';
-  listEl.innerHTML = '<div style="text-align:center;padding:40px;color:var(--text-muted);">Loading…</div>';
+  errEl.style.display='none';
+  listEl.innerHTML='<div style="text-align:center;padding:40px;color:var(--text-muted);">Loading…</div>';
   try {
-    const data = await jsonpFetch(SCRIPT_URL + '?action=getCompleted');
-    allCompletedOrders = (data.completed || []).sort((a,b) => new Date(b.completed_at) - new Date(a.completed_at));
+    const data = await jsonpFetch(SCRIPT_URL+'?action=getCompleted');
+    allCompletedOrders = (data.completed||[]).sort((a,b)=>new Date(b.completed_at)-new Date(a.completed_at));
     filterServiceHistory();
   } catch(e) {
-    errEl.textContent = 'Failed to load history: ' + e.message;
-    errEl.style.display = 'block';
-    listEl.innerHTML = '';
+    errEl.textContent='Failed to load history: '+e.message; errEl.style.display='block'; listEl.innerHTML='';
   }
 }
 
 function filterServiceHistory() {
-  const q    = (document.getElementById('sh-search').value || '').toLowerCase();
+  const q    = (document.getElementById('sh-search').value||'').toLowerCase();
   const type = document.getElementById('sh-type-filter').value;
   const filtered = allCompletedOrders.filter(o => {
-    if (type !== 'all' && (o.gear_type || '') !== type) return false;
+    if (type!=='all'&&(o.gear_type||'')!==type) return false;
     if (!q) return true;
-    return [o.work_order, o.rig_num, o.rig_sn, o.rig_make, o.customer_name, o.rigger]
-      .some(v => v && String(v).toLowerCase().includes(q));
+    return [o.work_order,o.rig_num,o.rig_sn,o.rig_make,o.customer_name,o.rigger].some(v=>v&&String(v).toLowerCase().includes(q));
   });
-  let totalRevenue = 0;
+  let totalRevenue=0;
   filtered.forEach(o => { totalRevenue += calcTotal(o.services).total; });
-  document.getElementById('sh-stats').textContent = filtered.length + ' completed order' + (filtered.length !== 1 ? 's' : '')
-    + (filtered.length > 0 ? ' · Est. Revenue: $' + totalRevenue.toFixed(2) : '');
+  document.getElementById('sh-stats').textContent = filtered.length+' completed order'+(filtered.length!==1?'s':'')
+    +(filtered.length>0?' · Est. Revenue: $'+totalRevenue.toFixed(2):'');
   renderServiceHistory(filtered);
 }
 
 function renderServiceHistory(orders) {
   const listEl = document.getElementById('sh-list');
-  if (orders.length === 0) {
-    listEl.innerHTML = '<div class="queue-empty"><div class="icon">📋</div><p>No completed orders found.</p></div>';
-    return;
-  }
-  listEl.innerHTML = '';
-  orders.forEach((o, i) => {
-    const isFJ = o.gear_type === 'fun-jumper';
-    const rigLine = isFJ ? (o.customer_name || 'Fun Jumper') : ((o.rig_num ? 'Rig #' + o.rig_num + ' — ' : '') + (o.rig_make || ''));
+  if (orders.length===0) { listEl.innerHTML='<div class="queue-empty"><div class="icon">📋</div><p>No completed orders found.</p></div>'; return; }
+  listEl.innerHTML='';
+  orders.forEach((o,i) => {
+    const isFJ = o.gear_type==='fun-jumper';
+    const rigLine = isFJ?(o.customer_name||'Fun Jumper'):((o.rig_num?'Rig #'+o.rig_num+' — ':'')+( o.rig_make||''));
     const { total, hasVaries } = calcTotal(o.services);
-    const totalStr = total > 0 ? '$' + total.toFixed(2) + (hasVaries ? '+' : '') : (hasVaries ? 'Varies' : '—');
-    const completedDate = o.completed_at ? new Date(o.completed_at).toLocaleDateString() : '—';
-    const rushBadge = o.rush && o.rush !== 'Standard Turnaround'
-      ? '<span style="background:var(--red-dim);border:1px solid rgba(239,68,68,0.3);color:var(--red);font-size:10px;font-weight:800;padding:2px 8px;border-radius:20px;margin-left:4px;">⚡ RUSH</span>' : '';
+    const totalStr = total>0?'$'+total.toFixed(2)+(hasVaries?'+':''):(hasVaries?'Varies':'—');
+    const completedDate = o.completed_at?new Date(o.completed_at).toLocaleDateString():'—';
+    const rushBadge = o.rush&&o.rush!=='Standard Turnaround'
+      ? '<span style="background:var(--red-dim);border:1px solid rgba(239,68,68,0.3);color:var(--red);font-size:10px;font-weight:800;padding:2px 8px;border-radius:20px;margin-left:4px;">⚡ RUSH</span>':'' ;
     const card = document.createElement('div');
-    card.className = 'order-card';
-    card.id = 'sh-card-' + i;
+    card.className='order-card'; card.id='sh-card-'+i;
     card.innerHTML = `
       <div class="order-card-header" onclick="toggleSHCard(${i})">
         <div>
@@ -1089,11 +1008,10 @@ function renderServiceHistory(orders) {
         <div class="info-block" style="margin-bottom:10px;">
           <div class="info-title">Services</div>
           <ul class="svc-list-view">
-            ${(o.services||'').split(' | ').filter(Boolean).map(s => '<li><span>' + s + '</span><span style="color:var(--text-muted);font-size:12px;">' + (SVC_PRICES[s]>0?'$'+SVC_PRICES[s]:'Varies') + '</span></li>').join('')}
+            ${(o.services||'').split(' | ').filter(Boolean).map(s=>'<li><span>'+s+'</span><span style="color:var(--text-muted);font-size:12px;">'+(SVC_PRICES[s]>0?'$'+SVC_PRICES[s]:'Varies')+'</span></li>').join('')}
           </ul>
         </div>
-        ${o.completion_notes ? '<div class="info-block" style="margin-bottom:10px;"><div class="info-title">Rigger Notes</div><div class="info-content">' + o.completion_notes + '</div></div>' : ''}
-
+        ${o.completion_notes?'<div class="info-block" style="margin-bottom:10px;"><div class="info-title">Rigger Notes</div><div class="info-content">'+o.completion_notes+'</div></div>':''}
         <div style="border-top:1px solid var(--border);padding-top:14px;margin-top:4px;">
           <button onclick="openInvoiceModal(${i})"
             style="background:var(--sky-dim);border:1px solid rgba(56,189,248,0.35);color:var(--sky);border-radius:8px;padding:9px 18px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:6px;min-height:40px;">
@@ -1105,133 +1023,108 @@ function renderServiceHistory(orders) {
   });
 }
 
-function toggleSHCard(i) { document.getElementById('sh-card-' + i).classList.toggle('expanded'); }
+function toggleSHCard(i) { document.getElementById('sh-card-'+i).classList.toggle('expanded'); }
 
-// ── INVOICE EDIT MODAL ────────────────────────────────────────
-let invoiceModalIdx = null;
-
+// ── INVOICE MODAL ─────────────────────────────────────────────
 function openInvoiceModal(i) {
   invoiceModalIdx = i;
   const o = allCompletedOrders[i];
   if (!o) return;
+  document.getElementById('inv-wo').textContent  = o.work_order||'—';
+  document.getElementById('inv-rig').textContent = o.gear_type==='fun-jumper'
+    ?(o.customer_name||'Fun Jumper')+' — S/N '+(o.rig_sn||'')
+    :'Rig #'+(o.rig_num||'')+' — '+(o.rig_make||'')+' S/N '+(o.rig_sn||'');
+  document.getElementById('inv-rigger').value       = o.rigger        ||'';
+  document.getElementById('inv-notes').value        = o.completion_notes||'';
+  document.getElementById('inv-extra-charge').value = '';
+  document.getElementById('inv-discount').value     = '';
+  document.getElementById('inv-email').value        = o.customer_email||'';
+  document.getElementById('inv-rigger-email').value = '';
 
-  // Populate header info
-  document.getElementById('inv-wo').textContent      = o.work_order || '—';
-  document.getElementById('inv-rig').textContent     = o.gear_type === 'fun-jumper'
-    ? (o.customer_name || 'Fun Jumper') + ' — S/N ' + (o.rig_sn || '')
-    : 'Rig #' + (o.rig_num || '') + ' — ' + (o.rig_make || '') + ' S/N ' + (o.rig_sn || '');
-  document.getElementById('inv-rigger').value        = o.rigger        || '';
-  document.getElementById('inv-notes').value         = o.completion_notes || '';
-  document.getElementById('inv-extra-charge').value  = '';
-  document.getElementById('inv-discount').value      = '';
-  document.getElementById('inv-email').value         = o.customer_email || '';
-  document.getElementById('inv-rigger-email').value  = '';
-
-  // Build service checkboxes
-  const svcs = (o.services || '').split(' | ').filter(Boolean);
+  const svcs = (o.services||'').split(' | ').filter(Boolean);
   const grid = document.getElementById('inv-svc-grid');
-  grid.innerHTML = '';
+  grid.innerHTML='';
   SERVICE_GROUPS.forEach(group => {
-    const hdr = document.createElement('div');
-    hdr.style.cssText = 'grid-column:1/-1;font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-muted);padding:8px 2px 4px;border-bottom:1px solid var(--border);margin-bottom:2px;';
-    hdr.textContent = group.group;
-    grid.appendChild(hdr);
+    const hdr=document.createElement('div');
+    hdr.style.cssText='grid-column:1/-1;font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-muted);padding:8px 2px 4px;border-bottom:1px solid var(--border);margin-bottom:2px;';
+    hdr.textContent=group.group; grid.appendChild(hdr);
     group.items.forEach(svc => {
-      const checked = svcs.includes(svc.name);
-      const label = document.createElement('label');
-      label.className = 'svc-item' + (checked ? ' checked' : '');
-      label.innerHTML = '<input type="checkbox" value="' + svc.name + '"' + (checked ? ' checked' : '') + '><div class="svc-check"></div><span class="svc-label">' + svc.name + '<span class="svc-price">' + svc.price + '</span></span>';
+      const checked=svcs.includes(svc.name);
+      const label=document.createElement('label');
+      label.className='svc-item'+(checked?' checked':'');
+      label.innerHTML='<input type="checkbox" value="'+svc.name+'"'+(checked?' checked':'')+'><div class="svc-check"></div><span class="svc-label">'+svc.name+'<span class="svc-price">'+svc.price+'</span></span>';
       label.addEventListener('click', function(e) {
-        const cb = label.querySelector('input[type="checkbox"]');
-        cb.checked = !cb.checked;
-        label.classList.toggle('checked', cb.checked);
-        updateInvoiceTotal();
+        const cb=label.querySelector('input[type="checkbox"]');
+        cb.checked=!cb.checked; label.classList.toggle('checked',cb.checked); updateInvoiceTotal();
       });
       grid.appendChild(label);
     });
   });
-
   updateInvoiceTotal();
-
-  const statusEl = document.getElementById('inv-send-status');
-  statusEl.style.display = 'none';
-  statusEl.className = 'edit-save-status';
-
+  const statusEl=document.getElementById('inv-send-status');
+  statusEl.style.display='none'; statusEl.className='edit-save-status';
   document.getElementById('invoice-edit-modal').classList.add('open');
 }
 
-function closeInvoiceModal() {
-  document.getElementById('invoice-edit-modal').classList.remove('open');
-  invoiceModalIdx = null;
-}
+function closeInvoiceModal() { document.getElementById('invoice-edit-modal').classList.remove('open'); invoiceModalIdx=null; }
 
 function updateInvoiceTotal() {
+  const grid=document.getElementById('inv-svc-grid');
+  const checked=[...grid.querySelectorAll('input[type="checkbox"]:checked')].map(c=>c.value);
+  const extra   =parseFloat(document.getElementById('inv-extra-charge').value)||0;
+  const discount=parseFloat(document.getElementById('inv-discount').value)||0;
+  const {total,hasVaries}=calcTotal(checked.join(' | '),extra,discount);
+  document.getElementById('inv-total-display').textContent='$'+Math.max(0,total).toFixed(2)+(hasVaries?' + varies':'');
+}
+
+async function saveInvoiceOnly() {
+  const i = invoiceModalIdx;
+  if (i===null) return;
+  const o = allCompletedOrders[i];
+  const statusEl = document.getElementById('inv-send-status');
   const grid = document.getElementById('inv-svc-grid');
-  const checked = [...grid.querySelectorAll('input[type="checkbox"]:checked')].map(c => c.value);
-  let total = 0; let hasVaries = false;
-  checked.forEach(s => { const p = SVC_PRICES[s]; if (p > 0) total += p; else hasVaries = true; });
-  const extra    = parseFloat(document.getElementById('inv-extra-charge').value) || 0;
-  const discount = parseFloat(document.getElementById('inv-discount').value)     || 0;
-  total += extra - discount;
-  document.getElementById('inv-total-display').textContent =
-    '$' + Math.max(0, total).toFixed(2) + (hasVaries ? ' + varies' : '');
+  const updatedServices = [...grid.querySelectorAll('input[type="checkbox"]:checked')].map(c=>c.value).join(' | ');
+  const rigger      = document.getElementById('inv-rigger').value.trim();
+  const notes       = document.getElementById('inv-notes').value.trim();
+  const extraCharge = parseFloat(document.getElementById('inv-extra-charge').value)||0;
+  const discount    = parseFloat(document.getElementById('inv-discount').value)||0;
+  statusEl.textContent='Saving…'; statusEl.className='edit-save-status'; statusEl.style.display='block';
+  try {
+    await fetch(SCRIPT_URL, { method:'POST', mode:'no-cors', headers:{'Content-Type':'text/plain'},
+      body: JSON.stringify({ action:'saveInvoice', work_order:o.work_order||'', rigger, services:updatedServices, notes, extra_charge:extraCharge, discount, row:o._row }) });
+    o.services=updatedServices; o.rigger=rigger; o.completion_notes=notes;
+    statusEl.textContent='✓ Saved!'; statusEl.className='edit-save-status ok';
+    setTimeout(() => { statusEl.style.display='none'; filterServiceHistory(); }, 1500);
+  } catch(e) { statusEl.textContent='⚠ Save failed.'; statusEl.className='edit-save-status err'; }
 }
 
 async function sendEditedInvoice() {
   const i = invoiceModalIdx;
-  if (i === null) return;
+  if (i===null) return;
   const o = allCompletedOrders[i];
   const statusEl = document.getElementById('inv-send-status');
-
   const grid = document.getElementById('inv-svc-grid');
-  const updatedServices = [...grid.querySelectorAll('input[type="checkbox"]:checked')].map(c => c.value).join(' | ');
-  const rigger      = document.getElementById('inv-rigger').value.trim();
-  const notes       = document.getElementById('inv-notes').value.trim();
-  const extraCharge = parseFloat(document.getElementById('inv-extra-charge').value) || 0;
-  const discount    = parseFloat(document.getElementById('inv-discount').value)     || 0;
-  const toEmail     = document.getElementById('inv-email').value.trim();
-  const riggerEmail = document.getElementById('inv-rigger-email').value.trim();
-
-  if (!toEmail && !riggerEmail) {
-    statusEl.textContent = 'Please enter at least one email address to send to.';
-    statusEl.className = 'edit-save-status err';
-    statusEl.style.display = 'block';
-    return;
+  const updatedServices=[...grid.querySelectorAll('input[type="checkbox"]:checked')].map(c=>c.value).join(' | ');
+  const rigger      =document.getElementById('inv-rigger').value.trim();
+  const notes       =document.getElementById('inv-notes').value.trim();
+  const extraCharge =parseFloat(document.getElementById('inv-extra-charge').value)||0;
+  const discount    =parseFloat(document.getElementById('inv-discount').value)||0;
+  const toEmail     =document.getElementById('inv-email').value.trim();
+  const riggerEmail =document.getElementById('inv-rigger-email').value.trim();
+  if (!toEmail&&!riggerEmail) {
+    statusEl.textContent='Please enter at least one email address.';
+    statusEl.className='edit-save-status err'; statusEl.style.display='block'; return;
   }
-
-  statusEl.textContent = 'Sending…';
-  statusEl.className = 'edit-save-status';
-  statusEl.style.display = 'block';
-
+  statusEl.textContent='Sending…'; statusEl.className='edit-save-status'; statusEl.style.display='block';
   try {
-    await fetch(SCRIPT_URL, {
-      method: 'POST', mode: 'no-cors',
-      headers: { 'Content-Type': 'text/plain' },
-      body: JSON.stringify({
-        action:        'resendInvoice',
-        work_order:    o.work_order || '',
-        gear_type:     o.gear_type  || '',
-        customer_name: o.customer_name || '',
-        customer_email: toEmail,
-        rigger_email:  riggerEmail,
-        rig_num:       o.rig_num  || '',
-        rig_make:      o.rig_make || '',
-        rig_sn:        o.rig_sn   || '',
-        completed_at:  o.completed_at || '',
-        rigger:        rigger,
-        services:      updatedServices,
-        notes:         notes,
-        extra_charge:  extraCharge,
-        discount:      discount,
-      })
-    });
-    statusEl.textContent = '✓ Invoice sent!';
-    statusEl.className = 'edit-save-status ok';
+    await fetch(SCRIPT_URL, { method:'POST', mode:'no-cors', headers:{'Content-Type':'text/plain'},
+      body: JSON.stringify({ action:'resendInvoice', work_order:o.work_order||'', gear_type:o.gear_type||'',
+        customer_name:o.customer_name||'', customer_email:toEmail, rigger_email:riggerEmail,
+        rig_num:o.rig_num||'', rig_make:o.rig_make||'', rig_sn:o.rig_sn||'',
+        completed_at:o.completed_at||'', rigger, services:updatedServices, notes, extra_charge:extraCharge, discount }) });
+    statusEl.textContent='✓ Invoice sent!'; statusEl.className='edit-save-status ok';
     setTimeout(() => closeInvoiceModal(), 1800);
-  } catch(e) {
-    statusEl.textContent = '⚠ Send failed — check connection.';
-    statusEl.className = 'edit-save-status err';
-  }
+  } catch(e) { statusEl.textContent='⚠ Send failed — check connection.'; statusEl.className='edit-save-status err'; }
 }
 
 async function searchHistory() {
@@ -1240,195 +1133,101 @@ async function searchHistory() {
   const sn    = document.getElementById('history-search-sn').value.trim();
   const errEl = document.getElementById('history-error');
   const resultsEl = document.getElementById('history-results');
-  errEl.style.display = 'none';
-  if (!name && !email && !sn) { errEl.textContent = 'Enter a name, email, or serial number.'; errEl.style.display = 'block'; return; }
-  resultsEl.innerHTML = '<div style="color:var(--text-muted);padding:20px 0;">Searching...</div>';
+  errEl.style.display='none';
+  if (!name&&!email&&!sn) { errEl.textContent='Enter a name, email, or serial number.'; errEl.style.display='block'; return; }
+  resultsEl.innerHTML='<div style="color:var(--text-muted);padding:20px 0;">Searching...</div>';
   try {
-    const params = new URLSearchParams({action:'getHistory'});
-    if (name)  params.append('name',  name.toLowerCase());
+    const params=new URLSearchParams({action:'getHistory'});
+    if (name)  params.append('name', name.toLowerCase());
     if (email) params.append('email', email);
     if (sn)    params.append('sn', sn);
-    const data = await jsonpFetch(SCRIPT_URL + '?' + params.toString());
-    const history = data.history || [];
-    if (history.length === 0) { resultsEl.innerHTML = '<div style="color:var(--text-muted);padding:20px 0;">No records found.</div>'; return; }
-    resultsEl.innerHTML = '<div style="font-size:12px;color:var(--text-muted);margin-bottom:12px;">' + history.length + ' record' + (history.length!==1?'s':'') + ' found</div>';
+    const data = await jsonpFetch(SCRIPT_URL+'?'+params.toString());
+    const history = data.history||[];
+    if (history.length===0) { resultsEl.innerHTML='<div style="color:var(--text-muted);padding:20px 0;">No records found.</div>'; return; }
+    resultsEl.innerHTML='<div style="font-size:12px;color:var(--text-muted);margin-bottom:12px;">'+history.length+' record'+(history.length!==1?'s':'')+' found</div>';
     history.forEach(h => {
-      const card = document.createElement('div');
-      card.className = 'history-card';
-
-      // Status badge
-      const hStatus = (h.status || 'PENDING').toUpperCase();
-      const statusColors = {
-        'COMPLETE':    'background:rgba(34,197,94,0.15);border:1px solid rgba(34,197,94,0.3);color:#22c55e;',
-        'IN_PROGRESS': 'background:rgba(59,130,246,0.15);border:1px solid rgba(59,130,246,0.3);color:#60a5fa;',
-        'GEAR_READY':  'background:rgba(34,197,94,0.15);border:1px solid rgba(34,197,94,0.3);color:#22c55e;',
-        'PENDING':     'background:rgba(245,158,11,0.15);border:1px solid rgba(245,158,11,0.3);color:#f59e0b;',
-      };
-      const statusLabel = { COMPLETE:'✓ Complete', IN_PROGRESS:'🔧 In Progress', GEAR_READY:'✅ Gear Ready', PENDING:'📥 Pending' };
-      const sBadge = `<span style="font-size:10px;font-weight:700;padding:2px 9px;border-radius:20px;${statusColors[hStatus]||statusColors.PENDING}">${statusLabel[hStatus]||hStatus}</span>`;
-      const rushBadge = h.rush && h.rush !== 'Standard Turnaround'
-        ? `<span style="font-size:10px;font-weight:800;padding:2px 8px;border-radius:20px;background:rgba(239,68,68,0.12);border:1px solid rgba(239,68,68,0.3);color:#ef4444;margin-left:4px;">⚡ RUSH</span>` : '';
-
-      // Services list with prices
-      const svcs = (h.services || '').split(' | ').filter(Boolean);
-      const SVC_P = {'Reserve Inspection & Repack (Sport)':115,'Inspect Main or Reserve':25,'Inspect Harness / Container':20,"Inspect & Pack Pilot's Emergency Rig":120,'Pack Main Sport':15,'Install AAD':10,'Reserve Safety Stow Replacement':12,'Replace Lower Steering Lines':40,'Replace Steering Lines Toggles to Cascades':65,'Re-line Sport':130,'Slinks':35,'Assembly, Inspection & Pack Reserve (Sport)':140,'Assembly, Inspection & Pack Main':75,'Disassemble Main or Reserve':10,'Install Slider Bumpers':25,'Fabric Tensile Test':20,'Kill Line Replacement':25,'BOC Replacement':100,'Tack Slinks / Links':5,'Wash Rig':65};
-      let total = 0; let hasVaries = false;
-      svcs.forEach(s => { const p = SVC_P[s]; if (p > 0) total += p; else hasVaries = true; });
-      const totalStr = total > 0 ? '$' + total.toFixed(2) + (hasVaries ? '+' : '') : (hasVaries ? 'Varies' : '—');
-      const svcsHtml = svcs.length > 0
-        ? svcs.map(s => `<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--border);font-size:12px;"><span>${s}</span><span style="color:var(--text-muted);font-size:11px;">${SVC_P[s]>0?'$'+SVC_P[s]:'Varies'}</span></div>`).join('')
-        : '<span style="color:var(--text-muted);font-size:12px;">No services listed</span>';
-
-      const isFJ = h.gear_type === 'fun-jumper';
-      const rigLine = isFJ
-        ? (h.customer_name || 'Fun Jumper')
-        : ((h.rig_num ? 'Rig #' + h.rig_num + ' — ' : '') + (h.rig_make || ''));
-
-      card.innerHTML = `
-        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:10px;flex-wrap:wrap;">
-          <div>
-            <div class="history-wo" style="margin-bottom:5px;">${h.work_order||'—'} ${sBadge} ${rushBadge}</div>
-            <div class="history-rig">${rigLine}</div>
-            <div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text-muted);margin-top:2px;">S/N: ${h.rig_sn||'—'}</div>
-          </div>
-          <div style="text-align:right;flex-shrink:0;">
-            <div style="font-family:'JetBrains Mono',monospace;font-size:18px;font-weight:700;color:var(--green);">${totalStr}</div>
-            <div style="font-size:11px;color:var(--text-muted);margin-top:2px;">${h.completed_at?'Completed: '+new Date(h.completed_at).toLocaleDateString():h.submitted_at?'Submitted: '+new Date(h.submitted_at).toLocaleDateString():''}</div>
-          </div>
-        </div>
-
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;">
-          ${isFJ ? `<div style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:10px 12px;">
-            <div style="font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-muted);margin-bottom:6px;">Customer</div>
-            <div style="font-size:13px;font-weight:600;">${h.customer_name||'—'}</div>
-            ${h.customer_phone ? `<div style="font-size:12px;color:var(--text-dim);margin-top:2px;">📞 ${h.customer_phone}</div>` : ''}
-            ${h.customer_email ? `<div style="font-size:12px;color:var(--text-dim);margin-top:1px;">✉ ${h.customer_email}</div>` : ''}
-          </div>` : `<div style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:10px 12px;">
-            <div style="font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-muted);margin-bottom:6px;">Rig</div>
-            <div style="font-size:13px;font-weight:600;">${h.rig_make||'—'}</div>
-            <div style="font-size:12px;color:var(--text-dim);margin-top:2px;">S/N: ${h.rig_sn||'—'}</div>
-          </div>`}
-          <div style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:10px 12px;">
-            <div style="font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-muted);margin-bottom:6px;">Details</div>
-            ${h.rigger ? `<div style="font-size:12px;color:var(--text-dim);">👤 Rigger: ${h.rigger}</div>` : ''}
-            ${h.res_repack_due ? `<div style="font-size:12px;color:var(--text-dim);margin-top:2px;">📅 Reserve Due: ${h.res_repack_due}</div>` : ''}
-            ${h.aad_make ? `<div style="font-size:12px;color:var(--text-dim);margin-top:2px;">⚡ AAD: ${h.aad_make}</div>` : ''}
-            <div style="font-size:11px;color:var(--text-muted);margin-top:4px;">Submitted: ${h.submitted_at?new Date(h.submitted_at).toLocaleDateString():'—'}</div>
-          </div>
-        </div>
-
-        <div style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:10px 12px;margin-bottom:${h.completion_notes||h.extra_notes?'8px':'0'};">
+      const card=document.createElement('div'); card.className='history-card';
+      const isFJ=h.gear_type==='fun-jumper';
+      const rigLine=isFJ?(h.customer_name||'Fun Jumper'):((h.rig_num?'Rig #'+h.rig_num+' — ':'')+(h.rig_make||''));
+      const {total,hasVaries}=calcTotal(h.services);
+      const totalStr=total>0?'$'+total.toFixed(2)+(hasVaries?'+':''):(hasVaries?'Varies':'—');
+      const svcs=(h.services||'').split(' | ').filter(Boolean);
+      const svcsHtml=svcs.length>0?svcs.map(s=>'<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--border);font-size:12px;"><span>'+s+'</span><span style="color:var(--text-muted);font-size:11px;">'+(SVC_PRICES[s]>0?'$'+SVC_PRICES[s]:'Varies')+'</span></div>').join(''):'<span style="color:var(--text-muted);font-size:12px;">No services listed</span>';
+      card.innerHTML=`<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:10px;flex-wrap:wrap;">
+        <div><div class="history-wo" style="margin-bottom:5px;">${h.work_order||'—'}</div>
+        <div class="history-rig">${rigLine}</div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text-muted);margin-top:2px;">S/N: ${h.rig_sn||'—'}</div></div>
+        <div style="text-align:right;flex-shrink:0;"><div style="font-family:'JetBrains Mono',monospace;font-size:18px;font-weight:700;color:var(--green);">${totalStr}</div>
+        <div style="font-size:11px;color:var(--text-muted);margin-top:2px;">${h.completed_at?'Completed: '+new Date(h.completed_at).toLocaleDateString():h.submitted_at?'Submitted: '+new Date(h.submitted_at).toLocaleDateString():''}</div></div></div>
+        <div style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:10px 12px;">
           <div style="font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-muted);margin-bottom:6px;">Services (${svcs.length}) — ${totalStr}</div>
           ${svcsHtml}
         </div>
-
-        ${h.completion_notes ? `<div style="background:rgba(59,130,246,0.08);border:1px solid rgba(59,130,246,0.2);border-radius:8px;padding:10px 12px;margin-bottom:${h.extra_notes?'8px':'0'};">
-          <div style="font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-muted);margin-bottom:4px;">Rigger Notes</div>
-          <div style="font-size:12px;color:var(--text-dim);line-height:1.5;">${h.completion_notes}</div>
-        </div>` : ''}
-        ${h.extra_notes ? `<div style="background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.2);border-radius:8px;padding:10px 12px;">
-          <div style="font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-muted);margin-bottom:4px;">Customer Notes</div>
-          <div style="font-size:12px;color:var(--text-dim);line-height:1.5;">${h.extra_notes}</div>
-        </div>` : ''}`;
+        ${h.completion_notes?'<div style="background:rgba(59,130,246,0.08);border:1px solid rgba(59,130,246,0.2);border-radius:8px;padding:10px 12px;margin-top:8px;"><div style="font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-muted);margin-bottom:4px;">Rigger Notes</div><div style="font-size:12px;color:var(--text-dim);line-height:1.5;">'+h.completion_notes+'</div></div>':''}`;
       resultsEl.appendChild(card);
     });
-  } catch(e) {
-    errEl.textContent = 'Search failed: ' + e.message; errEl.style.display = 'block';
-    resultsEl.innerHTML = '';
-  }
+  } catch(e) { errEl.textContent='Search failed: '+e.message; errEl.style.display='block'; resultsEl.innerHTML=''; }
 }
 
 function changePassword() {
-  const cur  = document.getElementById('pw-current').value;
-  const nw   = document.getElementById('pw-new').value;
-  const conf = document.getElementById('pw-confirm').value;
-  const errEl = document.getElementById('pw-error');
-  const successEl = document.getElementById('pw-success');
-  errEl.style.display = 'none'; successEl.style.display = 'none';
-  if (cur !== currentPassword) { errEl.textContent = 'Current password is incorrect.'; errEl.style.display = 'block'; return; }
-  if (nw.length < 4)           { errEl.textContent = 'New password must be at least 4 characters.'; errEl.style.display = 'block'; return; }
-  if (nw !== conf)             { errEl.textContent = 'Passwords do not match.'; errEl.style.display = 'block'; return; }
-  currentPassword = nw;
-  localStorage.setItem('ssxQueuePw', nw);
-  ['pw-current','pw-new','pw-confirm'].forEach(id => document.getElementById(id).value = '');
-  successEl.style.display = 'block';
-  setTimeout(() => successEl.style.display = 'none', 3000);
+  const cur=document.getElementById('pw-current').value;
+  const nw=document.getElementById('pw-new').value;
+  const conf=document.getElementById('pw-confirm').value;
+  const errEl=document.getElementById('pw-error'); const successEl=document.getElementById('pw-success');
+  errEl.style.display='none'; successEl.style.display='none';
+  if (cur!==currentPassword) { errEl.textContent='Current password is incorrect.'; errEl.style.display='block'; return; }
+  if (nw.length<4) { errEl.textContent='New password must be at least 4 characters.'; errEl.style.display='block'; return; }
+  if (nw!==conf) { errEl.textContent='Passwords do not match.'; errEl.style.display='block'; return; }
+  currentPassword=nw; localStorage.setItem('ssxQueuePw',nw);
+  ['pw-current','pw-new','pw-confirm'].forEach(id=>document.getElementById(id).value='');
+  successEl.style.display='block'; setTimeout(()=>successEl.style.display='none',3000);
 }
 
 function printWorkOrder(idx) {
-  const order = pendingOrders[idx];
-  if (!order) return;
-  const isFJ = order.gear_type === 'fun-jumper';
-  const svcs = (order.services || '').split(' | ').filter(Boolean);
-  const { total, hasVaries } = calcTotal(order.services);
-  const date = order.submitted_at ? new Date(order.submitted_at).toLocaleDateString() : new Date().toLocaleDateString();
-  const rush = order.rush && order.rush !== 'Standard Turnaround' ? order.rush : null;
-
-  const svcRows = svcs.map(s => {
-    const p = SVC_PRICES[s];
-    return '<tr><td>' + s + '</td><td style="text-align:right;font-weight:700;">' + (p > 0 ? '$' + p.toFixed(2) : 'Varies') + '</td></tr>';
-  }).join('');
-
-  const html = `<!DOCTYPE html><html><head><title>Work Order ${order.work_order||''}</title>
-<style>
-  @page { size: 8.5in 11in; margin: 0.6in; }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: Arial, sans-serif; font-size: 13px; color: #111; }
-  .header { display: flex; justify-content: space-between; border-bottom: 3px solid #1a1a2e; padding-bottom: 12px; margin-bottom: 20px; }
-  .dz-name { font-size: 22px; font-weight: 900; text-transform: uppercase; color: #1a1a2e; }
-  .dz-sub { font-size: 11px; color: #555; letter-spacing: 1px; text-transform: uppercase; margin-top: 3px; }
-  .wo-num { font-size: 28px; font-weight: 900; color: #1a1a2e; text-align: right; }
-  .wo-date { font-size: 11px; color: #555; margin-top: 4px; text-align: right; }
-  ${rush ? '.rush { background:#fee2e2;border:2px solid #ef4444;border-radius:6px;padding:8px 14px;font-weight:900;font-size:14px;color:#b91c1c;text-align:center;margin-bottom:16px; }' : ''}
-  .section { margin-bottom: 18px; }
-  .section-title { font-size: 10px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: #555; border-bottom: 1px solid #ddd; padding-bottom: 4px; margin-bottom: 10px; }
-  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-  .field { margin-bottom: 8px; }
-  .field label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: #777; display: block; margin-bottom: 2px; }
-  .field .val { font-size: 13px; font-weight: 500; }
-  table { width: 100%; border-collapse: collapse; }
-  td { padding: 6px 4px; border-bottom: 1px dashed #eee; }
-  .total-row td { font-size: 15px; font-weight: 900; border-top: 2px solid #1a1a2e; border-bottom: none; padding-top: 8px; }
-  .signoff { margin-top: 28px; border-top: 2px solid #1a1a2e; padding-top: 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
-  .signoff-field { border-bottom: 1px solid #aaa; min-height: 36px; }
-  .signoff-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: #777; margin-top: 6px; }
+  const order=pendingOrders[idx]; if (!order) return;
+  const isFJ=order.gear_type==='fun-jumper';
+  const svcs=(order.services||'').split(' | ').filter(Boolean);
+  const {total,hasVaries}=calcTotal(order.services);
+  const date=order.submitted_at?new Date(order.submitted_at).toLocaleDateString():new Date().toLocaleDateString();
+  const rush=order.rush&&order.rush!=='Standard Turnaround'?order.rush:null;
+  const svcRows=svcs.map(s=>'<tr><td>'+s+'</td><td style="text-align:right;font-weight:700;">'+(SVC_PRICES[s]>0?'$'+SVC_PRICES[s].toFixed(2):'Varies')+'</td></tr>').join('');
+  const html=`<!DOCTYPE html><html><head><title>Work Order ${order.work_order||''}</title>
+<style>@page{size:8.5in 11in;margin:0.6in;}*{box-sizing:border-box;margin:0;padding:0;}body{font-family:Arial,sans-serif;font-size:13px;color:#111;}
+.header{display:flex;justify-content:space-between;border-bottom:3px solid #1a1a2e;padding-bottom:12px;margin-bottom:20px;}
+.dz-name{font-size:22px;font-weight:900;text-transform:uppercase;color:#1a1a2e;}.dz-sub{font-size:11px;color:#555;letter-spacing:1px;text-transform:uppercase;margin-top:3px;}
+.wo-num{font-size:28px;font-weight:900;color:#1a1a2e;text-align:right;}.wo-date{font-size:11px;color:#555;margin-top:4px;text-align:right;}
+${rush?'.rush{background:#fee2e2;border:2px solid #ef4444;border-radius:6px;padding:8px 14px;font-weight:900;font-size:14px;color:#b91c1c;text-align:center;margin-bottom:16px;}':''}
+.section{margin-bottom:18px;}.section-title{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#555;border-bottom:1px solid #ddd;padding-bottom:4px;margin-bottom:10px;}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px;}.field{margin-bottom:8px;}.field label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#777;display:block;margin-bottom:2px;}.field .val{font-size:13px;font-weight:500;}
+table{width:100%;border-collapse:collapse;}td{padding:6px 4px;border-bottom:1px dashed #eee;}.total-row td{font-size:15px;font-weight:900;border-top:2px solid #1a1a2e;border-bottom:none;padding-top:8px;}
+.signoff{margin-top:28px;border-top:2px solid #1a1a2e;padding-top:20px;display:grid;grid-template-columns:1fr 1fr;gap:30px;}.signoff-field{border-bottom:1px solid #aaa;min-height:36px;}.signoff-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#777;margin-top:6px;}
 </style></head><body>
-<div class="header">
-  <div><div class="dz-name">Skydive Sussex</div><div class="dz-sub">Rigging — Service Request</div></div>
-  <div><div class="wo-num">${order.work_order||'N/A'}</div><div class="wo-date">Date: ${date}</div></div>
-</div>
-${rush ? '<div class="rush">⚡ RUSH — ' + rush + '</div>' : ''}
+<div class="header"><div><div class="dz-name">Skydive Sussex</div><div class="dz-sub">Rigging — Service Request</div></div><div><div class="wo-num">${order.work_order||'N/A'}</div><div class="wo-date">Date: ${date}</div></div></div>
+${rush?'<div class="rush">⚡ RUSH — '+rush+'</div>':''}
 <div class="grid2">
-  <div class="section">
-    <div class="section-title">${isFJ ? 'Customer' : 'DZ Gear'}</div>
-    ${isFJ ? '<div class="field"><label>Name</label><div class="val">' + (order.customer_name||'—') + '</div></div><div class="field"><label>Phone</label><div class="val">' + (order.customer_phone||'—') + '</div></div><div class="field"><label>Email</label><div class="val">' + (order.customer_email||'—') + '</div></div>' : '<div class="field"><label>Rig #</label><div class="val">' + (order.rig_num||'—') + '</div></div><div class="field"><label>Type</label><div class="val">' + (order.gear_type==='tandem'?'Tandem':'Student') + '</div></div>'}
+  <div class="section"><div class="section-title">${isFJ?'Customer':'DZ Gear'}</div>
+    ${isFJ?'<div class="field"><label>Name</label><div class="val">'+(order.customer_name||'—')+'</div></div><div class="field"><label>Phone</label><div class="val">'+(order.customer_phone||'—')+'</div></div><div class="field"><label>Email</label><div class="val">'+(order.customer_email||'—')+'</div></div>':'<div class="field"><label>Rig #</label><div class="val">'+(order.rig_num||'—')+'</div></div><div class="field"><label>Type</label><div class="val">'+(order.gear_type==='tandem'?'Tandem':'Student')+'</div></div>'}
   </div>
-  <div class="section">
-    <div class="section-title">Container</div>
+  <div class="section"><div class="section-title">Container</div>
     <div class="field"><label>Make</label><div class="val">${order.rig_make||'—'}</div></div>
     <div class="field"><label>S/N</label><div class="val">${order.rig_sn||'—'}</div></div>
-    ${order.res_make ? '<div class="field"><label>Reserve</label><div class="val">' + order.res_make + (order.res_repack_due ? ' · Due: ' + new Date(order.res_repack_due + 'T00:00:00').toLocaleDateString() : '') + '</div></div>' : ''}
-    ${order.aad_make ? '<div class="field"><label>AAD</label><div class="val">' + order.aad_make + '</div></div>' : ''}
+    ${order.res_make?'<div class="field"><label>Reserve</label><div class="val">'+order.res_make+(order.res_repack_due?' · Due: '+new Date(order.res_repack_due+'T00:00:00').toLocaleDateString():'')+'</div></div>':''}
+    ${order.aad_make?'<div class="field"><label>AAD</label><div class="val">'+order.aad_make+'</div></div>':''}
   </div>
 </div>
-<div class="section">
-  <div class="section-title">Services</div>
-  <table>${svcRows}<tr class="total-row"><td>Estimated Total</td><td style="text-align:right;">$${total.toFixed(2)}${hasVaries ? ' + varies' : ''}</td></tr></table>
+<div class="section"><div class="section-title">Services</div>
+  <table>${svcRows}<tr class="total-row"><td>Estimated Total</td><td style="text-align:right;">$${total.toFixed(2)}${hasVaries?' + varies':''}</td></tr></table>
 </div>
-${order.extra_notes ? '<div class="section"><div class="section-title">Notes</div><p>' + order.extra_notes + '</p></div>' : ''}
+${order.extra_notes?'<div class="section"><div class="section-title">Notes</div><p>'+order.extra_notes+'</p></div>':''}
 <div class="signoff">
   <div><div class="signoff-field"></div><div class="signoff-label">Rigger Name</div></div>
   <div><div class="signoff-field"></div><div class="signoff-label">Rigger Seal</div></div>
   <div><div class="signoff-field"></div><div class="signoff-label">Date Completed</div></div>
   <div><div class="signoff-field"></div><div class="signoff-label">Customer Pickup</div></div>
-</div>
-</body></html>`;
-
-  const w = window.open('', '_blank');
+</div></body></html>`;
+  const w=window.open('','_blank');
   if (!w) { alert('Please allow popups for ssxgear.com to print work orders.'); return; }
-  w.document.write(html);
-  w.document.close();
-  setTimeout(() => w.print(), 600);
+  w.document.write(html); w.document.close(); setTimeout(()=>w.print(),600);
 }
 </script>
 
@@ -1482,7 +1281,6 @@ ${order.extra_notes ? '<div class="section"><div class="section-title">Notes</di
   <div class="edit-modal-box">
     <div class="edit-modal-title">✏️ Edit Order Info</div>
     <div class="edit-modal-sub">Changes save directly to the service log sheet.</div>
-
     <div id="ei-cust-section">
       <div class="edit-section-label">Customer</div>
       <div class="edit-grid">
@@ -1491,14 +1289,12 @@ ${order.extra_notes ? '<div class="section"><div class="section-title">Notes</di
         <div class="edit-field"><label>Email</label><input type="email" id="ei-cust-email" placeholder="Email address"></div>
       </div>
     </div>
-
     <div class="edit-section-label">Container</div>
     <div class="edit-grid">
       <div class="edit-field"><label>Make / Model</label><input type="text" id="ei-rig-make" placeholder="e.g. Javelin Odyssey"></div>
       <div class="edit-field"><label>Serial Number</label><input type="text" id="ei-rig-sn" placeholder="Container S/N"></div>
       <div class="edit-field"><label>DOM</label><input type="text" id="ei-rig-dom" placeholder="YYYY-MM-DD"></div>
     </div>
-
     <div class="edit-section-label">Reserve</div>
     <div class="edit-grid">
       <div class="edit-field"><label>Make</label><input type="text" id="ei-res-make" placeholder="e.g. Tempo"></div>
@@ -1506,16 +1302,13 @@ ${order.extra_notes ? '<div class="section"><div class="section-title">Notes</di
       <div class="edit-field"><label>Last Pack Date</label><input type="text" id="ei-res-pack" placeholder="YYYY-MM-DD"></div>
       <div class="edit-field"><label>Repack Due</label><input type="text" id="ei-res-due" placeholder="YYYY-MM-DD"></div>
     </div>
-
     <div class="edit-section-label">AAD</div>
     <div class="edit-grid">
       <div class="edit-field"><label>Make</label><input type="text" id="ei-aad-make" placeholder="e.g. Vigil Cuatro"></div>
       <div class="edit-field"><label>Serial Number</label><input type="text" id="ei-aad-sn" placeholder="AAD S/N"></div>
       <div class="edit-field"><label>DOM</label><input type="text" id="ei-aad-dom" placeholder="YYYY-MM-DD"></div>
     </div>
-
     <div class="edit-save-status" id="edit-save-status"></div>
-
     <div class="edit-actions">
       <button class="btn-save-edit" onclick="saveEditInfo()">💾 Save Changes</button>
       <button class="btn-cancel-edit" onclick="closeEditModal()">Cancel</button>
@@ -1528,59 +1321,35 @@ ${order.extra_notes ? '<div class="section"><div class="section-title">Notes</di
   <div class="edit-modal-box" style="max-width:640px;">
     <div class="edit-modal-title">📄 Edit &amp; Resend Invoice</div>
     <div class="edit-modal-sub">Adjust services, add charges or notes, then send to any email.</div>
-
     <div style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:10px 14px;margin-bottom:14px;">
       <div style="font-size:11px;font-weight:700;color:var(--text-muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:3px;">Work Order</div>
       <div id="inv-wo" style="font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--accent);"></div>
       <div id="inv-rig" style="font-size:13px;font-weight:600;margin-top:2px;"></div>
     </div>
-
     <div class="edit-section-label">Services</div>
     <div class="info-block" style="margin-bottom:12px;">
       <div class="svc-edit-grid" id="inv-svc-grid"></div>
     </div>
-
     <div class="edit-section-label">Adjustments</div>
     <div class="inv-grid" style="margin-bottom:12px;">
-      <div class="inv-field">
-        <label>Extra Charge ($)</label>
-        <input type="number" id="inv-extra-charge" placeholder="0.00" min="0" step="0.01" oninput="updateInvoiceTotal()">
-      </div>
-      <div class="inv-field">
-        <label>Discount ($)</label>
-        <input type="number" id="inv-discount" placeholder="0.00" min="0" step="0.01" oninput="updateInvoiceTotal()">
-      </div>
-      <div class="inv-field full">
-        <label>Rigger Name</label>
-        <input type="text" id="inv-rigger" placeholder="Rigger name">
-      </div>
-      <div class="inv-field full">
-        <label>Notes / Comments</label>
-        <textarea id="inv-notes" placeholder="Any additional notes to include on the invoice…"></textarea>
-      </div>
+      <div class="inv-field"><label>Extra Charge ($)</label><input type="number" id="inv-extra-charge" placeholder="0.00" min="0" step="0.01" oninput="updateInvoiceTotal()"></div>
+      <div class="inv-field"><label>Discount ($)</label><input type="number" id="inv-discount" placeholder="0.00" min="0" step="0.01" oninput="updateInvoiceTotal()"></div>
+      <div class="inv-field full"><label>Rigger Name</label><input type="text" id="inv-rigger" placeholder="Rigger name"></div>
+      <div class="inv-field full"><label>Notes / Comments</label><textarea id="inv-notes" placeholder="Any additional notes…"></textarea></div>
     </div>
-
     <div style="background:var(--surface2);border:1px solid rgba(56,189,248,0.2);border-radius:8px;padding:10px 14px;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;">
       <span style="font-size:12px;font-weight:700;color:var(--text-muted);letter-spacing:1px;text-transform:uppercase;">Invoice Total</span>
       <span id="inv-total-display" style="font-family:'JetBrains Mono',monospace;font-size:20px;font-weight:700;color:var(--green);">$0.00</span>
     </div>
-
     <div class="edit-section-label">Send To</div>
     <div class="inv-grid" style="margin-bottom:4px;">
-      <div class="inv-field">
-        <label>Customer Email</label>
-        <input type="email" id="inv-email" placeholder="customer@email.com">
-      </div>
-      <div class="inv-field">
-        <label>Rigger Email <span style="font-weight:400;text-transform:none;letter-spacing:0;font-size:10px;color:var(--text-muted)">(copy)</span></label>
-        <input type="email" id="inv-rigger-email" placeholder="rigger@email.com">
-      </div>
+      <div class="inv-field"><label>Customer Email</label><input type="email" id="inv-email" placeholder="customer@email.com"></div>
+      <div class="inv-field"><label>Rigger Email <span style="font-weight:400;text-transform:none;letter-spacing:0;font-size:10px;color:var(--text-muted)">(copy)</span></label><input type="email" id="inv-rigger-email" placeholder="rigger@email.com"></div>
     </div>
-    <div style="font-size:11px;color:var(--text-muted);margin-bottom:14px;">Fill in at least one email address. Both will receive the invoice if provided.</div>
-
+    <div style="font-size:11px;color:var(--text-muted);margin-bottom:14px;">Fill in at least one email to send. Both will receive the invoice if provided.</div>
     <div class="edit-save-status" id="inv-send-status"></div>
-
     <div class="edit-actions">
+      <button class="btn-save-edit" onclick="saveInvoiceOnly()" style="background:var(--sky);color:#0e1117;flex:0 0 auto;">💾 Save</button>
       <button class="btn-save-edit" onclick="sendEditedInvoice()" style="background:var(--green);color:#0e1117;">📧 Send Invoice</button>
       <button class="btn-cancel-edit" onclick="closeInvoiceModal()">Cancel</button>
     </div>
