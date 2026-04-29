@@ -1036,8 +1036,8 @@ function openInvoiceModal(i) {
     :'Rig #'+(o.rig_num||'')+' — '+(o.rig_make||'')+' S/N '+(o.rig_sn||'');
   document.getElementById('inv-rigger').value       = o.rigger        ||'';
   document.getElementById('inv-notes').value        = o.completion_notes||'';
-  document.getElementById('inv-extra-charge').value = '';
-  document.getElementById('inv-discount').value     = '';
+  document.getElementById('inv-extra-charge').value = o.extra_charge > 0 ? o.extra_charge : '';
+  document.getElementById('inv-discount').value     = o.discount > 0 ? o.discount : '';
   document.getElementById('inv-email').value        = o.customer_email||'';
   document.getElementById('inv-rigger-email').value = '';
 
