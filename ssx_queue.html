@@ -1091,7 +1091,7 @@ async function saveInvoiceOnly() {
   statusEl.textContent='Saving…'; statusEl.className='edit-save-status'; statusEl.style.display='block';
   try {
     await fetch(SCRIPT_URL, { method:'POST', mode:'no-cors', headers:{'Content-Type':'text/plain'},
-      body: JSON.stringify({ action:'saveInvoice', work_order:o.work_order||'', rigger, services:updatedServices, notes, extra_charge:extraCharge, discount, row:o._row }) });
+      body: JSON.stringify({ action:'saveInvoice', work_order:o.work_order||'', rigger, services:updatedServices, notes, extra_charge:extraCharge, discount, row:o._row, _tab:o._tab||'' }) });
     o.services=updatedServices; o.rigger=rigger; o.completion_notes=notes;
     statusEl.textContent='✓ Saved!'; statusEl.className='edit-save-status ok';
     setTimeout(() => { statusEl.style.display='none'; filterServiceHistory(); }, 1500);
