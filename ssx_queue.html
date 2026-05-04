@@ -420,22 +420,21 @@ function showScreen(id) {
 function login() {
   const pw = document.getElementById('pw-input').value;
   const errEl = document.getElementById('login-error');
-  // Fetch latest password from sheet first
-  jsonpFetch(SCRIPT_URL + '?action=getSettings').then(data => {
-    if (data && data.admin_password) {
-      currentPassword = data.admin_password;
-      localStorage.setItem('ssxQueuePw', currentPassword);
-    }
-  }).catch(() => {}).finally(() => {
-    if (pw === currentPassword || pw === '2280') {
-      errEl.style.display = 'none';
-      showScreen('screen-queue');
-      document.getElementById('logout-btn').style.display = 'block';
-      loadQueue();
-    } else {
-      errEl.style.display = 'block';
-    }
-  });
+  if (pw === currentPassword || pw === '2280') {
+    errEl.style.display = 'none';
+    showScreen('screen-queue');
+    document.getElementById('logout-btn').style.display = 'block';
+    loadQueue();
+    // Update cached password in background
+    jsonpFetch(SCRIPT_URL + '?action=getSettings').then(data => {
+      if (data && data.admin_password) {
+        currentPassword = data.admin_password;
+        localStorage.setItem('ssxQueuePw', currentPassword);
+      }
+    }).catch(() => {});
+  } else {
+    errEl.style.display = 'block';
+  }
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -1116,7 +1115,7 @@ function addCustomService(idx) {
     const label = document.createElement('label');
     label.className = 'svc-item checked';
     label.style.cssText = 'grid-column:1/-1;border-color:rgba(56,189,248,0.5);background:var(--sky-dim);';
-    label.innerHTML = '<input type="checkbox" value="' + name + '" checked onchange="updateLiveTotal(' + idx + ')"><div class="svc-check" style="background:var(--sky);border-color:var(--sky);"><span style='font-size:11px;color:#fff;'>✓</span></div><span class="svc-label">' + name + '<span class="svc-price">$' + price.toFixed(2) + '</span></span>';
+    label.innerHTML = '<input type="checkbox" value="' + name + '" checked onchange="updateLiveTotal(' + idx + ')"><div class="svc-check" style="background:var(--sky);border-color:var(--sky);"><span style="font-size:11px;color:#fff;">&#10003;</span></div><span class="svc-label">' + name + '<span class="svc-price">$' + price.toFixed(2) + '</span></span>';
     label.addEventListener('click', function(e) {
       const cb = label.querySelector('input[type="checkbox"]');
       cb.checked = !cb.checked;
