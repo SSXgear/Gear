@@ -620,7 +620,21 @@ function renderQueue() {
         <button class="add-svc-toggle" onclick="toggleAddSvc(this)">➕ Add / Edit Services ▾</button>
         <div class="add-svc-panel">
           <div class="info-block"><div class="svc-edit-grid" id="svc-grid-${realIdx}"></div></div>
-          <div style="margin-top:8px;">
+          <div style="margin-top:8px;background:var(--surface);border:1px solid rgba(56,189,248,0.2);border-radius:8px;padding:10px 12px;">
+            <div style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--sky);margin-bottom:8px;">➕ Add Custom Service</div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;">
+              <input type="text" id="custom-svc-name-${realIdx}" placeholder="Service description…"
+                style="flex:2;min-width:160px;background:var(--bg);border:1px solid var(--border);border-radius:7px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;padding:8px 10px;min-height:38px;">
+              <input type="number" id="custom-svc-price-${realIdx}" placeholder="Price $" min="0" step="0.01"
+                style="flex:1;min-width:80px;background:var(--bg);border:1px solid var(--border);border-radius:7px;color:var(--text);font-family:'JetBrains Mono',monospace;font-size:13px;padding:8px 10px;min-height:38px;">
+              <button onclick="addCustomService(${realIdx})"
+                style="background:var(--sky-dim);border:1px solid rgba(56,189,248,0.3);color:var(--sky);border-radius:7px;padding:8px 14px;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap;min-height:38px;">
+                + Add
+              </button>
+            </div>
+            <div id="custom-svc-list-${realIdx}" style="margin-top:8px;"></div>
+          </div>
+        <div style="margin-top:8px;">
             <div style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-muted);margin-bottom:5px;">📝 Rigger Notes</div>
             <textarea id="rigger-notes-${realIdx}" placeholder="Notes on this service order..." style="width:100%;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;padding:10px 12px;min-height:64px;resize:vertical;"></textarea>
           </div>
@@ -1082,6 +1096,47 @@ function updateInvoiceTotal() {
   const discount=parseFloat(document.getElementById('inv-discount').value)||0;
   const {total,hasVaries}=calcTotal(checked.join(' | '),extra,discount);
   document.getElementById('inv-total-display').textContent='$'+Math.max(0,total).toFixed(2)+(hasVaries?' + varies':'');
+}
+
+function addCustomService(idx) {
+  const nameEl  = document.getElementById('custom-svc-name-' + idx);
+  const priceEl = document.getElementById('custom-svc-price-' + idx);
+  const listEl  = document.getElementById('custom-svc-list-' + idx);
+  const name  = (nameEl?.value || '').trim();
+  const price = parseFloat(priceEl?.value) || 0;
+  if (!name) { nameEl?.focus(); return; }
+
+  // Add to SVC_PRICES so it gets counted
+  const key = 'CUSTOM:' + idx + ':' + Date.now();
+  SVC_PRICES[name] = price;
+
+  // Add a checked item to the svc grid
+  const svcGrid = document.getElementById('svc-grid-' + idx);
+  if (svcGrid) {
+    const label = document.createElement('label');
+    label.className = 'svc-item checked';
+    label.style.cssText = 'grid-column:1/-1;border-color:rgba(56,189,248,0.5);background:var(--sky-dim);';
+    label.innerHTML = '<input type="checkbox" value="' + name + '" checked onchange="updateLiveTotal(' + idx + ')"><div class="svc-check" style="background:var(--sky);border-color:var(--sky);"><span style='font-size:11px;color:#fff;'>✓</span></div><span class="svc-label">' + name + '<span class="svc-price">$' + price.toFixed(2) + '</span></span>';
+    label.addEventListener('click', function(e) {
+      const cb = label.querySelector('input[type="checkbox"]');
+      cb.checked = !cb.checked;
+      label.classList.toggle('checked', cb.checked);
+      updateLiveTotal(idx);
+    });
+    svcGrid.appendChild(label);
+  }
+
+  // Show in custom list
+  if (listEl) {
+    const tag = document.createElement('div');
+    tag.style.cssText = 'display:inline-flex;align-items:center;gap:6px;background:var(--sky-dim);border:1px solid rgba(56,189,248,0.3);color:var(--sky);border-radius:6px;padding:4px 10px;font-size:12px;margin:2px 4px 2px 0;';
+    tag.innerHTML = '✓ ' + name + (price > 0 ? ' — $' + price.toFixed(2) : '') + ' <span onclick="this.parentElement.remove()" style="cursor:pointer;opacity:0.7;margin-left:4px;">✕</span>';
+    listEl.appendChild(tag);
+  }
+
+  // Clear inputs
+  nameEl.value = ''; priceEl.value = '';
+  updateLiveTotal(idx);
 }
 
 async function saveInvoiceOnly() {
