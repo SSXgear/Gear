@@ -627,6 +627,7 @@ function renderQueue() {
           <div class="charge-row" style="margin-top:8px;">
             <div class="charge-field"><label>➕ Extra Charge ($)</label><input type="number" id="extra-charge-${realIdx}" placeholder="0.00" min="0" step="0.01" oninput="updateLiveTotal(${realIdx})"></div>
             <div class="charge-field"><label>➖ Discount ($)</label><input type="number" id="discount-${realIdx}" placeholder="0.00" min="0" step="0.01" oninput="updateLiveTotal(${realIdx})"></div>
+            <div class="charge-field" style="grid-column:1/-1;"><label>Extra Charge Description</label><input type="text" id="extra-charge-desc-${realIdx}" placeholder="e.g. AAD cutter repositioning, Technical Bulletin TB-250122…" style="font-family:'DM Sans',sans-serif;font-size:13px;"></div>
           </div>
           <div style="background:var(--surface2);border:1px solid rgba(56,189,248,0.2);border-radius:8px;padding:10px 14px;margin-top:8px;display:flex;align-items:center;justify-content:space-between;">
             <span style="font-size:11px;font-weight:700;color:var(--text-muted);letter-spacing:1px;text-transform:uppercase;">Invoice Total</span>
@@ -907,9 +908,14 @@ async function doMarkComplete(idx) {
     ? [...svcGrid.querySelectorAll('input[type="checkbox"]:checked')].map(c=>c.value).join(' | ')
     : order.services;
 
+  const extraChargeDesc = (document.getElementById('extra-charge-desc-'+idx)?.value||'').trim();
   let finalNotes = riggerNotes||compNotes;
-  if (extraCharge>0) finalNotes += (finalNotes?'\n':'')+'Extra charge: +$'+extraCharge.toFixed(2);
-  if (discount>0)    finalNotes += (finalNotes?'\n':'')+'Discount: -$'+discount.toFixed(2);
+  if (extraCharge>0) {
+    let chargeNote = 'Extra charge: +$'+extraCharge.toFixed(2);
+    if (extraChargeDesc) chargeNote += ' — ' + extraChargeDesc;
+    finalNotes += (finalNotes?'\n':'') + chargeNote;
+  }
+  if (discount>0) finalNotes += (finalNotes?'\n':'')+'Discount: -$'+discount.toFixed(2);
 
   const btn = document.getElementById('complete-btn-'+idx);
   if (btn) btn.classList.add('submitting');
@@ -924,6 +930,7 @@ async function doMarkComplete(idx) {
         services:         updatedServices,
         completion_notes: finalNotes,
         extra_charge:     extraCharge,
+        extra_charge_desc: extraChargeDesc,
         discount:         discount,
         row:              order._row,
       }) });
@@ -1333,6 +1340,7 @@ ${order.extra_notes?'<div class="section"><div class="section-title">Notes</div>
     <div class="edit-section-label">Adjustments</div>
     <div class="inv-grid" style="margin-bottom:12px;">
       <div class="inv-field"><label>Extra Charge ($)</label><input type="number" id="inv-extra-charge" placeholder="0.00" min="0" step="0.01" oninput="updateInvoiceTotal()"></div>
+      <div class="inv-field"><label>Extra Charge Description</label><input type="text" id="inv-extra-charge-desc" placeholder="e.g. AAD cutter repositioning…" style="font-size:14px;"></div>
       <div class="inv-field"><label>Discount ($)</label><input type="number" id="inv-discount" placeholder="0.00" min="0" step="0.01" oninput="updateInvoiceTotal()"></div>
       <div class="inv-field full"><label>Rigger Name</label><input type="text" id="inv-rigger" placeholder="Rigger name"></div>
       <div class="inv-field full"><label>Notes / Comments</label><textarea id="inv-notes" placeholder="Any additional notes…"></textarea></div>
