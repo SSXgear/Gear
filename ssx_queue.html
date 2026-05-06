@@ -920,6 +920,27 @@ async function doMarkComplete(idx) {
   const updatedServices = svcGrid
     ? [...svcGrid.querySelectorAll('input[type="checkbox"]:checked')].map(c=>c.value).join(' | ')
     : order.services;
+  // Collect custom service prices (ones not in standard list)
+  const customPrices = {};
+  if (svcGrid) {
+    svcGrid.querySelectorAll('input[type="checkbox"]:checked').forEach(cb => {
+      const name = cb.value;
+      if (SVC_PRICES[name] !== undefined && !Object.keys({
+        'Reserve Inspection & Repack (Sport)':1,'Reserve Inspection & Repack (Tandem)':1,
+        'Inspect Main or Reserve':1,'Inspect Harness / Container':1,
+        "Inspect & Pack Pilot's Emergency Rig":1,'Pack Main Sport':1,'Pack Main Tandem':1,
+        'Install AAD':1,'Reserve Safety Stow Replacement':1,'Replace Lower Steering Lines':1,
+        'Replace Steering Lines Toggles to Cascades':1,'Re-line Sport':1,'Re-line Tandem':1,
+        'Slinks':1,'Assembly, Inspection & Pack Reserve (Sport)':1,
+        'Assembly, Inspection & Pack Reserve (Tandem)':1,'Assembly, Inspection & Pack Main':1,
+        'Disassemble Main or Reserve':1,'Install Slider Bumpers':1,'Fabric Tensile Test':1,
+        'Kill Line Replacement':1,'BOC Replacement':1,'Tack Slinks / Links':1,'Wash Rig':1,
+        'Canopy Patch':1,'Sewing':1,'Full Line Set':1,'AAD Batteries / Service':1,
+      }).includes(name)) {
+        customPrices[name] = SVC_PRICES[name];
+      }
+    });
+  }
 
   const extraChargeDesc = (document.getElementById('extra-charge-desc-'+idx)?.value||'').trim();
   let finalNotes = riggerNotes||compNotes;
@@ -945,6 +966,7 @@ async function doMarkComplete(idx) {
         extra_charge:     extraCharge,
         extra_charge_desc: extraChargeDesc,
         discount:         discount,
+        custom_prices:    customPrices,
         row:              order._row,
       }) });
     pendingOrders.splice(idx,1);
