@@ -666,7 +666,7 @@ function renderQueue() {
         <div style="margin-bottom:10px;margin-top:12px;">
           <div style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-muted);margin-bottom:8px;">Update Status</div>
           <div class="status-row">
-            ${['IN_PROGRESS','GEAR_READY'].map(s=>`<button class="status-opt${status===s?' sel-'+s:''}" onclick="changeStatus(${realIdx},'${s}')" id="st-${realIdx}-${s}">${statusLabel(s)}</button>`).join('')}
+            ${['PENDING','IN_PROGRESS','GEAR_READY'].map(s=>`<button class="status-opt${status===s?' sel-'+s:''}" onclick="changeStatus(${realIdx},'${s}')" id="st-${realIdx}-${s}">${statusLabel(s)}</button>`).join('')}
           </div>
         </div>
         <div class="complete-section">
